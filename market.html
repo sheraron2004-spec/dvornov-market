@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dvornov Market</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg:#0d1117; --surface:#161b26; --surface2:#1e2535;
+    --blue:#3d7eff; --blue-glow:rgba(61,126,255,0.18);
+    --teal:#00c9b1; --gold:#f5c842; --red:#ff4f6d;
+    --text:#e8eef8; --text-dim:#5a6a8a; --text-mid:#99aec8;
+    --radius:16px; --radius-sm:10px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;padding-bottom:90px;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(61,126,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(61,126,255,0.03) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
+
+  header{position:sticky;top:0;z-index:100;background:rgba(13,17,23,0.95);backdrop-filter:blur(24px);border-bottom:1px solid rgba(61,126,255,0.12);padding:12px 16px}
+  .header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .logo{display:flex;align-items:center;gap:9px}
+  .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#1a4fd6,var(--blue));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 16px rgba(61,126,255,0.4)}
+  .logo-title{font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:700;letter-spacing:0.8px;color:var(--text)}
+  .logo-title span{color:var(--blue)}
+  .header-right{display:flex;gap:7px;align-items:center}
+  .pill-btn{font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;padding:6px 11px;border-radius:20px;text-decoration:none;cursor:pointer;transition:all 0.2s;border:none;display:flex;align-items:center;gap:4px}
+  .pill-reviews{background:rgba(61,126,255,0.12);border:1px solid rgba(61,126,255,0.25);color:var(--blue)}
+  .pill-admin{background:rgba(245,200,66,0.12);border:1px solid rgba(245,200,66,0.3);color:var(--gold);display:none}
+  .pill-admin.visible{display:flex}
+  .search-wrap{position:relative}
+  .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:14px}
+  .search-input{width:100%;background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-sm);padding:9px 12px 9px 34px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--text);outline:none;transition:border-color 0.2s}
+  .search-input:focus{border-color:rgba(61,126,255,0.4)}
+  .search-input::placeholder{color:var(--text-dim)}
+
+  .banner{margin:14px 14px 0;border-radius:20px;overflow:hidden;position:relative;background:linear-gradient(125deg,#0a1628 0%,#0f2352 40%,#0d3272 70%,#0a4080 100%);padding:22px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 12px 40px rgba(13,50,114,0.5);animation:fadeSlide 0.5s ease}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+  .banner::before{content:'';position:absolute;right:-30px;top:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(61,126,255,0.15),transparent 70%);border-radius:50%}
+  .banner::after{content:'';position:absolute;right:50px;bottom:-50px;width:130px;height:130px;background:radial-gradient(circle,rgba(0,201,177,0.12),transparent 70%);border-radius:50%}
+  .banner-left{position:relative;z-index:1}
+  .banner-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(245,200,66,0.18);border:1px solid rgba(245,200,66,0.35);color:var(--gold);font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;margin-bottom:8px;letter-spacing:0.4px;text-transform:uppercase}
+  .banner-title{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;color:#fff;line-height:1.1;margin-bottom:6px}
+  .banner-title span{color:var(--teal)}
+  .banner-sub{color:rgba(255,255,255,0.55);font-size:12px;font-weight:600}
+  .banner-trophy{font-size:56px;filter:drop-shadow(0 0 20px rgba(245,200,66,0.5));position:relative;z-index:1}
+
+  .filter-section{padding:16px 14px 0;position:relative;z-index:1}
+  .filter-label{font-size:11px;font-weight:800;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px}
+  .filter-row{display:flex;gap:8px;align-items:center}
+  .filter-input{flex:1;background:var(--surface);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius-sm);padding:10px 12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--text);outline:none;transition:border-color 0.2s}
+  .filter-input:focus{border-color:rgba(61,126,255,0.45)}
+  .filter-input::placeholder{color:var(--text-dim)}
+  .filter-sep{color:var(--text-dim);font-size:16px;font-weight:800}
+  .filter-btn{background:var(--blue);border:none;color:#fff;padding:10px 16px;border-radius:var(--radius-sm);font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(61,126,255,0.35);transition:all 0.18s;white-space:nowrap}
+  .filter-btn:active{transform:scale(0.95)}
+  .filter-reset{background:var(--surface);border:1px solid rgba(255,255,255,0.07);color:var(--text-dim);width:38px;height:38px;border-radius:var(--radius-sm);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+  .section{padding:16px 14px 0;position:relative;z-index:1}
+  .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .section-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;letter-spacing:0.5px;color:var(--text)}
+  .section-badge{background:var(--blue-glow);border:1px solid rgba(61,126,255,0.25);color:var(--blue);font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+  .card{background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius);overflow:hidden;transition:transform 0.18s,border-color 0.18s;animation:cardIn 0.4s ease forwards;opacity:0}
+  .card:hover{border-color:rgba(61,126,255,0.3)}
+  .card:active{transform:scale(0.97)}
+  @keyframes cardIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+  .card-img{width:100%;aspect-ratio:4/3;background:var(--surface2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+  .card-img img{width:100%;height:100%;object-fit:cover}
+  .card-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:38px;background:linear-gradient(135deg,#111d35,#162347)}
+  .card-badge{position:absolute;bottom:7px;left:7px;background:rgba(13,17,23,0.82);backdrop-filter:blur(8px);border:1px solid rgba(61,126,255,0.3);color:var(--blue);font-size:9px;font-weight:800;padding:3px 7px;border-radius:7px}
+  .card-body{padding:10px 11px 12px}
+  .card-price{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--gold);letter-spacing:0.3px;line-height:1;margin-bottom:2px}
+  .card-curr{font-size:13px;color:var(--text-dim);font-weight:700}
+  .card-sub{font-size:10px;font-weight:700;color:var(--text-dim);margin-bottom:9px}
+  .card-btns{display:flex;gap:5px}
+  .btn-buy{flex:1;background:linear-gradient(135deg,#1a4fd6,var(--blue));border:none;color:#fff;padding:8px 4px;border-radius:9px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:2px;box-shadow:0 3px 10px rgba(61,126,255,0.3);transition:all 0.18s}
+  .btn-icon{width:30px;height:30px;border:1px solid rgba(255,255,255,0.08);border-radius:9px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.18s;flex-shrink:0;text-decoration:none;background:var(--surface2);color:var(--text-mid)}
+  .btn-icon:hover{border-color:var(--teal);color:var(--teal)}
+
+  .loading{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-dim)}
+  .loading-spinner{font-size:36px;animation:spin 1s linear infinite;margin-bottom:10px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-dim)}
+  .empty-icon{font-size:46px;margin-bottom:10px}
+  .empty-text{font-size:13px;font-weight:700;line-height:1.6}
+
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(13,17,23,0.96);backdrop-filter:blur(20px);border-top:1px solid rgba(61,126,255,0.1);padding:10px 14px 18px;display:flex;gap:10px;z-index:100}
+  .nav-btn{flex:1;padding:12px;border-radius:13px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;border:none;cursor:pointer;transition:all 0.18s}
+  .nav-sell{background:var(--surface2);border:1px solid rgba(61,126,255,0.2);color:var(--text-mid)}
+  .nav-contact{background:linear-gradient(135deg,#1a4fd6,#3d7eff);color:#fff;box-shadow:0 4px 18px rgba(61,126,255,0.35)}
+  .nav-btn:active{transform:scale(0.96)}
+
+  .overlay{display:none;position:fixed;inset:0;background:rgba(5,8,16,0.75);backdrop-filter:blur(12px);z-index:200;align-items:flex-end}
+  .overlay.active{display:flex}
+  .modal{background:var(--surface);border-radius:22px 22px 0 0;border:1px solid rgba(255,255,255,0.07);border-bottom:none;padding:18px 18px 40px;width:100%;max-height:82vh;overflow-y:auto;animation:slideUp 0.28s ease}
+  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .modal-handle{width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:2px;margin:0 auto 16px;cursor:pointer}
+  .modal-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:14px;letter-spacing:0.4px}
+  .album-link{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid rgba(255,255,255,0.06);border-radius:11px;padding:12px 14px;text-decoration:none;color:var(--teal);font-size:12px;font-weight:700;margin-bottom:8px;word-break:break-all;transition:border-color 0.18s}
+  .album-link:hover{border-color:var(--teal)}
+  .no-albums{text-align:center;padding:28px;color:var(--text-dim);font-size:13px;font-weight:700}
+
+  /* Admin */
+  .admin-section-label{font-size:11px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;opacity:0.7}
+  .admin-actions{display:flex;flex-direction:column;gap:9px}
+  .admin-action-btn{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:13px 15px;cursor:pointer;transition:all 0.18s;text-align:left;width:100%;font-family:'Nunito',sans-serif}
+  .admin-action-btn:hover{border-color:rgba(61,126,255,0.3)}
+  .admin-action-btn:active{transform:scale(0.98)}
+  .action-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .ic-blue{background:rgba(61,126,255,0.15)} .ic-red{background:rgba(255,79,109,0.15)} .ic-gold{background:rgba(245,200,66,0.15)} .ic-teal{background:rgba(0,201,177,0.15)}
+  .action-name{font-size:14px;font-weight:800;color:var(--text)}
+  .action-desc{font-size:11px;font-weight:600;color:var(--text-dim);margin-top:1px}
+  .admin-divider{height:1px;background:rgba(255,255,255,0.05)}
+  .admin-back{display:flex;align-items:center;gap:6px;background:transparent;border:none;color:var(--text-dim);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;padding:0}
+  .admin-back:hover{color:var(--text)}
+
+  .admin-form{display:flex;flex-direction:column;gap:10px}
+  .form-group{display:flex;flex-direction:column;gap:5px}
+  .form-label{font-size:11px;font-weight:800;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px}
+  .form-input{background:var(--surface2);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);padding:11px 14px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--text);outline:none;transition:border-color 0.2s}
+  .form-input:focus{border-color:rgba(61,126,255,0.5)}
+  .form-input::placeholder{color:var(--text-dim)}
+  .form-btns{display:flex;gap:8px;margin-top:4px}
+  .form-submit{flex:1;background:linear-gradient(135deg,#1a4fd6,var(--blue));border:none;color:#fff;padding:12px;border-radius:var(--radius-sm);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(61,126,255,0.3);transition:all 0.18s}
+  .form-submit:active{transform:scale(0.96)}
+  .form-submit:disabled{opacity:0.5;cursor:not-allowed}
+  .form-cancel{background:var(--surface2);border:1px solid rgba(255,255,255,0.08);color:var(--text-dim);padding:12px 16px;border-radius:var(--radius-sm);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer}
+
+  .album-add-row{display:flex;gap:6px}
+  .album-add-row .form-input{flex:1}
+  .album-add-btn{background:var(--surface2);border:1px solid rgba(255,255,255,0.1);color:var(--teal);padding:11px 14px;border-radius:var(--radius-sm);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap}
+  .album-chips{display:flex;flex-direction:column;gap:5px;margin-top:4px}
+  .album-chip{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid rgba(0,201,177,0.2);border-radius:8px;padding:7px 10px;font-size:11px;font-weight:700;color:var(--teal);word-break:break-all}
+  .chip-del{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:14px;margin-left:6px;flex-shrink:0}
+
+  .admin-acc-list{display:flex;flex-direction:column;gap:8px}
+  .admin-acc-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:12px 14px}
+  .acc-item-num{font-size:13px;font-weight:800;color:var(--text)}
+  .acc-item-price{font-size:11px;font-weight:700;color:var(--gold)}
+  .acc-item-del{background:rgba(255,79,109,0.12);border:1px solid rgba(255,79,109,0.25);color:var(--red);padding:7px 12px;border-radius:9px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;cursor:pointer;transition:all 0.18s}
+  .acc-item-del:hover{background:rgba(255,79,109,0.22)}
+
+  .photo-preview{width:100%;border-radius:var(--radius-sm);aspect-ratio:4/3;object-fit:cover;display:none;margin-top:6px}
+  .photo-label{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--surface2);border:1px dashed rgba(61,126,255,0.3);border-radius:var(--radius-sm);padding:14px;cursor:pointer;color:var(--text-mid);font-size:13px;font-weight:700;transition:border-color 0.2s}
+  .photo-label:hover{border-color:var(--blue)}
+
+  .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid rgba(61,126,255,0.3);color:var(--text);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;transition:all 0.3s;z-index:500;white-space:nowrap;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <div class="logo">
+      <div class="logo-icon">⚽</div>
+      <div class="logo-title">DVORNOV <span>MARKET</span></div>
+    </div>
+    <div class="header-right">
+      <a href="https://t.me/Dvornov_Otziv" target="_blank" class="pill-btn pill-reviews">⭐ Отзывы</a>
+      <button class="pill-btn pill-admin" id="adminBtn" onclick="openAdmin()">⚙️ Админ</button>
+    </div>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="searchInput" type="text" placeholder="Поиск по числу или цене..." oninput="applyFilter()">
+  </div>
+</header>
+
+<div class="banner">
+  <div class="banner-left">
+    <div class="banner-tag">🔥 Топ предложения</div>
+    <div class="banner-title">eFootball<br><span>Аккаунты</span></div>
+    <div class="banner-sub">Продажа · Обмен · Быстро</div>
+  </div>
+  <div class="banner-trophy">🏆</div>
+</div>
+
+<div class="filter-section">
+  <div class="filter-label">Фильтр по цене</div>
+  <div class="filter-row">
+    <input type="number" class="filter-input" id="minPrice" placeholder="От">
+    <span class="filter-sep">—</span>
+    <input type="number" class="filter-input" id="maxPrice" placeholder="До">
+    <button class="filter-btn" onclick="applyFilter()">Найти</button>
+    <button class="filter-reset" onclick="resetAll()">✕</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">Все аккаунты</div>
+    <div class="section-badge" id="countBadge">...</div>
+  </div>
+  <div class="grid" id="grid">
+    <div class="loading">
+      <div class="loading-spinner">⚽</div>
+      <div>Загрузка аккаунтов...</div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a href="https://t.me/DvornovNikitos" target="_blank" class="nav-btn nav-sell">💎 Продать акк</a>
+  <a href="https://t.me/DvornovNikitos" target="_blank" class="nav-btn nav-contact">✉️ Написать Дворнову</a>
+</div>
+
+<!-- Screens overlay -->
+<div class="overlay" id="screensOverlay" onclick="closeOvClick('screensOverlay',event)">
+  <div class="modal">
+    <div class="modal-handle" onclick="closeOv('screensOverlay')"></div>
+    <div class="modal-title">📸 Фулл-скрины аккаунта</div>
+    <div id="screensContent"></div>
+  </div>
+</div>
+
+<!-- Admin overlay -->
+<div class="overlay" id="adminOverlay">
+  <div class="modal">
+    <div class="modal-handle" onclick="closeOv('adminOverlay')"></div>
+    <div id="adminContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== КОНФИГ =====
+// ⚠️ Замени на IP твоего сервера после запуска server.py
+const API = "http://157.22.241.131:8000";
+const ADMIN_TG_ID = 568518218;
+
+let ACCOUNTS = [];
+let currentList = [];
+let isAdmin = true; // ← поменяй на false перед продакшеном
+
+// ===== Telegram =====
+if (window.Telegram?.WebApp) {
+  Telegram.WebApp.ready();
+  Telegram.WebApp.expand();
+  const user = Telegram.WebApp.initDataUnsafe?.user;
+  if (user && user.id === ADMIN_TG_ID) isAdmin = true;
+}
+
+if (isAdmin) document.getElementById('adminBtn').classList.add('visible');
+
+// ===== Загрузка данных =====
+async function loadAccounts() {
+  try {
+    const res = await fetch(`${API}/accounts`);
+    ACCOUNTS = await res.json();
+    currentList = [...ACCOUNTS];
+    renderCards(currentList);
+  } catch(e) {
+    document.getElementById('grid').innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">⚠️</div>
+        <div class="empty-text">Не удалось загрузить аккаунты.<br>Сервер недоступен.</div>
+      </div>`;
+    document.getElementById('countBadge').textContent = '—';
+  }
+}
+
+// ===== Карточки =====
+function renderCards(list) {
+  document.getElementById('countBadge').textContent = list.length + ' шт';
+  const grid = document.getElementById('grid');
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">Ничего не найдено.<br>Попробуй другой фильтр.</div></div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map((acc, i) => `
+    <div class="card" style="animation-delay:${i*0.055}s">
+      <div class="card-img">
+        ${acc.photo ? `<img src="${acc.photo}" alt="">` : `<div class="card-placeholder">⚽</div>`}
+        <div class="card-badge">#${acc.number}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-price">${Number(acc.price).toLocaleString('ru')} <span class="card-curr">₽</span></div>
+        <div class="card-sub">Число акк: ${acc.number}</div>
+        <div class="card-btns">
+          <a href="https://t.me/DvornovNikitos" target="_blank" class="btn-buy">🔴 Купить/Обменять</a>
+          <button class="btn-icon" onclick="openScreens(${i})" title="Скрины">📸</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function applyFilter() {
+  const min = parseInt(document.getElementById('minPrice').value) || 0;
+  const max = parseInt(document.getElementById('maxPrice').value) || Infinity;
+  const q   = document.getElementById('searchInput').value.toLowerCase();
+  currentList = ACCOUNTS.filter(a =>
+    Number(a.price) >= min && Number(a.price) <= max &&
+    (a.number.toLowerCase().includes(q) || a.price.toString().includes(q))
+  );
+  renderCards(currentList);
+}
+
+function resetAll() {
+  ['minPrice','maxPrice','searchInput'].forEach(id => document.getElementById(id).value='');
+  currentList = [...ACCOUNTS];
+  renderCards(currentList);
+}
+
+function openScreens(i) {
+  const acc = currentList[i];
+  document.getElementById('screensContent').innerHTML = acc.albums?.length
+    ? acc.albums.map(l=>`<a href="${l}" target="_blank" class="album-link">🔗 ${l}</a>`).join('')
+    : '<div class="no-albums">😔 Скрины не добавлены.<br>Смотри в боте @Efootball_dvornovbot</div>';
+  document.getElementById('screensOverlay').classList.add('active');
+}
+
+function closeOv(id) { document.getElementById(id).classList.remove('active'); }
+function closeOvClick(id,e) { if(e.target===document.getElementById(id)) closeOv(id); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+// ===== АДМИН =====
+let newAlbums = [];
+let selectedPhoto = null;
+
+function openAdmin() {
+  if (!isAdmin) return;
+  renderAdminHome();
+  document.getElementById('adminOverlay').classList.add('active');
+}
+
+function renderAdminHome() {
+  document.getElementById('adminContent').innerHTML = `
+    <div class="modal-title">⚙️ Админ панель</div>
+    <div class="admin-section-label">Управление</div>
+    <div class="admin-actions">
+      <button class="admin-action-btn" onclick="renderAddForm()">
+        <div class="action-icon ic-blue">➕</div>
+        <div><div class="action-name">Добавить аккаунт</div><div class="action-desc">Добавить + пост в канал</div></div>
+      </button>
+      <button class="admin-action-btn" onclick="renderDeleteList()">
+        <div class="action-icon ic-red">🗑</div>
+        <div><div class="action-name">Удалить аккаунт</div><div class="action-desc">Убрать + удалить пост из канала</div></div>
+      </button>
+      <div class="admin-divider"></div>
+      <button class="admin-action-btn" onclick="renderStats()">
+        <div class="action-icon ic-teal">📊</div>
+        <div><div class="action-name">Статистика</div><div class="action-desc">Аккаунтов в магазине</div></div>
+      </button>
+      <button class="admin-action-btn" onclick="closeOv('adminOverlay')">
+        <div class="action-icon ic-gold">🚪</div>
+        <div><div class="action-name">Закрыть панель</div><div class="action-desc">Вернуться в магазин</div></div>
+      </button>
+    </div>`;
+}
+
+function renderAddForm() {
+  newAlbums = []; selectedPhoto = null;
+  document.getElementById('adminContent').innerHTML = `
+    <button class="admin-back" onclick="renderAdminHome()">← Назад</button>
+    <div class="modal-title">➕ Добавить аккаунт</div>
+    <div class="admin-form">
+      <div class="form-group">
+        <div class="form-label">Фото (необязательно)</div>
+        <label class="photo-label" for="photoInput">📷 Нажми чтобы выбрать фото</label>
+        <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="previewPhoto(event)">
+        <img class="photo-preview" id="photoPreview">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Число аккаунта</div>
+        <input class="form-input" id="newNumber" placeholder="Например: 007">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Цена (₽)</div>
+        <input class="form-input" type="number" id="newPrice" placeholder="Например: 5000">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Ссылка на ВК магазин (необязательно)</div>
+        <input class="form-input" id="newVk" placeholder="https://vk.com/...">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Фулл-скрины</div>
+        <div class="album-add-row">
+          <input class="form-input" id="newAlbumInput" placeholder="https://t.me/...">
+          <button class="album-add-btn" onclick="addAlbumChip()">+ Добавить</button>
+        </div>
+        <div class="album-chips" id="albumChips"></div>
+      </div>
+      <div class="form-btns">
+        <button class="form-submit" id="submitBtn" onclick="saveAccount()">✅ Добавить + пост в канал</button>
+        <button class="form-cancel" onclick="renderAdminHome()">Отмена</button>
+      </div>
+    </div>`;
+}
+
+function previewPhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  selectedPhoto = file;
+  const preview = document.getElementById('photoPreview');
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+}
+
+function addAlbumChip() {
+  const input = document.getElementById('newAlbumInput');
+  const val = input.value.trim();
+  if (!val) return;
+  newAlbums.push(val); input.value = '';
+  renderAlbumChips();
+}
+
+function removeAlbumChip(i) { newAlbums.splice(i,1); renderAlbumChips(); }
+
+function renderAlbumChips() {
+  document.getElementById('albumChips').innerHTML = newAlbums.map((l,i)=>`
+    <div class="album-chip">
+      <span>🔗 ${l}</span>
+      <button class="chip-del" onclick="removeAlbumChip(${i})">✕</button>
+    </div>`).join('');
+}
+
+async function saveAccount() {
+  const number = document.getElementById('newNumber').value.trim();
+  const price  = document.getElementById('newPrice').value.trim();
+  const vk     = document.getElementById('newVk').value.trim();
+
+  if (!number || !price) { showToast('⚠️ Заполни число и цену'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Отправляю...';
+
+  const formData = new FormData();
+  formData.append('number', number);
+  formData.append('price', price);
+  formData.append('vk', vk);
+  formData.append('albums', newAlbums.join('\n'));
+  if (selectedPhoto) formData.append('photo', selectedPhoto);
+
+  try {
+    const res = await fetch(`${API}/accounts`, { method:'POST', body: formData });
+    const data = await res.json();
+    if (data.ok) {
+      showToast(data.posted ? '✅ Добавлен + пост в канале!' : '✅ Добавлен (пост не отправлен)');
+      await loadAccounts();
+      renderAdminHome();
+    } else {
+      showToast('❌ Ошибка сервера');
+      btn.disabled = false;
+      btn.textContent = '✅ Добавить + пост в канал';
+    }
+  } catch(e) {
+    showToast('❌ Сервер недоступен');
+    btn.disabled = false;
+    btn.textContent = '✅ Добавить + пост в канал';
+  }
+}
+
+async function renderDeleteList() {
+  document.getElementById('adminContent').innerHTML = `
+    <button class="admin-back" onclick="renderAdminHome()">← Назад</button>
+    <div class="modal-title">🗑 Удалить аккаунт</div>
+    <div class="admin-acc-list">
+      ${!ACCOUNTS.length
+        ? '<div class="no-albums">Нет аккаунтов</div>'
+        : ACCOUNTS.map(acc=>`
+          <div class="admin-acc-item">
+            <div><div class="acc-item-num">#${acc.number}</div><div class="acc-item-price">${Number(acc.price).toLocaleString('ru')} ₽</div></div>
+            <button class="acc-item-del" onclick="deleteAccount('${acc.id}')">🗑 Удалить</button>
+          </div>`).join('')}
+    </div>`;
+}
+
+async function deleteAccount(id) {
+  try {
+    const res = await fetch(`${API}/accounts/${id}`, { method:'DELETE' });
+    const data = await res.json();
+    if (data.ok) {
+      showToast('🗑 Аккаунт и пост удалены');
+      await loadAccounts();
+      renderDeleteList();
+    }
+  } catch(e) {
+    showToast('❌ Ошибка удаления');
+  }
+}
+
+function renderStats() {
+  const total = ACCOUNTS.length;
+  const withAlbums = ACCOUNTS.filter(a=>a.albums.length>0).length;
+  const prices = ACCOUNTS.map(a=>Number(a.price)).filter(Boolean);
+  const minP = prices.length ? Math.min(...prices) : 0;
+  const maxP = prices.length ? Math.max(...prices) : 0;
+
+  document.getElementById('adminContent').innerHTML = `
+    <button class="admin-back" onclick="renderAdminHome()">← Назад</button>
+    <div class="modal-title">📊 Статистика</div>
+    <div class="admin-actions">
+      <div class="admin-action-btn" style="cursor:default">
+        <div class="action-icon ic-blue">📦</div>
+        <div><div class="action-name">Всего аккаунтов</div><div class="action-desc">${total} шт</div></div>
+      </div>
+      <div class="admin-action-btn" style="cursor:default">
+        <div class="action-icon ic-teal">📸</div>
+        <div><div class="action-name">Со скринами</div><div class="action-desc">${withAlbums} из ${total}</div></div>
+      </div>
+      <div class="admin-action-btn" style="cursor:default">
+        <div class="action-icon ic-gold">💰</div>
+        <div><div class="action-name">Диапазон цен</div><div class="action-desc">${minP.toLocaleString('ru')} — ${maxP.toLocaleString('ru')} ₽</div></div>
+      </div>
+    </div>`;
+}
+
+// ===== Старт =====
+loadAccounts();
+</script>
+</body>
+</html>
