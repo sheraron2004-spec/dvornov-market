@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Dvornov Market</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#0a0c10;--card:#111419;--card2:#181c23;--border:rgba(255,255,255,0.07);--blue:#4d8bff;--blue2:#2563eb;--gold:#fbbf24;--teal:#2dd4bf;--red:#f43f5e;--text:#f1f5f9;--muted:#64748b;--muted2:#94a3b8}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif}
+
+/* ━━━ #39 ИНЕРЦИОННЫЙ СКРОЛЛ ━━━ */
+#swrap{position:fixed;inset:0;bottom:72px;overflow:hidden}
+#scont{will-change:transform;padding-bottom:20px}
+.scrollbar{position:fixed;right:3px;top:0;bottom:72px;width:3px;pointer-events:none;z-index:99}
+.sb-thumb{position:absolute;width:100%;background:rgba(77,139,255,0.4);border-radius:2px;transition:opacity .3s;opacity:0}
+
+/* ━━━ HEADER ━━━ */
+header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:10px 12px 8px}
+.h-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.logo{display:flex;align-items:center;gap:7px}
+.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--blue2),var(--blue));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 12px rgba(77,139,255,.35);flex-shrink:0}
+.logo-text{font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;letter-spacing:.5px}
+.logo-text span{color:var(--blue)}
+.h-btns{display:flex;gap:5px}
+.h-btn{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;padding:5px 9px;border-radius:6px;border:none;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:3px;white-space:nowrap}
+.btn-reviews{background:rgba(77,139,255,.1);border:1px solid rgba(77,139,255,.2);color:var(--blue)}
+.btn-admin{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);color:var(--gold);display:none}
+.btn-admin.show{display:flex}
+.search-box{position:relative}
+.search-box svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);width:14px;height:14px;pointer-events:none}
+.search-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px 8px 30px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--text);outline:none}
+.search-input::placeholder{color:var(--muted)}
+
+/* ━━━ BANNER ━━━ */
+.banner{margin:10px 10px 0;border-radius:14px;background:linear-gradient(135deg,#0f0c00,#1c1500,#251b00,#1c1500,#0f0c00);border:1px solid rgba(251,191,36,.35);padding:16px 14px;display:flex;align-items:center;justify-content:space-between;overflow:hidden;position:relative;box-shadow:0 8px 32px rgba(251,191,36,.15),inset 0 1px 0 rgba(251,191,36,.2)}
+.banner::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,.9),transparent)}
+.banner-left{position:relative;z-index:2}
+.banner-tag{display:inline-flex;align-items:center;gap:3px;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.5);color:#fde68a;font-size:9px;font-weight:800;padding:3px 9px;border-radius:5px;margin-bottom:7px;text-transform:uppercase;letter-spacing:1px}
+.banner-title{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;line-height:1.1;color:#fff;margin-bottom:4px}
+.banner-title span{background:linear-gradient(90deg,#fde68a,#fbbf24,#f59e0b,#fbbf24,#fde68a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.banner-sub{font-size:11px;font-weight:600;color:rgba(253,230,138,.5)}
+.banner-emoji{font-size:44px;flex-shrink:0;filter:drop-shadow(0 0 16px rgba(251,191,36,.7));animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+/* ━━━ FILTER ━━━ */
+.filter-wrap{padding:10px 10px 0}
+.filter-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.filter-row{display:flex;gap:5px;align-items:center}
+.filter-input{flex:1;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:7px;padding:7px 9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--text);outline:none}
+.filter-input::placeholder{color:var(--muted)}
+.filter-sep{color:var(--muted);font-size:13px;font-weight:700;flex-shrink:0}
+.filter-go{background:var(--blue2);border:none;color:#fff;padding:7px 12px;border-radius:7px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0}
+.filter-reset{background:var(--card);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:7px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* ━━━ SECTION ━━━ */
+.section{padding:10px 10px 0}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sec-title{font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;letter-spacing:.3px}
+.sec-count{background:rgba(77,139,255,.1);border:1px solid rgba(77,139,255,.2);color:var(--blue);font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px}
+.grid{display:grid;grid-template-columns:1fr;gap:10px}
+
+/* ━━━ #11 FLIP КАРТОЧКА ━━━ */
+.flip-wrap{perspective:1000px;cursor:pointer}
+.flip-card{position:relative;width:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1);border-radius:14px}
+.flip-wrap.flipped .flip-card{transform:rotateY(180deg)}
+.flip-front,.flip-back{backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px;overflow:hidden;width:100%}
+
+/* ЛИЦО — базовый стиль */
+.flip-front{background:linear-gradient(160deg,#0d1018,#080b12);border:1px solid rgba(77,139,255,.2);box-shadow:0 4px 20px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);animation:fadeUp .4s ease forwards;opacity:0}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ОБОРОТ */
+.flip-back{background:linear-gradient(160deg,#080b12,#060810);border:1px solid rgba(45,212,191,.22);box-shadow:0 4px 20px rgba(0,0,0,.6);transform:rotateY(180deg);position:absolute;top:0;left:0;right:0}
+
+/* ━━━ #45 ЦВЕТА КЛУБОВ ━━━ */
+/* Полоска-акцент вверху карточки */
+.club-stripe{height:3px;width:100%}
+
+.club-psg .flip-front{background:linear-gradient(160deg,#03061a,#060d24);border-color:rgba(0,56,147,.5);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(0,56,147,.15),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-psg .club-stripe{background:linear-gradient(90deg,#001f5c,#003893,#001f5c)}
+.club-psg .card-price{color:#6ba3ff;text-shadow:0 0 14px rgba(77,139,255,.4)}
+
+.club-real .flip-front{background:linear-gradient(160deg,#131008,#1a1505);border-color:rgba(200,160,0,.35);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(200,160,0,.1),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-real .club-stripe{background:linear-gradient(90deg,#7a5c00,#c8a800,#ffd700,#c8a800,#7a5c00)}
+.club-real .card-price{color:#ffd700;text-shadow:0 0 14px rgba(255,215,0,.4)}
+
+.club-barca .flip-front{background:linear-gradient(160deg,#0e0408,#160612);border-color:rgba(164,0,0,.4);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(164,0,0,.12),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-barca .club-stripe{background:linear-gradient(90deg,#a40000,#004085,#a40000,#004085,#a40000)}
+.club-barca .card-price{color:#ff7070;text-shadow:0 0 14px rgba(255,100,100,.35)}
+
+.club-manu .flip-front{background:linear-gradient(160deg,#120404,#1a0505);border-color:rgba(218,41,28,.4);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(218,41,28,.12),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-manu .club-stripe{background:linear-gradient(90deg,#8b0000,#da291c,#ff4136,#da291c,#8b0000)}
+.club-manu .card-price{color:#ff6b6b;text-shadow:0 0 14px rgba(255,100,100,.35)}
+
+.club-juve .flip-front{background:linear-gradient(160deg,#0c0c0c,#111);border-color:rgba(255,255,255,.12);box-shadow:0 4px 24px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)}
+.club-juve .club-stripe{background:linear-gradient(90deg,#111,#555,#eee,#555,#111)}
+.club-juve .card-price{color:#e2e8f0;text-shadow:0 0 14px rgba(226,232,240,.25)}
+
+.club-chelsea .flip-front{background:linear-gradient(160deg,#030a18,#050f22);border-color:rgba(3,70,148,.5);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(3,70,148,.15),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-chelsea .club-stripe{background:linear-gradient(90deg,#012055,#034694,#0054b8,#034694,#012055)}
+.club-chelsea .card-price{color:#60a5fa;text-shadow:0 0 14px rgba(96,165,250,.35)}
+
+/* ━━━ ФОТО КАРТОЧКИ ━━━ */
+.card-img{width:100%;aspect-ratio:20/9;background:#060810;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.card-img img{width:100%;height:100%;object-fit:contain}
+.card-placeholder{font-size:40px;opacity:.15}
+.card-num{position:absolute;bottom:7px;left:7px;background:linear-gradient(135deg,#2563eb,#4d8bff);color:#fff;font-size:9px;font-weight:800;padding:3px 9px;border-radius:20px;box-shadow:0 2px 8px rgba(77,139,255,.5);z-index:2}
+
+/* ━━━ #18 ПУЛЬСИРУЮЩИЕ БЕЙДЖИ ━━━ */
+/* НОВЫЙ: точка + расходящаяся волна */
+.badge-new{position:absolute;top:8px;left:8px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.4);color:#6ee7b7;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:5px;z-index:2}
+.badge-dot{width:6px;height:6px;background:#22c55e;border-radius:50%;position:relative;flex-shrink:0}
+.badge-dot::after{content:'';position:absolute;inset:-3px;background:rgba(34,197,94,.4);border-radius:50%;animation:dotPing 1.5s ease-out infinite}
+@keyframes dotPing{0%{transform:scale(.8);opacity:1}100%{transform:scale(2.2);opacity:0}}
+
+/* ГОРЯЧИЙ: шейк + огненный градиент */
+.badge-hot{position:absolute;top:8px;left:8px;background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(251,146,60,.2));border:1px solid rgba(251,146,60,.45);color:#fed7aa;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;z-index:2;animation:hotShake .45s ease-in-out infinite}
+@keyframes hotShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-1.5deg)}75%{transform:rotate(1.5deg)}}
+
+/* Подсказка переворота */
+.flip-hint{position:absolute;bottom:7px;right:7px;background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.3);color:#2dd4bf;font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;animation:hintPulse 2s ease-in-out infinite;z-index:2}
+@keyframes hintPulse{0%,100%{opacity:.45}50%{opacity:1}}
+
+/* ━━━ ТЕЛО КАРТОЧКИ ━━━ */
+.card-body{padding:10px 12px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-info{flex:1;min-width:0}
+.card-price{font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;color:#fbbf24;line-height:1;margin-bottom:3px;text-shadow:0 0 14px rgba(251,191,36,.35)}
+.card-price span{font-size:14px;color:rgba(251,191,36,.55);font-family:'Inter',sans-serif;font-weight:700}
+.card-sub{font-size:10px;font-weight:600;color:var(--muted)}
+.cbtn-buy{background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:9px 13px;border-radius:8px;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:3px;box-shadow:0 3px 12px rgba(239,68,68,.4);white-space:nowrap;transition:opacity .15s}
+.cbtn-buy:active{opacity:.8}
+
+/* ━━━ ОБОРОТ КАРТОЧКИ ━━━ */
+.back-body{padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.back-price-row{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:8px 14px;width:100%}
+.back-price-label{font-size:11px;color:var(--muted);font-weight:600}
+.back-price-val{font-family:'Oswald',sans-serif;font-size:20px;color:#fbbf24;font-weight:700}
+.btn-fullscreen{width:100%;padding:18px 16px;background:linear-gradient(135deg,rgba(45,212,191,.12),rgba(45,212,191,.05));border:1px solid rgba(45,212,191,.35);border-radius:14px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;position:relative;overflow:hidden}
+.btn-fullscreen::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(45,212,191,.5),transparent)}
+.btn-fullscreen:active{background:linear-gradient(135deg,rgba(45,212,191,.2),rgba(45,212,191,.1))}
+.btn-fs-icon{font-size:28px}
+.btn-fs-text{font-family:'Oswald',sans-serif;font-size:21px;font-weight:700;color:#2dd4bf;letter-spacing:1px;text-align:center;line-height:1.2;text-shadow:0 0 20px rgba(45,212,191,.4)}
+.btn-fs-sub{font-size:11px;font-weight:600;color:rgba(45,212,191,.5)}
+.back-btns{display:flex;gap:8px;width:100%}
+.back-btn-buy{flex:1;background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 3px 12px rgba(239,68,68,.35);text-decoration:none;display:flex;align-items:center;justify-content:center;gap:4px}
+.back-btn-flip{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--muted);padding:12px 14px;border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0}
+
+/* ━━━ STATE ━━━ */
+.state-box{text-align:center;padding:40px 20px;color:var(--muted)}
+.state-icon{font-size:36px;margin-bottom:8px}
+.state-text{font-size:12px;font-weight:600;line-height:1.6}
+.spin{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ━━━ BOTTOM NAV ━━━ */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,12,16,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:8px 10px 14px;display:flex;gap:7px;z-index:50}
+.nav-btn{flex:1;padding:10px 6px;border-radius:9px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:4px;border:none;cursor:pointer;white-space:nowrap;line-height:1}
+.nav-sell{background:var(--card2);border:1px solid var(--border);color:var(--muted2)}
+.nav-contact{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;box-shadow:0 3px 12px rgba(77,139,255,.3)}
+
+/* ━━━ OVERLAYS ━━━ */
+.overlay{display:none;position:fixed;inset:0;background:rgba(5,7,12,.85);backdrop-filter:blur(10px);z-index:200;align-items:flex-end}
+.overlay.open{display:flex}
+.sheet{background:#13161d;border-radius:16px 16px 0 0;border:1px solid rgba(255,255,255,.06);border-bottom:none;padding:14px 14px 36px;width:100%;max-height:85vh;overflow-y:auto;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:32px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 12px;cursor:pointer}
+.sheet-title{font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;margin-bottom:12px;letter-spacing:.3px}
+.no-albums{text-align:center;padding:24px;color:var(--muted);font-size:12px;font-weight:600;line-height:1.6}
+
+/* ━━━ ADMIN ━━━ */
+.admin-back{background:none;border:none;color:var(--muted);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:10px;padding:0;display:flex;align-items:center;gap:4px}
+.admin-btns{display:flex;flex-direction:column;gap:7px}
+.adm-btn{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:11px 12px;cursor:pointer;text-align:left;width:100%;font-family:'Inter',sans-serif}
+.adm-ic{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ic-b{background:rgba(77,139,255,.12)}.ic-r{background:rgba(244,63,94,.12)}.ic-g{background:rgba(251,191,36,.12)}.ic-t{background:rgba(45,212,191,.12)}
+.adm-name{font-size:13px;font-weight:700;color:var(--text)}
+.adm-desc{font-size:10px;font-weight:500;color:var(--muted);margin-top:1px}
+.adm-divider{height:1px;background:var(--border);margin:2px 0}
+
+/* ━━━ FORM ━━━ */
+.form{display:flex;flex-direction:column;gap:9px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.fi{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--text);outline:none;width:100%}
+.fi::placeholder{color:var(--muted)}
+.fi:focus{border-color:rgba(77,139,255,.45)}
+.photo-label{display:flex;align-items:center;justify-content:center;gap:6px;background:var(--card2);border:1px dashed rgba(77,139,255,.25);border-radius:7px;padding:12px;cursor:pointer;color:var(--muted2);font-size:12px;font-weight:600}
+.photo-preview{width:100%;border-radius:7px;aspect-ratio:20/9;object-fit:contain;background:#060810;display:none;margin-top:5px}
+.chips{display:flex;flex-direction:column;gap:4px;margin-top:3px}
+.chip{display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid rgba(45,212,191,.2);border-radius:6px;padding:5px 9px;font-size:10px;font-weight:600;color:var(--teal);word-break:break-all}
+.chip-x{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-left:5px;flex-shrink:0}
+.form-btns{display:flex;gap:6px;margin-top:2px}
+.f-submit{flex:1;background:linear-gradient(135deg,var(--blue2),var(--blue));border:none;color:#fff;padding:10px;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(77,139,255,.25)}
+.f-submit:disabled{opacity:.5;cursor:not-allowed}
+.f-cancel{background:var(--card2);border:1px solid var(--border);color:var(--muted2);padding:10px 14px;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+
+/* ━━━ DEL + STATS ━━━ */
+.del-list{display:flex;flex-direction:column;gap:6px}
+.del-item{display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 11px}
+.del-num{font-size:12px;font-weight:700}
+.del-price{font-size:10px;font-weight:600;color:var(--gold)}
+.del-btn{background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.2);color:var(--red);padding:5px 10px;border-radius:6px;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;cursor:pointer}
+.stats{display:flex;flex-direction:column;gap:7px}
+.stat-item{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.stat-ic{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.stat-label{font-size:11px;font-weight:600;color:var(--muted2)}
+.stat-val{font-size:15px;font-weight:800;color:var(--text)}
+
+/* ━━━ TOAST ━━━ */
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(10px);background:#1e2433;border:1px solid rgba(77,139,255,.25);color:var(--text);padding:8px 16px;border-radius:20px;font-size:12px;font-weight:700;opacity:0;transition:all .25s;z-index:999;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="scrollbar"><div class="sb-thumb" id="sbThumb"></div></div>
+
+<div id="swrap">
+<div id="scont">
+
+<header>
+  <div class="h-row">
+    <div class="logo">
+      <div class="logo-icon">⚽</div>
+      <div class="logo-text">DVORNOV <span>MARKET</span></div>
+    </div>
+    <div class="h-btns">
+      <a href="https://t.me/Dvornov_Otziv" target="_blank" class="h-btn btn-reviews">⭐ Отзывы</a>
+      <button class="h-btn btn-admin" id="adminBtn" onclick="openAdmin()">⚙️ Админ</button>
+    </div>
+  </div>
+  <div class="search-box">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input class="search-input" id="searchInput" placeholder="Поиск по числу или цене..." oninput="applyFilter()">
+  </div>
+</header>
+
+<div class="banner">
+  <div class="banner-left">
+    <div class="banner-tag">💎 Premium Shop</div>
+    <div class="banner-title">Dvornov<br><span>Market</span></div>
+    <div class="banner-sub">Продажа · Обмен · Быстро</div>
+  </div>
+  <div class="banner-emoji">💎</div>
+</div>
+
+<div class="filter-wrap">
+  <div class="filter-label">Фильтр по цене</div>
+  <div class="filter-row">
+    <input type="number" class="filter-input" id="minPrice" placeholder="От">
+    <span class="filter-sep">—</span>
+    <input type="number" class="filter-input" id="maxPrice" placeholder="До">
+    <button class="filter-go" onclick="applyFilter()">Найти</button>
+    <button class="filter-reset" onclick="resetAll()">✕</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-head">
+    <div class="sec-title">Все аккаунты</div>
+    <div class="sec-count" id="countBadge">...</div>
+  </div>
+  <div class="grid" id="grid">
+    <div class="state-box"><div class="state-icon spin">⚽</div><div class="state-text">Загрузка...</div></div>
+  </div>
+</div>
+
+</div><!-- /scont -->
+</div><!-- /swrap -->
+
+<div class="bottom-nav">
+  <a href="https://t.me/DvornovNikitos" target="_blank" class="nav-btn nav-sell">💎 Продать акк</a>
+  <a href="https://t.me/DvornovNikitos" target="_blank" class="nav-btn nav-contact">✉️ Написать Дворнову</a>
+</div>
+
+<!-- Скрины -->
+<div class="overlay" id="screensOv" onclick="closeIfBg('screensOv',event)">
+  <div class="sheet">
+    <div class="sheet-handle" onclick="closeOv('screensOv')"></div>
+    <div class="sheet-title">📸 Фулл скрины аккаунта</div>
+    <div id="screensBody"></div>
+  </div>
+</div>
+
+<!-- Админ -->
+<div class="overlay" id="adminOv">
+  <div class="sheet">
+    <div class="sheet-handle" onclick="closeOv('adminOv')"></div>
+    <div id="adminBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = "https://conduct-jennifer-professor-football.trycloudflare.com";
+const ADMIN_TG_ID = 568518218;
+let ACCOUNTS=[], LIST=[], isAdmin=false, selPhoto=null, extraFiles=[];
+
+if(window.Telegram?.WebApp){
+  Telegram.WebApp.ready();
+  Telegram.WebApp.expand();
+  const u=Telegram.WebApp.initDataUnsafe?.user;
+  if(u && u.id===ADMIN_TG_ID) isAdmin=true;
+}
+if(isAdmin) document.getElementById('adminBtn').classList.add('show');
+
+// ━━━ #45 КЛУБЫ ━━━
+function getClubClass(vk){
+  if(!vk) return '';
+  const v = vk.toLowerCase();
+  if(v==='psg')     return 'club-psg';
+  if(v==='real')    return 'club-real';
+  if(v==='barca')   return 'club-barca';
+  if(v==='manu')    return 'club-manu';
+  if(v==='juve')    return 'club-juve';
+  if(v==='chelsea') return 'club-chelsea';
+  return '';
+}
+
+// ━━━ ЗАГРУЗКА ━━━
+async function loadAccounts(){
+  try{
+    const r = await fetch(`${API}/accounts`);
+    ACCOUNTS = await r.json();
+    LIST = [...ACCOUNTS];
+    render(LIST);
+  } catch(e){
+    document.getElementById('grid').innerHTML=`<div class="state-box"><div class="state-icon">⚠️</div><div class="state-text">Сервер недоступен</div></div>`;
+    document.getElementById('countBadge').textContent='—';
+  }
+}
+
+// ━━━ РЕНДЕР с #11 FLIP + #18 БЕЙДЖИ + #45 КЛУБЫ ━━━
+function render(list){
+  document.getElementById('countBadge').textContent = list.length+' шт';
+  const g = document.getElementById('grid');
+  if(!list.length){
+    g.innerHTML=`<div class="state-box"><div class="state-icon">🔍</div><div class="state-text">Ничего не найдено</div></div>`;
+    return;
+  }
+
+  g.innerHTML = list.map((a,i) => {
+    const clubCls = getClubClass(a.vk||'');
+    const hasPhotos = a.albums && a.albums.length > 0;
+    const cnt = hasPhotos ? a.albums.length : 0;
+    // Первые 2 — горячие, остальные новые (можно менять логику)
+    const isHot = i < 2;
+
+    const badge = isHot
+      ? `<div class="badge-hot">🔥 ГОРЯЧИЙ</div>`
+      : `<div class="badge-new"><span class="badge-dot"></span> НОВЫЙ</div>`;
+
+    const hintHtml = hasPhotos
+      ? `<div class="flip-hint">📸 ${cnt}</div>` : '';
+
+    const backContent = hasPhotos
+      ? `<button class="btn-fullscreen" onclick="event.stopPropagation();openScreens(${i})">
+           <span class="btn-fs-icon">📸</span>
+           <span class="btn-fs-text">СМОТРЕТЬ<br>ФУЛЛ СКРИНЫ</span>
+           <span class="btn-fs-sub">${cnt} фото · нажми для просмотра</span>
+         </button>`
+      : `<div class="no-albums" style="width:100%;padding:12px 0">😔 Доп. фото не добавлены</div>`;
+
+    return `
+    <div class="flip-wrap ${clubCls}" id="fw${i}" style="animation-delay:${i*0.06}s">
+      <div class="flip-card">
+
+        <div class="flip-front" onclick="flipCard(${i})">
+          <div class="club-stripe"></div>
+          <div class="card-img">
+            ${a.photo ? `<img src="${a.photo}" alt="" loading="lazy">` : `<div class="card-placeholder">⚽</div>`}
+            <div class="card-num">#${a.number}</div>
+            ${badge}
+            ${hintHtml}
+          </div>
+          <div class="card-body">
+            <div class="card-info">
+              <div class="card-price">${Number(a.price).toLocaleString('ru')} <span>₽</span></div>
+              <div class="card-sub">Число: ${a.number}</div>
+            </div>
+            <a href="https://t.me/DvornovNikitos" target="_blank" class="cbtn-buy" onclick="event.stopPropagation()">🔴 Купить / Обменять</a>
+          </div>
+        </div>
+
+        <div class="flip-back">
+          <div class="back-body">
+            <div class="back-price-row">
+              <span class="back-price-label">Цена</span>
+              <span class="back-price-val">${Number(a.price).toLocaleString('ru')} ₽</span>
+            </div>
+            ${backContent}
+            <div class="back-btns">
+              <a href="https://t.me/DvornovNikitos" target="_blank" class="back-btn-buy" onclick="event.stopPropagation()">🔴 Купить / Обменять</a>
+              <button class="back-btn-flip" onclick="event.stopPropagation();unflip(${i})">↩️</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ━━━ #11 FLIP ━━━
+function flipCard(i){ document.getElementById('fw'+i)?.classList.toggle('flipped'); }
+function unflip(i){   document.getElementById('fw'+i)?.classList.remove('flipped'); }
+
+// ━━━ ФИЛЬТР ━━━
+function applyFilter(){
+  const min = parseInt(document.getElementById('minPrice').value)||0;
+  const max = parseInt(document.getElementById('maxPrice').value)||Infinity;
+  const q   = document.getElementById('searchInput').value.toLowerCase();
+  LIST = ACCOUNTS.filter(a =>
+    Number(a.price)>=min && Number(a.price)<=max &&
+    (a.number.toLowerCase().includes(q) || a.price.toString().includes(q))
+  );
+  render(LIST);
+}
+function resetAll(){
+  ['minPrice','maxPrice','searchInput'].forEach(id=>document.getElementById(id).value='');
+  LIST=[...ACCOUNTS]; render(LIST);
+}
+
+// ━━━ ГАЛЕРЕЯ СКРИНОВ ━━━
+function openScreens(i){
+  const photos = LIST[i]?.albums || [];
+  if(!photos.length){
+    document.getElementById('screensBody').innerHTML=`<div class="no-albums">😔 Доп. фото не добавлены</div>`;
+    document.getElementById('screensOv').classList.add('open');
+    return;
+  }
+  let cur = 0;
+  function rg(){
+    document.getElementById('screensBody').innerHTML = `
+      <div style="position:relative;background:#060810;border-radius:10px;overflow:hidden;margin-bottom:10px">
+        <img src="${photos[cur]}" style="width:100%;display:block;object-fit:contain;max-height:55vh">
+        ${photos.length>1 ? `
+        <button onclick="gP()" style="position:absolute;left:6px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.1);color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">‹</button>
+        <button onclick="gN()" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.1);color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">›</button>` : ''}
+        <div style="position:absolute;bottom:6px;right:8px;background:rgba(0,0,0,.7);color:#94a3b8;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">${cur+1} / ${photos.length}</div>
+      </div>
+      <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none">
+        ${photos.map((p,idx)=>`<img src="${p}" onclick="gG(${idx})" style="width:54px;height:54px;object-fit:cover;border-radius:7px;cursor:pointer;border:2px solid ${idx===cur?'#2dd4bf':'transparent'};opacity:${idx===cur?1:.45};flex-shrink:0;transition:all .2s">`).join('')}
+      </div>`;
+    window.gP = ()=>{ cur=(cur-1+photos.length)%photos.length; rg(); };
+    window.gN = ()=>{ cur=(cur+1)%photos.length; rg(); };
+    window.gG = (idx)=>{ cur=idx; rg(); };
+  }
+  rg();
+  document.getElementById('screensOv').classList.add('open');
+  // Свайп
+  let tx=0;
+  document.getElementById('screensBody').ontouchstart = e=>{ tx=e.touches[0].clientX; };
+  document.getElementById('screensBody').ontouchend   = e=>{ const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50){dx<0?gN():gP();} };
+}
+
+// ━━━ OVERLAYS ━━━
+function closeOv(id){ document.getElementById(id).classList.remove('open'); }
+function closeIfBg(id,e){ if(e.target===document.getElementById(id)) closeOv(id); }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
+
+// ━━━ ADMIN ━━━
+function openAdmin(){ if(!isAdmin) return; renderHome(); document.getElementById('adminOv').classList.add('open'); }
+
+function renderHome(){
+  document.getElementById('adminBody').innerHTML=`
+    <div class="sheet-title">⚙️ Панель управления</div>
+    <div class="admin-btns">
+      <button class="adm-btn" onclick="renderAdd()"><div class="adm-ic ic-b">➕</div><div><div class="adm-name">Добавить аккаунт</div><div class="adm-desc">Добавить + пост в канал</div></div></button>
+      <button class="adm-btn" onclick="renderDel()"><div class="adm-ic ic-r">🗑</div><div><div class="adm-name">Удалить аккаунт</div><div class="adm-desc">Убрать + удалить из канала</div></div></button>
+      <div class="adm-divider"></div>
+      <button class="adm-btn" onclick="renderStats()"><div class="adm-ic ic-t">📊</div><div><div class="adm-name">Статистика</div><div class="adm-desc">Аккаунтов в магазине</div></div></button>
+      <button class="adm-btn" onclick="closeOv('adminOv')"><div class="adm-ic ic-g">🚪</div><div><div class="adm-name">Закрыть</div><div class="adm-desc">Вернуться в магазин</div></div></button>
+    </div>`;}
+
+function renderAdd(){
+  selPhoto=null; extraFiles=[];
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderHome()">← Назад</button>
+    <div class="sheet-title">➕ Добавить аккаунт</div>
+    <div class="form">
+      <div class="fg"><label>Главное фото</label>
+        <label class="photo-label" for="photoIn">📷 Выбрать главное фото</label>
+        <input type="file" id="photoIn" accept="image/*" style="display:none" onchange="previewPh(event)">
+        <img class="photo-preview" id="phPreview">
+      </div>
+      <div class="fg"><label>Число аккаунта</label><input class="fi" id="fNum" placeholder="Например: 007"></div>
+      <div class="fg"><label>Цена ₽</label><input class="fi" type="number" id="fPrice" placeholder="Например: 5000"></div>
+      <div class="fg"><label>Клуб (цвет карточки)</label>
+        <select class="fi" id="fClub">
+          <option value="">— Без клуба</option>
+          <option value="psg">🔵 PSG</option>
+          <option value="real">⚪ Real Madrid</option>
+          <option value="barca">🔴 Barcelona</option>
+          <option value="manu">🔴 Man United</option>
+          <option value="juve">⬛ Juventus</option>
+          <option value="chelsea">🔵 Chelsea</option>
+        </select>
+      </div>
+      <div class="fg"><label>Доп. фото — фулл скрины (до 10)</label>
+        <label class="photo-label" for="extrasIn">📸 Выбрать фото (можно сразу все)</label>
+        <input type="file" id="extrasIn" accept="image/*" multiple style="display:none" onchange="previewExtras(event)">
+        <div class="chips" id="extraChips"></div>
+      </div>
+      <div class="form-btns">
+        <button class="f-submit" id="fSubmit" onclick="saveAcc()">✅ Добавить + пост</button>
+        <button class="f-cancel" onclick="renderHome()">Отмена</button>
+      </div>
+    </div>`;}
+
+function previewPh(e){
+  const f=e.target.files[0]; if(!f) return;
+  selPhoto=f;
+  const img=document.getElementById('phPreview');
+  img.src=URL.createObjectURL(f); img.style.display='block';
+}
+function previewExtras(e){
+  extraFiles=Array.from(e.target.files).slice(0,10);
+  document.getElementById('extraChips').innerHTML=extraFiles.map((f,i)=>
+    `<div class="chip"><span>📸 ${f.name}</span><button class="chip-x" onclick="rmExtra(${i})">✕</button></div>`
+  ).join('');
+}
+function rmExtra(i){
+  extraFiles.splice(i,1);
+  document.getElementById('extraChips').innerHTML=extraFiles.map((f,idx)=>
+    `<div class="chip"><span>📸 ${f.name}</span><button class="chip-x" onclick="rmExtra(${idx})">✕</button></div>`
+  ).join('');
+}
+
+async function saveAcc(){
+  const num   = document.getElementById('fNum').value.trim();
+  const price = document.getElementById('fPrice').value.trim();
+  const club  = document.getElementById('fClub').value;
+  if(!num||!price){ toast('⚠️ Заполни число и цену'); return; }
+  const btn=document.getElementById('fSubmit'); btn.disabled=true; btn.textContent='⏳ Отправляю...';
+  const fd=new FormData();
+  fd.append('number',num);
+  fd.append('price',price);
+  fd.append('vk',club);
+  if(selPhoto) fd.append('photo',selPhoto);
+  extraFiles.forEach(f=>fd.append('extra_photos',f));
+  try{
+    const r=await fetch(`${API}/accounts`,{method:'POST',body:fd});
+    const d=await r.json();
+    if(d.ok){ toast(d.posted?'✅ Добавлен + пост в канале!':'✅ Добавлен'); await loadAccounts(); renderHome(); }
+    else{ toast('❌ Ошибка сервера'); btn.disabled=false; btn.textContent='✅ Добавить + пост'; }
+  }catch{ toast('❌ Сервер недоступен'); btn.disabled=false; btn.textContent='✅ Добавить + пост'; }
+}
+
+function renderDel(){
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderHome()">← Назад</button>
+    <div class="sheet-title">🗑 Удалить аккаунт</div>
+    <div class="del-list">
+      ${!ACCOUNTS.length?'<div class="no-albums">Нет аккаунтов</div>':
+        ACCOUNTS.map(a=>`
+          <div class="del-item">
+            <div><div class="del-num">#${a.number}</div><div class="del-price">${Number(a.price).toLocaleString('ru')} ₽</div></div>
+            <button class="del-btn" onclick="delAcc('${a.id}')">🗑 Удалить</button>
+          </div>`).join('')}
+    </div>`;}
+
+async function delAcc(id){
+  try{
+    const r=await fetch(`${API}/accounts/${id}`,{method:'DELETE'});
+    const d=await r.json();
+    if(d.ok){ toast('🗑 Удалено'); await loadAccounts(); renderDel(); }
+  }catch{ toast('❌ Ошибка'); }
+}
+
+function renderStats(){
+  const prices=ACCOUNTS.map(a=>Number(a.price)).filter(Boolean);
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderHome()">← Назад</button>
+    <div class="sheet-title">📊 Статистика</div>
+    <div class="stats">
+      <div class="stat-item"><div class="stat-ic ic-b">📦</div><div><div class="stat-label">Аккаунтов</div><div class="stat-val">${ACCOUNTS.length} шт</div></div></div>
+      <div class="stat-item"><div class="stat-ic ic-t">📸</div><div><div class="stat-label">С доп. фото</div><div class="stat-val">${ACCOUNTS.filter(a=>a.albums&&a.albums.length).length} из ${ACCOUNTS.length}</div></div></div>
+      <div class="stat-item"><div class="stat-ic ic-g">💰</div><div><div class="stat-label">Диапазон цен</div><div class="stat-val">${prices.length?Math.min(...prices).toLocaleString('ru')+' — '+Math.max(...prices).toLocaleString('ru')+' ₽':'—'}</div></div></div>
+    </div>`;}
+
+// ━━━ #39 ИНЕРЦИОННЫЙ СКРОЛЛ С LERP ━━━
+(function(){
+  const swrap  = document.getElementById('swrap');
+  const scont  = document.getElementById('scont');
+  const sbThumb= document.getElementById('sbThumb');
+  let curY=0, targY=0, vel=0;
+  let touchStartY=0, touchLastY=0, touchLastT=0, touchVel=0, isDragging=false;
+
+  function maxScroll(){ return Math.max(0, scont.scrollHeight - swrap.clientHeight); }
+  function clamp(v,a,b){ return Math.min(Math.max(v,a),b); }
+
+  function updateThumb(){
+    const vH=swrap.clientHeight, tH=scont.scrollHeight;
+    if(tH<=vH){ sbThumb.style.opacity='0'; return; }
+    const ratio=vH/tH;
+    const tHpx=Math.max(32, vH*ratio);
+    const track=vH-tHpx;
+    sbThumb.style.height=tHpx+'px';
+    sbThumb.style.top=(curY/maxScroll()*track)+'px';
+    sbThumb.style.opacity='0.5';
+  }
+
+  let frame;
+  function loop(){
+    const mx=maxScroll();
+    if(!isDragging){
+      vel*=0.87;
+      targY=clamp(targY+vel, 0, mx);
+      if(targY<=0||targY>=mx) vel*=0.4;
+    }
+    curY += (targY-curY)*0.12;
+    if(Math.abs(targY-curY)<0.5) curY=targY;
+    scont.style.transform=`translateY(${-curY}px)`;
+    updateThumb();
+    frame=requestAnimationFrame(loop);
+  }
+  loop();
+
+  swrap.addEventListener('touchstart',e=>{
+    isDragging=true; vel=0;
+    touchStartY=touchLastY=e.touches[0].clientY;
+    touchLastT=Date.now(); touchVel=0;
+  },{passive:true});
+
+  swrap.addEventListener('touchmove',e=>{
+    const y=e.touches[0].clientY;
+    const dy=touchLastY-y;
+    const dt=Math.max(1, Date.now()-touchLastT);
+    touchVel=(dy/dt)*16;
+    targY=clamp(targY+dy, 0, maxScroll());
+    touchLastY=y; touchLastT=Date.now();
+  },{passive:true});
+
+  swrap.addEventListener('touchend',()=>{
+    isDragging=false;
+    vel=touchVel;
+  });
+
+  swrap.addEventListener('wheel',e=>{
+    targY=clamp(targY+e.deltaY, 0, maxScroll());
+    vel=0;
+  },{passive:true});
+})();
+
+loadAccounts();
+</script>
+</body>
+</html>
