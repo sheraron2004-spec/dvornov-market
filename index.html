@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Dvornov Market v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#0a0c10;--card:#111419;--card2:#181c23;--border:rgba(255,255,255,0.07);--blue:#4d8bff;--blue2:#2563eb;--gold:#fbbf24;--teal:#2dd4bf;--red:#f43f5e;--text:#f1f5f9;--muted:#64748b;--muted2:#94a3b8}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif}
+
+/* ━━━ SCROLL ━━━ */
+#swrap{position:fixed;inset:0;bottom:72px;overflow:hidden}
+#scont{will-change:transform;padding-bottom:20px}
+.scrollbar{position:fixed;right:3px;top:0;bottom:72px;width:3px;pointer-events:none;z-index:99}
+.sb-thumb{position:absolute;width:100%;background:rgba(77,139,255,0.4);border-radius:2px;opacity:0}
+
+/* ━━━ HEADER ━━━ */
+header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:10px 12px 8px}
+.h-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.logo{display:flex;align-items:center;gap:7px}
+.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--blue2),var(--blue));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 12px rgba(77,139,255,.35);flex-shrink:0}
+.logo-text{font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;letter-spacing:.5px}
+.logo-text span{color:var(--blue)}
+.h-btns{display:flex;gap:5px}
+.h-btn{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;padding:5px 9px;border-radius:6px;border:none;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:3px;white-space:nowrap}
+.btn-reviews{background:rgba(77,139,255,.1);border:1px solid rgba(77,139,255,.2);color:var(--blue)}
+.btn-admin{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);color:var(--gold);display:none}
+.btn-admin.show{display:flex}
+.search-box{position:relative}
+.search-box svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);width:14px;height:14px;pointer-events:none}
+.search-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px 8px 30px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--text);outline:none}
+.search-input::placeholder{color:var(--muted)}
+
+/* ━━━ БАННЕРЫ (свайп) ━━━ */
+.banners-wrap{margin:12px 12px 0;border-radius:20px;overflow:hidden;position:relative}
+.banners-track{display:flex;transition:transform .5s cubic-bezier(.4,0,.2,1);will-change:transform}
+.banner{min-width:100%;position:relative;overflow:hidden;padding:22px 20px 24px;display:flex;align-items:center;justify-content:space-between;min-height:168px}
+.banner-left{position:relative;z-index:3;flex:1;min-width:0}
+.banner-right{position:relative;z-index:3;flex-shrink:0;margin-left:10px;display:flex;align-items:center;justify-content:center}
+.banner-tag{display:inline-flex;align-items:center;gap:5px;border-radius:6px;padding:4px 11px;font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px}
+.banner-title{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:1px;line-height:.93;color:#fff;margin-bottom:7px}
+.banner-sub{font-size:11px;font-weight:700;letter-spacing:.2px}
+.banner-emoji{font-size:60px;animation:bnFloat 3s ease-in-out infinite}
+@keyframes bnFloat{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+/* БН1 ЗОЛОТО */
+.bn1{background:radial-gradient(ellipse at 10% 80%,#1a0e00,#0d0800 50%,#050300)}
+.bn1::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 80% at 90% 40%,rgba(251,191,36,.13),transparent 65%);pointer-events:none}
+.bn1::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,.5),transparent);pointer-events:none}
+.bn1-streak{position:absolute;top:0;bottom:0;width:40%;background:linear-gradient(90deg,transparent,rgba(251,191,36,.05),transparent);animation:bnStreak 3.5s ease-in-out infinite .5s;pointer-events:none}
+.bn1-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(251,191,36,.25);pointer-events:none;z-index:4}
+.bn1-border::before{content:'';position:absolute;inset:-1px;border-radius:20px;background:conic-gradient(from var(--ba,0deg),transparent 0deg,rgba(251,191,36,.7) 50deg,transparent 100deg);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;padding:1px;animation:baBspin 4s linear infinite}
+@keyframes baBspin{to{--ba:360deg}}
+@property --ba{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes bnStreak{0%{left:-40%}100%{left:140%}}
+.bn1 .banner-tag{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.35);color:#fde68a}
+.bn1 .banner-title span{background:linear-gradient(135deg,#fef3c7,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bn1 .banner-sub{color:rgba(253,230,138,.4)}
+.bn1 .banner-emoji{filter:drop-shadow(0 0 22px rgba(251,191,36,.8))}
+/* БН2 ОГОНЬ */
+.bn2{background:radial-gradient(ellipse at 50% 120%,#1a0400,#0d0300,#050100)}
+.bn2::before{content:'';position:absolute;bottom:0;left:0;right:0;height:50px;background:linear-gradient(to top,rgba(239,68,68,.25),transparent);animation:fireFlicker 1.8s ease-in-out infinite alternate;pointer-events:none}
+.bn2::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 80% 50%,rgba(251,146,30,.1),transparent);pointer-events:none}
+.bn2-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(239,68,68,.25);pointer-events:none;z-index:4}
+.bn2-sparks{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+@keyframes fireFlicker{0%{opacity:.7;transform:scaleX(.98)}100%{opacity:1;transform:scaleX(1.02)}}
+.sp{position:absolute;border-radius:50%;background:radial-gradient(circle,#fff8e1,#fb923c);animation:spUp var(--d) ease-out infinite var(--dl);opacity:0}
+@keyframes spUp{0%{transform:translate(0,0);opacity:.9}100%{transform:translate(var(--tx),-80px) scale(.1);opacity:0}}
+.bn2 .banner-tag{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+.bn2 .banner-title span{background:linear-gradient(135deg,#fed7aa,#f97316,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bn2 .banner-sub{color:rgba(252,165,165,.35)}
+.bn2 .banner-emoji{filter:drop-shadow(0 0 22px rgba(239,68,68,.8));animation:flameDance 1.8s ease-in-out infinite alternate}
+@keyframes flameDance{0%{transform:rotate(-5deg) scale(1)}100%{transform:rotate(5deg) scale(1.1)}}
+/* БН3 КОСМОС */
+.bn3{background:radial-gradient(ellipse at 20% 50%,#020818,#030b1a,#010408)}
+.bn3::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 85% 30%,rgba(139,92,246,.1),transparent);pointer-events:none}
+.bn3-stars{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.bstar{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d) ease-in-out infinite var(--dl)}
+@keyframes twinkle{0%,100%{opacity:.05;transform:scale(1)}50%{opacity:.8;transform:scale(1.5)}}
+.bn3-scan{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,.4),transparent);animation:scanDown 5s linear infinite;pointer-events:none}
+@keyframes scanDown{0%{top:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}}
+.bn3-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(139,92,246,.2);pointer-events:none;z-index:4}
+.bn3-orbit{position:absolute;width:80px;height:80px;border-radius:50%;border:1px dashed rgba(139,92,246,.2);animation:orbitSpin 6s linear infinite}
+.bn3-orbit::after{content:'';position:absolute;width:7px;height:7px;background:#7c3aed;border-radius:50%;top:-3.5px;left:50%;margin-left:-3.5px;box-shadow:0 0 10px #7c3aed}
+@keyframes orbitSpin{to{transform:rotate(360deg)}}
+.bn3 .banner-tag{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);color:#c4b5fd}
+.bn3 .banner-title span{background:linear-gradient(135deg,#e9d5ff,#a855f7,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bn3 .banner-sub{color:rgba(196,181,253,.35)}
+.bn3 .banner-emoji{filter:drop-shadow(0 0 22px rgba(139,92,246,.9))}
+/* БН4 НЕОН */
+.bn4{background:radial-gradient(ellipse at 0% 100%,#011004,#020d06,#010703)}
+.bn4::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 70% 60%,rgba(34,197,94,.07),transparent);pointer-events:none}
+.bn4::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(34,197,94,.4),transparent);pointer-events:none}
+.bn4-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(34,197,94,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(34,197,94,.025) 1px,transparent 1px);background-size:30px 30px;pointer-events:none}
+.bn4-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(34,197,94,.2);pointer-events:none;z-index:4}
+.bn4-pulse{position:absolute;width:70px;height:70px;border-radius:50%;background:rgba(34,197,94,.05);animation:pls 2s ease-out infinite}
+.bn4-pulse2{animation-delay:.7s}
+@keyframes pls{0%{transform:scale(.7);opacity:1}100%{transform:scale(1.8);opacity:0}}
+.bn4 .banner-tag{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:#86efac}
+.bn4 .banner-title span{background:linear-gradient(135deg,#bbf7d0,#4ade80,#15803d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bn4 .banner-sub{color:rgba(134,239,172,.35)}
+.bn4 .banner-emoji{filter:drop-shadow(0 0 22px rgba(34,197,94,.9))}
+/* БН5 БЕГУЩАЯ СТРОКА */
+.bn5{background:radial-gradient(ellipse at 50% 0%,#010a18,#020812,#010508);flex-direction:column;align-items:flex-start;justify-content:space-between;padding-bottom:0}
+.bn5::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(45,212,191,.08),transparent 60%);pointer-events:none}
+.bn5-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(45,212,191,.18);pointer-events:none;z-index:4}
+.bn5-top{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;width:100%;padding-bottom:14px}
+.bn5-ticker-wrap{position:relative;z-index:3;width:calc(100% + 40px);margin-left:-20px;border-top:1px solid rgba(45,212,191,.08);background:rgba(45,212,191,.03);overflow:hidden;padding:7px 0}
+.bn5-ticker{display:flex;width:max-content;animation:tickRun 14s linear infinite}
+@keyframes tickRun{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.bn5-tick-item{display:flex;align-items:center;gap:6px;padding:0 16px;font-size:10px;font-weight:700;color:rgba(94,234,212,.45);white-space:nowrap}
+.bn5-tick-item strong{color:#2dd4bf}
+.bn5 .banner-tag{background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.2);color:#5eead4}
+.bn5 .banner-title span{background:linear-gradient(135deg,#ccfbf1,#2dd4bf,#0f766e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+/* БН6 ХАЙП */
+.bn6{background:radial-gradient(ellipse at 100% 0%,#180008,#0d0004,#060002)}
+.bn6::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 20% 60%,rgba(236,72,153,.08),transparent);pointer-events:none}
+.bn6::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(236,72,153,.5),transparent);pointer-events:none}
+.bn6-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(236,72,153,.2);pointer-events:none;z-index:4}
+.bn6-streak{position:absolute;top:0;bottom:0;width:30%;background:linear-gradient(90deg,transparent,rgba(236,72,153,.06),transparent);animation:bnStreak 4s ease-in-out infinite 1s;pointer-events:none}
+.bn6 .banner-tag{background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.3);color:#fbcfe8}
+.bn6 .banner-title span{background:linear-gradient(135deg,#fce7f3,#f472b6,#be185d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bn6 .banner-sub{color:rgba(251,207,232,.35)}
+.bn6 .banner-emoji{filter:drop-shadow(0 0 22px rgba(236,72,153,.9));animation:heartBeat 1.2s ease-in-out infinite}
+@keyframes heartBeat{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.1)}70%{transform:scale(1)}}
+/* Dots */
+.banner-dots{display:flex;justify-content:center;gap:5px;margin-top:8px}
+.bn-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.12);transition:all .35s;cursor:pointer}
+.bn-dot.active{width:22px;border-radius:3px;background:rgba(255,255,255,.4)}
+
+/* ━━━ FILTER ━━━ */
+.filter-wrap{padding:10px 10px 0}
+.filter-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.filter-row{display:flex;gap:5px;align-items:center}
+.filter-input{flex:1;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:7px;padding:7px 9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--text);outline:none}
+.filter-input::placeholder{color:var(--muted)}
+.filter-sep{color:var(--muted);font-size:13px;font-weight:700;flex-shrink:0}
+.filter-go{background:var(--blue2);border:none;color:#fff;padding:7px 12px;border-radius:7px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0}
+.filter-reset{background:var(--card);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:7px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* ━━━ SECTION ━━━ */
+.section{padding:10px 10px 0}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sec-title{font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;letter-spacing:.3px}
+.sec-count{background:rgba(77,139,255,.1);border:1px solid rgba(77,139,255,.2);color:var(--blue);font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px}
+.grid{display:grid;grid-template-columns:1fr;gap:10px}
+
+/* ━━━ FLIP КАРТОЧКА ━━━ */
+.flip-wrap{perspective:1000px;cursor:pointer}
+.flip-card{position:relative;width:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1);border-radius:14px}
+.flip-wrap.flipped .flip-card{transform:rotateY(180deg)}
+.flip-front,.flip-back{backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px;overflow:hidden;width:100%}
+.flip-front{background:linear-gradient(160deg,#0d1018,#080b12);border:1px solid rgba(77,139,255,.2);box-shadow:0 4px 20px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);animation:fadeUp .4s ease forwards;opacity:0}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.flip-back{background:linear-gradient(160deg,#080b12,#060810);border:1px solid rgba(45,212,191,.22);box-shadow:0 4px 20px rgba(0,0,0,.6);transform:rotateY(180deg);position:absolute;top:0;left:0;right:0}
+
+/* ━━━ ЦВЕТА КЛУБОВ ━━━ */
+.club-stripe{height:3px;width:100%}
+.club-psg .flip-front{background:linear-gradient(160deg,#03061a,#060d24);border-color:rgba(0,56,147,.5);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(0,56,147,.15),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-psg .club-stripe{background:linear-gradient(90deg,#001f5c,#003893,#001f5c)}
+.club-psg .card-price{color:#6ba3ff;text-shadow:0 0 14px rgba(77,139,255,.4)}
+.club-real .flip-front{background:linear-gradient(160deg,#131008,#1a1505);border-color:rgba(200,160,0,.35);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(200,160,0,.1),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-real .club-stripe{background:linear-gradient(90deg,#7a5c00,#c8a800,#ffd700,#c8a800,#7a5c00)}
+.club-real .card-price{color:#ffd700;text-shadow:0 0 14px rgba(255,215,0,.4)}
+.club-barca .flip-front{background:linear-gradient(160deg,#0e0408,#160612);border-color:rgba(164,0,0,.4);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(164,0,0,.12),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-barca .club-stripe{background:linear-gradient(90deg,#a40000,#004085,#a40000,#004085,#a40000)}
+.club-barca .card-price{color:#ff7070;text-shadow:0 0 14px rgba(255,100,100,.35)}
+.club-manu .flip-front{background:linear-gradient(160deg,#120404,#1a0505);border-color:rgba(218,41,28,.4);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(218,41,28,.12),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-manu .club-stripe{background:linear-gradient(90deg,#8b0000,#da291c,#ff4136,#da291c,#8b0000)}
+.club-manu .card-price{color:#ff6b6b;text-shadow:0 0 14px rgba(255,100,100,.35)}
+.club-juve .flip-front{background:linear-gradient(160deg,#0c0c0c,#111);border-color:rgba(255,255,255,.12);box-shadow:0 4px 24px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)}
+.club-juve .club-stripe{background:linear-gradient(90deg,#111,#555,#eee,#555,#111)}
+.club-juve .card-price{color:#e2e8f0;text-shadow:0 0 14px rgba(226,232,240,.25)}
+.club-chelsea .flip-front{background:linear-gradient(160deg,#030a18,#050f22);border-color:rgba(3,70,148,.5);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(3,70,148,.15),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-chelsea .club-stripe{background:linear-gradient(90deg,#012055,#034694,#0054b8,#034694,#012055)}
+.club-chelsea .card-price{color:#60a5fa;text-shadow:0 0 14px rgba(96,165,250,.35)}
+
+/* ━━━ ФОТО КАРТОЧКИ ━━━ */
+.card-img{width:100%;aspect-ratio:20/9;background:#060810;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.card-img img{width:100%;height:100%;object-fit:contain}
+.card-placeholder{font-size:40px;opacity:.15}
+.card-num{position:absolute;bottom:7px;left:7px;background:linear-gradient(135deg,#2563eb,#4d8bff);color:#fff;font-size:9px;font-weight:800;padding:3px 9px;border-radius:20px;box-shadow:0 2px 8px rgba(77,139,255,.5);z-index:2}
+
+/* ━━━ БЕЙДЖИ ━━━ */
+.badge-new{position:absolute;top:8px;left:8px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.4);color:#6ee7b7;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:5px;z-index:2}
+.badge-dot{width:6px;height:6px;background:#22c55e;border-radius:50%;position:relative;flex-shrink:0}
+.badge-dot::after{content:'';position:absolute;inset:-3px;background:rgba(34,197,94,.4);border-radius:50%;animation:dotPing 1.5s ease-out infinite}
+@keyframes dotPing{0%{transform:scale(.8);opacity:1}100%{transform:scale(2.2);opacity:0}}
+.badge-hot{position:absolute;top:8px;left:8px;background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(251,146,60,.2));border:1px solid rgba(251,146,60,.45);color:#fed7aa;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;z-index:2;animation:hotShake .45s ease-in-out infinite}
+@keyframes hotShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-1.5deg)}75%{transform:rotate(1.5deg)}}
+.flip-hint{position:absolute;bottom:7px;right:7px;background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.3);color:#2dd4bf;font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;animation:hintPulse 2s ease-in-out infinite;z-index:2}
+@keyframes hintPulse{0%,100%{opacity:.45}50%{opacity:1}}
+
+/* ━━━ ТЕЛО КАРТОЧКИ ━━━ */
+.card-body{padding:10px 12px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-info{flex:1;min-width:0}
+.card-price{font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;color:#fbbf24;line-height:1;margin-bottom:3px;text-shadow:0 0 14px rgba(251,191,36,.35)}
+.card-price span{font-size:14px;color:rgba(251,191,36,.55);font-family:'Inter',sans-serif;font-weight:700}
+.card-sub{font-size:10px;font-weight:600;color:var(--muted)}
+.cbtn-buy{background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:9px 13px;border-radius:8px;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:3px;box-shadow:0 3px 12px rgba(239,68,68,.4);white-space:nowrap;transition:opacity .15s}
+.cbtn-buy:active{opacity:.8}
+
+/* ━━━ ОБОРОТ ━━━ */
+.back-body{padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.back-price-row{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:8px 14px;width:100%}
+.back-price-label{font-size:11px;color:var(--muted);font-weight:600}
+.back-price-val{font-family:'Oswald',sans-serif;font-size:20px;color:#fbbf24;font-weight:700}
+.btn-fullscreen{width:100%;padding:18px 16px;background:linear-gradient(135deg,rgba(45,212,191,.12),rgba(45,212,191,.05));border:1px solid rgba(45,212,191,.35);border-radius:14px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;position:relative;overflow:hidden}
+.btn-fullscreen::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(45,212,191,.5),transparent)}
+.btn-fullscreen:active{background:linear-gradient(135deg,rgba(45,212,191,.2),rgba(45,212,191,.1))}
+.btn-fs-icon{font-size:28px}
+.btn-fs-text{font-family:'Oswald',sans-serif;font-size:21px;font-weight:700;color:#2dd4bf;letter-spacing:1px;text-align:center;line-height:1.2;text-shadow:0 0 20px rgba(45,212,191,.4)}
+.btn-fs-sub{font-size:11px;font-weight:600;color:rgba(45,212,191,.5)}
+.back-btns{display:flex;gap:8px;width:100%}
+.back-btn-buy{flex:1;background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 3px 12px rgba(239,68,68,.35);text-decoration:none;display:flex;align-items:center;justify-content:center;gap:4px}
+.back-btn-flip{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--muted);padding:12px 14px;border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0}
+
+/* ━━━ STATE ━━━ */
+.state-box{text-align:center;padding:40px 20px;color:var(--muted)}
+.state-icon{font-size:36px;margin-bottom:8px}
+.state-text{font-size:12px;font-weight:600;line-height:1.6}
+.spin{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ━━━ BOTTOM NAV ━━━ */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,12,16,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:8px 10px 14px;display:flex;gap:7px;z-index:50}
+.nav-btn{flex:1;padding:10px 6px;border-radius:9px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:4px;border:none;cursor:pointer;white-space:nowrap;line-height:1}
+.nav-sell{background:var(--card2);border:1px solid var(--border);color:var(--muted2)}
+.nav-contact{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;box-shadow:0 3px 12px rgba(77,139,255,.3)}
+
+/* ━━━ OVERLAYS ━━━ */
+.overlay{display:none;position:fixed;inset:0;background:rgba(5,7,12,.85);backdrop-filter:blur(10px);z-index:200;align-items:flex-end}
+.overlay.open{display:flex}
+.sheet{background:#13161d;border-radius:16px 16px 0 0;border:1px solid rgba(255,255,255,.06);border-bottom:none;padding:14px 14px 36px;width:100%;max-height:85vh;overflow-y:auto;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:32px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 12px;cursor:pointer}
+.sheet-title{font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;margin-bottom:12px;letter-spacing:.3px}
+.no-albums{text-align:center;padding:24px;color:var(--muted);font-size:12px;font-weight:600;line-height:1.6}
+
+/* ━━━ ADMIN ━━━ */
+.admin-back{background:none;border:none;color:var(--muted);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:10px;padding:0;display:flex;align-items:center;gap:4px}
+.admin-btns{display:flex;flex-direction:column;gap:7px}
+.adm-btn{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:11px 12px;cursor:pointer;text-align:left;width:100%;font-family:'Inter',sans-serif}
+.adm-ic{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ic-b{background:rgba(77,139,255,.12)}.ic-r{background:rgba(244,63,94,.12)}.ic-g{background:rgba(251,191,36,.12)}.ic-t{background:rgba(45,212,191,.12)}.ic-o{background:rgba(251,146,60,.12)}
+.adm-name{font-size:13px;font-weight:700;color:var(--text)}
+.adm-desc{font-size:10px;font-weight:500;color:var(--muted);margin-top:1px}
+.adm-divider{height:1px;background:var(--border);margin:2px 0}
+
+/* ━━━ FORM ━━━ */
+.form{display:flex;flex-direction:column;gap:9px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.fi{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--text);outline:none;width:100%}
+.fi::placeholder{color:var(--muted)}
+.fi:focus{border-color:rgba(77,139,255,.45)}
+.photo-label{display:flex;align-items:center;justify-content:center;gap:6px;background:var(--card2);border:1px dashed rgba(77,139,255,.25);border-radius:7px;padding:12px;cursor:pointer;color:var(--muted2);font-size:12px;font-weight:600}
+.photo-preview{width:100%;border-radius:7px;aspect-ratio:20/9;object-fit:contain;background:#060810;display:none;margin-top:5px}
+.chips{display:flex;flex-direction:column;gap:4px;margin-top:3px}
+.chip{display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid rgba(45,212,191,.2);border-radius:6px;padding:5px 9px;font-size:10px;font-weight:600;color:var(--teal);word-break:break-all}
+.chip-x{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-left:5px;flex-shrink:0}
+.form-btns{display:flex;gap:6px;margin-top:2px}
+.f-submit{flex:1;background:linear-gradient(135deg,var(--blue2),var(--blue));border:none;color:#fff;padding:10px;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(77,139,255,.25)}
+.f-submit:disabled{opacity:.5;cursor:not-allowed}
+.f-cancel{background:var(--card2);border:1px solid var(--border);color:var(--muted2);padding:10px 14px;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+
+/* ━━━ EDIT LIST ━━━ */
+.edit-list{display:flex;flex-direction:column;gap:6px}
+.edit-item{display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 11px}
+.edit-num{font-size:12px;font-weight:700}
+.edit-price{font-size:10px;font-weight:600;color:var(--gold)}
+.edit-btn{background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.25);color:#fb923c;padding:5px 10px;border-radius:6px;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;cursor:pointer}
+
+/* ━━━ DEL + STATS ━━━ */
+.del-list{display:flex;flex-direction:column;gap:6px}
+.del-item{display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 11px}
+.del-num{font-size:12px;font-weight:700}
+.del-price{font-size:10px;font-weight:600;color:var(--gold)}
+.del-btn{background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.2);color:var(--red);padding:5px 10px;border-radius:6px;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;cursor:pointer}
+.stats{display:flex;flex-direction:column;gap:7px}
+.stat-item{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.stat-ic{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.stat-label{font-size:11px;font-weight:600;color:var(--muted2)}
+.stat-val{font-size:15px;font-weight:800;color:var(--text)}
+
+/* ━━━ TOAST ━━━ */
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(10px);background:#1e2433;border:1px solid rgba(77,139,255,.25);color:var(--text);padding:8px 16px;border-radius:20px;font-size:12px;font-weight:700;opacity:0;transition:all .25s;z-index:999;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ━━━ ГАЛЕРЕЯ v2 ━━━ */
+#galFull{display:flex;flex-direction:column;gap:0}
+.gf-main{position:relative;background:#060810;border-radius:12px;overflow:hidden}
+.gf-img-wrap{transition:opacity .15s,transform .15s;transform-origin:center}
+.gf-img-wrap img{width:100%;display:block;object-fit:contain;max-height:56vh;min-height:180px}
+.gf-img-wrap.anim{opacity:0;transform:scale(.97)}
+.gf-arrow{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:#fff;backdrop-filter:blur(8px);z-index:2;transition:all .2s}
+.gf-arrow:active{background:rgba(45,212,191,.25);border-color:rgba(45,212,191,.5)}
+.gf-l{left:10px}.gf-r{right:10px}
+.gf-counter{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);color:#94a3b8;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;z-index:2}
+.gf-prog{height:2px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin:10px 0 8px}
+.gf-prog-fill{height:100%;background:linear-gradient(90deg,#2dd4bf,#0d9488);border-radius:2px;transition:width .3s ease}
+.gf-thumbs{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.gf-thumbs::-webkit-scrollbar{display:none}
+.gf-thumb{width:62px;height:62px;border-radius:10px;overflow:hidden;cursor:pointer;flex-shrink:0;border:2px solid transparent;transition:all .2s;opacity:.4;filter:grayscale(20%)}
+.gf-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.gf-th-active{border-color:#2dd4bf!important;opacity:1!important;filter:none!important;box-shadow:0 0 12px rgba(45,212,191,.35)}
+
+/* ━━━ GALLERY STRIP НА КАРТОЧКЕ ━━━ */
+.card-gallery{border-top:1px solid rgba(255,255,255,.05);padding:8px 10px;display:flex;align-items:center;gap:8px}
+.gal-strip{display:flex;gap:5px;flex:1;overflow:hidden;align-items:center}
+.gal-mini{width:46px;height:46px;border-radius:7px;overflow:hidden;flex-shrink:0;cursor:pointer;border:1.5px solid rgba(255,255,255,.07);transition:all .2s}
+.gal-mini img{width:100%;height:100%;object-fit:cover;display:block}
+.gal-mini:first-child{border-color:rgba(45,212,191,.45);box-shadow:0 0 8px rgba(45,212,191,.2)}
+.gal-more{width:46px;height:46px;border-radius:7px;background:rgba(45,212,191,.07);border:1.5px solid rgba(45,212,191,.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;gap:0px}
+.gal-more-num{font-size:14px;font-weight:900;color:#2dd4bf;line-height:1.1}
+.gal-more-txt{font-size:7px;font-weight:700;color:rgba(45,212,191,.5);text-transform:uppercase;letter-spacing:.3px}
+.gal-open-btn{background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.25);color:#2dd4bf;padding:7px 10px;border-radius:8px;font-family:'Inter',sans-serif;font-size:9px;font-weight:800;cursor:pointer;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:1px;letter-spacing:.2px;flex-shrink:0;line-height:1.3}
+.gal-no-photos{font-size:10px;font-weight:600;color:var(--muted);padding:4px 0;display:flex;align-items:center;gap:5px}
+
+/* ━━━ CARD-WRAP (без флипа) ━━━ */
+.card-wrap{border-radius:14px;overflow:hidden;background:linear-gradient(160deg,#0d1018,#080b12);border:1px solid rgba(77,139,255,.2);box-shadow:0 4px 20px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-psg .card-wrap{background:linear-gradient(160deg,#03061a,#060d24);border-color:rgba(0,56,147,.5);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(0,56,147,.15),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-real .card-wrap{background:linear-gradient(160deg,#131008,#1a1505);border-color:rgba(200,160,0,.35);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(200,160,0,.1),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-barca .card-wrap{background:linear-gradient(160deg,#0e0408,#160612);border-color:rgba(164,0,0,.4)}
+.club-manu .card-wrap{background:linear-gradient(160deg,#120404,#1a0505);border-color:rgba(218,41,28,.4)}
+.club-juve .card-wrap{background:linear-gradient(160deg,#0c0c0c,#111);border-color:rgba(255,255,255,.12)}
+.club-chelsea .card-wrap{background:linear-gradient(160deg,#030a18,#050f22);border-color:rgba(3,70,148,.5)}
+
+/* ━━━ БЫСТРАЯ ЦЕНА ━━━ */
+.qp-wrap{border-top:1px solid rgba(255,255,255,.04);padding:8px 12px 10px;display:flex;flex-direction:column;gap:6px}
+.qp-row{display:flex;align-items:center;gap:7px}
+.qp-label{font-size:9px;font-weight:700;color:var(--muted);white-space:nowrap}
+.qp-input{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(59,130,246,.2);border-radius:8px;color:#fff;font-family:'Oswald',sans-serif;font-size:18px;padding:5px 10px;outline:none;min-width:0}
+.qp-input:focus{border-color:rgba(59,130,246,.45)}
+.qp-save{background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.3);color:#2dd4bf;padding:7px 12px;border-radius:8px;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap}
+.qp-save:active{transform:scale(.95)}
+.qp-presets{display:flex;gap:5px;flex-wrap:wrap}
+.qp-preset{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:4px 9px;font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s}
+.qp-preset:active{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.3);color:#60a5fa}
+.qp-sending{display:none;font-size:10px;font-weight:700;color:#2dd4bf;align-items:center;gap:5px}
+.qp-sending.show{display:flex}
+
+/* ━━━ ПУСТОЙ МАРКЕТ ━━━ */
+.empty-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:65vh;text-align:center;padding:20px}
+.empty-trophy{font-size:76px;margin-bottom:16px;animation:tFloat 3s ease-in-out infinite;filter:drop-shadow(0 0 28px rgba(251,191,36,.45))}
+@keyframes tFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12px) rotate(4deg)}}
+.empty-ring{position:relative;display:inline-block;margin-bottom:0}
+.empty-ring::before,.empty-ring::after{content:'';position:absolute;top:50%;left:50%;border-radius:50%;border:2px solid rgba(251,191,36,.12);animation:rPulse 2.5s ease-in-out infinite}
+.empty-ring::before{width:120px;height:120px;margin:-60px}
+.empty-ring::after{width:165px;height:165px;margin:-82px;border-color:rgba(251,191,36,.06);animation-delay:.8s;animation-duration:3.2s}
+@keyframes rPulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.08);opacity:1}}
+.empty-title{font-family:'Oswald',sans-serif;font-size:36px;font-weight:700;letter-spacing:1px;margin-bottom:8px;background:linear-gradient(135deg,#fde68a,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.empty-sub{font-size:13px;font-weight:600;color:var(--muted);line-height:1.75;max-width:260px;margin-bottom:20px}
+.empty-sub b{color:#94a3b8;font-weight:700}
+.empty-soon{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:14px;padding:12px 24px;margin-bottom:20px;width:100%;max-width:280px}
+.empty-soon-label{font-size:9px;font-weight:800;color:rgba(251,191,36,.4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
+.empty-soon-text{font-size:13px;font-weight:700;color:#fbbf24}
+.empty-tg-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff;text-decoration:none;padding:14px 28px;border-radius:14px;font-size:13px;font-weight:800;box-shadow:0 6px 24px rgba(37,99,235,.3);width:100%;max-width:280px}
+.empty-tg-btn:active{transform:scale(.97)}
+.cf-item{position:fixed;animation:cfFall var(--d) linear infinite var(--dl);pointer-events:none;z-index:0}
+@keyframes cfFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+
+/* ━━━ УДАЛЕНИЕ ФОТО В ГАЛЕРЕЕ ━━━ */
+.gft-wrap{position:relative;width:62px;height:62px;flex-shrink:0}
+.gft-wrap .gft-del{position:absolute;top:-7px;right:-7px;width:20px;height:20px;background:linear-gradient(135deg,#dc2626,#ef4444);border:2px solid #07080f;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:900;cursor:pointer;z-index:10;opacity:0;transform:scale(0);transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 8px rgba(239,68,68,.5)}
+.gft-wrap.del-mode .gft-del{opacity:1;transform:scale(1)}
+.gft-hold-svg{position:absolute;inset:-3px;width:calc(100% + 6px);height:calc(100% + 6px);pointer-events:none;z-index:5}
+.gft-hold-circle{fill:none;stroke:#2dd4bf;stroke-width:3;stroke-dasharray:220;stroke-dashoffset:220;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%}
+.gal-del-hint{font-size:10px;font-weight:700;color:#334155;text-align:center;margin-bottom:8px;transition:opacity .3s}
+.gal-del-hint.hide{opacity:0}
+</style>
+</head>
+<body>
+
+<div class="scrollbar"><div class="sb-thumb" id="sbThumb"></div></div>
+
+<div id="swrap">
+<div id="scont">
+
+<header>
+  <div class="h-row">
+    <div class="logo">
+      <div class="logo-icon">⚽</div>
+      <div class="logo-text">DVORNOV <span>MARKET</span></div>
+    </div>
+    <div class="h-btns">
+      <a href="https://t.me/Dvornov_Otziv" target="_blank" class="h-btn btn-reviews">⭐ Отзывы</a>
+      <button class="h-btn btn-admin" id="adminBtn" onclick="openAdmin()">⚙️ Админ</button>
+    </div>
+  </div>
+  <div class="search-box">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input class="search-input" id="searchInput" placeholder="Поиск по числу или цене..." oninput="applyFilter()">
+  </div>
+</header>
+
+<!-- БАННЕРЫ -->
+<div class="banners-wrap">
+  <div class="banners-track" id="bnTrack">
+    <div class="banner bn1">
+      <div class="bn1-border"></div>
+      <div class="bn1-streak"></div>
+      <div class="banner-left">
+        <div class="banner-tag">💎 Premium Shop</div>
+        <div class="banner-title">Dvornov<br><span>Market</span></div>
+        <div class="banner-sub">Продажа · Обмен · Быстро</div>
+      </div>
+      <div class="banner-right"><div class="banner-emoji">💎</div></div>
+    </div>
+    <div class="banner bn2">
+      <div class="bn2-border"></div>
+      <div class="bn2-sparks" id="bnSparks"></div>
+      <div class="banner-left">
+        <div class="banner-tag">🔥 Горячие акки</div>
+        <div class="banner-title">Успей<br><span>Купить</span></div>
+        <div class="banner-sub">Лимитированные · По огню</div>
+      </div>
+      <div class="banner-right"><div class="banner-emoji">🔥</div></div>
+    </div>
+    <div class="banner bn3">
+      <div class="bn3-border"></div>
+      <div class="bn3-stars" id="bnStars"></div>
+      <div class="bn3-scan"></div>
+      <div class="banner-left">
+        <div class="banner-tag">⚡ Быстрая сделка</div>
+        <div class="banner-title">Лучшие<br><span>Акки</span></div>
+        <div class="banner-sub">Топовые игроки · Рейтинг</div>
+      </div>
+      <div class="banner-right">
+        <div style="position:relative;width:70px;height:70px;display:flex;align-items:center;justify-content:center">
+          <div class="bn3-orbit"></div>
+          <div class="banner-emoji" style="font-size:52px;margin:0">🏆</div>
+        </div>
+      </div>
+    </div>
+    <div class="banner bn4">
+      <div class="bn4-border"></div>
+      <div class="bn4-grid"></div>
+      <div class="banner-left">
+        <div class="banner-tag">✅ Гарантия</div>
+        <div class="banner-title">Честно<br><span>Надёжно</span></div>
+        <div class="banner-sub">Отзывы · Быстрый ответ</div>
+      </div>
+      <div class="banner-right">
+        <div style="position:relative;width:70px;height:70px;display:flex;align-items:center;justify-content:center">
+          <div class="bn4-pulse"></div>
+          <div class="bn4-pulse bn4-pulse2"></div>
+          <div class="banner-emoji" style="font-size:52px;margin:0">🛡️</div>
+        </div>
+      </div>
+    </div>
+    <div class="banner bn5">
+      <div class="bn5-border"></div>
+      <div class="bn5-top">
+        <div>
+          <div class="banner-tag" style="background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.2);color:#5eead4;margin-bottom:10px">⚡ Новый завоз</div>
+          <div class="banner-title" style="font-size:36px">Свежие<br><span style="background:linear-gradient(135deg,#ccfbf1,#2dd4bf,#0f766e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Акки</span></div>
+        </div>
+        <div class="banner-emoji" style="filter:drop-shadow(0 0 22px rgba(45,212,191,.8));font-size:52px;animation:bnFloat 3s ease-in-out infinite">⚽</div>
+      </div>
+      <div class="bn5-ticker-wrap">
+        <div class="bn5-ticker" id="bnTicker"></div>
+      </div>
+    </div>
+    <div class="banner bn6">
+      <div class="bn6-border"></div>
+      <div class="bn6-streak"></div>
+      <div class="banner-left">
+        <div class="banner-tag">🎯 Топ продажи</div>
+        <div class="banner-title">Только<br><span>Хиты</span></div>
+        <div class="banner-sub">Самые популярные акки</div>
+      </div>
+      <div class="banner-right"><div class="banner-emoji">❤️‍🔥</div></div>
+    </div>
+  </div>
+  <div class="banner-dots" id="bnDots"></div>
+</div>
+
+
+<div class="filter-wrap">
+  <div class="filter-label">Фильтр по цене</div>
+  <div class="filter-row">
+    <input type="number" class="filter-input" id="minPrice" placeholder="От">
+    <span class="filter-sep">—</span>
+    <input type="number" class="filter-input" id="maxPrice" placeholder="До">
+    <button class="filter-go" onclick="applyFilter()">Найти</button>
+    <button class="filter-reset" onclick="resetAll()">✕</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-head">
+    <div class="sec-title">Все аккаунты</div>
+    <div class="sec-count" id="countBadge">...</div>
+  </div>
+  <div class="grid" id="grid">
+    <div class="state-box"><div class="state-icon spin">⚽</div><div class="state-text">Загрузка...</div></div>
+  </div>
+</div>
+
+</div></div>
+
+<div class="bottom-nav">
+  <a href="https://t.me/DvornovNikitos" target="_blank" class="nav-btn nav-sell">💎 Продать акк</a>
+  <a href="https://t.me/DvornovNikitos" target="_blank" class="nav-btn nav-contact">✉️ Написать Дворнову</a>
+</div>
+
+<!-- Галерея FULLSCREEN -->
+<div id="screensOv" style="display:none;position:fixed;inset:0;z-index:300;flex-direction:column;background:rgba(2,3,8,.98)">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0">
+    <div style="font-family:'Oswald',sans-serif;font-size:16px;font-weight:600">📸 Фулл скрины</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div id="gfCnt" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:800;color:#64748b"></div>
+      <div onclick="closeOv('screensOv')" style="width:34px;height:34px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:#64748b">✕</div>
+    </div>
+  </div>
+  <div style="flex:1;position:relative;display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden">
+    <div id="gfWrap" style="width:100%;border-radius:12px;overflow:hidden;background:#030612;transition:opacity .15s,transform .15s">
+      <img id="gfImg" src="" style="width:100%;display:block;object-fit:contain;max-height:52vh">
+    </div>
+    <button id="gfL" style="position:absolute;left:18px;top:50%;transform:translateY(-50%);width:40px;height:40px;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.12);border-radius:50%;font-size:22px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)">&#8249;</button>
+    <button id="gfR" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);width:40px;height:40px;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.12);border-radius:50%;font-size:22px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)">&#8250;</button>
+  </div>
+  <div style="padding:0 16px;flex-shrink:0">
+    <div style="height:2px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden">
+      <div id="gfProg" style="height:100%;background:linear-gradient(90deg,#2dd4bf,#0d9488);transition:width .3s ease;border-radius:2px"></div>
+    </div>
+  </div>
+  <div style="padding:10px 16px;flex-shrink:0">
+    <div id="gfThumbs" style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px"></div>
+  </div>
+  <div style="padding:0 16px 28px;display:flex;gap:8px;flex-shrink:0">
+    <a href="https://t.me/DvornovNikitos" target="_blank" style="flex:1;background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:13px;border-radius:12px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:0 4px 16px rgba(239,68,68,.3)">&#128308; Купить / Обменять</a>
+    <a href="https://t.me/DvornovNikitos" target="_blank" style="background:rgba(77,139,255,.1);border:1px solid rgba(77,139,255,.25);color:#4d8bff;padding:13px 16px;border-radius:12px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:4px;white-space:nowrap">&#128172; Спросить</a>
+  </div>
+</div>
+
+<!-- Админ -->
+<div class="overlay" id="adminOv">
+  <div class="sheet">
+    <div class="sheet-handle" onclick="closeOv('adminOv')"></div>
+    <div id="adminBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = "https://conduct-jennifer-professor-football.trycloudflare.com";
+const ADMIN_TG_ID = 568518218;
+let ACCOUNTS=[], LIST=[], isAdmin=false, selPhoto=null, extraFiles=[];
+
+if(window.Telegram?.WebApp){
+  Telegram.WebApp.ready(); Telegram.WebApp.expand();
+  const u=Telegram.WebApp.initDataUnsafe?.user;
+  if(u&&u.id===ADMIN_TG_ID) isAdmin=true;
+}
+if(isAdmin) document.getElementById('adminBtn').classList.add('show');
+
+// ━━━ БАННЕРЫ СВАЙП ━━━
+(function(){
+  const track = document.getElementById('bnTrack');
+  const dotsWrap = document.getElementById('bnDots');
+  let cur=0, total=6, dragging=false, startX=0;
+  // Генерируем 6 точек
+  for(let i=0;i<total;i++){const d=document.createElement('div');d.className='bn-dot'+(i===0?' active':'');d.onclick=(n=>()=>go(n))(i);dotsWrap.appendChild(d);}
+  const dots = dotsWrap.children;
+
+  function go(idx){
+    cur=(idx+total)%total;
+    track.style.transform=`translateX(${-cur*100}%)`;
+    [...dots].forEach((d,i)=>d.classList.toggle('active',i===cur));
+  }
+  window.bnGoTo = go;
+
+  // Искры баннер 2
+  const bnSparks=document.getElementById('bnSparks');
+  if(bnSparks){for(let i=0;i<12;i++){const s=document.createElement('div');s.className='sp';const sz=2+Math.random()*3;s.style.cssText=`width:${sz}px;height:${sz}px;left:${10+Math.random()*80}%;bottom:${Math.random()*35}%;--d:${.9+Math.random()*1.3}s;--dl:-${Math.random()*2}s;--tx:${(Math.random()*20-10)}px`;bnSparks.appendChild(s);}}
+  // Звёзды баннер 3
+  const bnStars=document.getElementById('bnStars');
+  if(bnStars){for(let i=0;i<28;i++){const s=document.createElement('div');s.className='bstar';const sz=Math.random()*1.8+.4;s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--dl:-${Math.random()*4}s`;bnStars.appendChild(s);}}
+  // Бегущая строка баннер 5 — заполняем после загрузки аккаунтов
+  window._fillBnTicker = function(accs){
+    const bnTicker=document.getElementById('bnTicker');
+    if(!bnTicker) return;
+    const items=accs.length?accs.slice(0,8).map(a=>`<span class="bn5-tick-item">⚽ <strong>#${a.number||'—'}</strong> · <strong>${Number(a.price).toLocaleString('ru')}₽</strong><span style="opacity:.2;margin:0 6px">·</span></span>`).join(''):`<span class="bn5-tick-item">⚽ <strong>Dvornov Market</strong> · Лучшие акки eFootball<span style="opacity:.2;margin:0 6px">·</span></span>`.repeat(5);
+    bnTicker.innerHTML=items+items;
+  };
+
+  // Авто-слайд каждые 4 сек
+  let timer = setInterval(()=>go(cur+1), 4000);
+  function resetTimer(){ clearInterval(timer); timer=setInterval(()=>go(cur+1),4000); }
+
+  track.addEventListener('touchstart',e=>{ startX=e.touches[0].clientX; dragging=true; },{ passive:true });
+  track.addEventListener('touchend',e=>{
+    if(!dragging) return; dragging=false;
+    const dx=e.changedTouches[0].clientX-startX;
+    if(Math.abs(dx)>40){ go(dx<0?cur+1:cur-1); resetTimer(); }
+  });
+})();
+
+// ━━━ КЛУБЫ ━━━
+function getClubClass(v){
+  if(!v) return '';
+  v=v.toLowerCase();
+  if(v==='psg') return 'club-psg';
+  if(v==='real') return 'club-real';
+  if(v==='barca') return 'club-barca';
+  if(v==='manu') return 'club-manu';
+  if(v==='juve') return 'club-juve';
+  if(v==='chelsea') return 'club-chelsea';
+  return '';
+}
+
+// ━━━ ЗАГРУЗКА ━━━
+async function loadAccounts(){
+  try{
+    const r=await fetch(`${API}/accounts`);
+    ACCOUNTS=await r.json(); LIST=[...ACCOUNTS]; render(LIST); if(window._fillBnTicker) _fillBnTicker(ACCOUNTS);
+  }catch{
+    document.getElementById('grid').innerHTML=`<div class="state-box"><div class="state-icon">⚠️</div><div class="state-text">Сервер недоступен</div></div>`;
+    document.getElementById('countBadge').textContent='—';
+  }
+}
+
+// ━━━ РЕНДЕР ━━━
+function render(list){
+  document.getElementById('countBadge').textContent=list.length+' шт';
+  const g=document.getElementById('grid');
+  if(!ACCOUNTS.length){
+    // Генерируем конфетти
+    const colors=['#fbbf24','#f59e0b','#60a5fa','#34d399','#f472b6','#a78bfa'];
+    let cfHtml='';
+    for(let i=0;i<40;i++){
+      const s=4+Math.random()*6;
+      cfHtml+=`<div class="cf-item" style="left:${Math.random()*100}%;width:${s}px;height:${s}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};--d:${3+Math.random()*5}s;--dl:-${Math.random()*6}s"></div>`;
+    }
+    g.innerHTML=cfHtml+`<div class="empty-screen">
+      <div class="empty-ring"><span class="empty-trophy">🏆</span></div>
+      <div class="empty-title">Все продано!</div>
+      <div class="empty-sub">Все аккаунты нашли своих владельцев.<br><b>Уже готовлю новые</b> — следи за обновлениями в канале!</div>
+      <div class="empty-soon"><div class="empty-soon-label">⏳ Новый завоз</div><div class="empty-soon-text">Новый завоз сегодня 🔥</div></div>
+      <a href="https://t.me/DvornovNikitos" target="_blank" class="empty-tg-btn">💬 Написать продавцу →</a>
+    </div>`;
+    return;
+  }
+  if(!list.length){ g.innerHTML=`<div class="state-box"><div class="state-icon">🔍</div><div class="state-text">Ничего не найдено</div></div>`; return; }
+  g.innerHTML=list.map((a,i)=>{
+    const cc=getClubClass(a.vk||'');
+    const hp=a.albums&&a.albums.length>0;
+    const cnt=hp?a.albums.length:0;
+    const isHot=i<2;
+    const badge=isHot?`<div class="badge-hot">🔥 ГОРЯЧИЙ</div>`:`<div class="badge-new"><span class="badge-dot"></span> НОВЫЙ</div>`;
+
+    // Миниатюры — показываем первые 4
+    let galStrip='';
+    if(hp){
+      const show=a.albums.slice(0,4);
+      const extra=cnt-4;
+      galStrip=`
+        <div class="card-gallery">
+          <div class="gal-strip">
+            ${show.map((p,idx)=>`<div class="gal-mini" onclick="openScreens(${i},${idx})"><img src="${p}" loading="lazy"></div>`).join('')}
+            ${extra>0?`<div class="gal-more" onclick="openScreens(${i},0)"><div class="gal-more-num">+${extra}</div><div class="gal-more-txt">фото</div></div>`:''}
+          </div>
+          <button class="gal-open-btn" onclick="openScreens(${i},0)">📸 Все<br>скрины</button>
+        </div>`;
+    } else {
+      galStrip=`<div class="card-gallery"><div class="gal-no-photos">😔 Скрины не добавлены</div></div>`;
+    }
+
+    return `
+    <div class="card-wrap ${cc}" id="fw_${a.id}" style="animation:fadeUp .4s ease ${i*0.06}s forwards;opacity:0">
+      <div class="flip-front">
+        <div class="club-stripe"></div>
+        <div class="card-img">
+          ${a.photo?`<img src="${a.photo}" alt="" loading="lazy">`:`<div class="card-placeholder">⚽</div>`}
+          <div class="card-num">#${a.number}</div>
+          ${badge}
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-price">${Number(a.price).toLocaleString('ru')} <span>₽</span></div>
+            <div class="card-sub">Число: ${a.number}</div>
+          </div>
+          <a href="https://t.me/DvornovNikitos" target="_blank" class="cbtn-buy" onclick="event.stopPropagation()">🔴 Купить / Обменять</a>
+        </div>
+        ${galStrip}
+        ${isAdmin ? `
+        <div class="qp-wrap" id="qpWrap_${a.id}">
+          <div class="qp-row">
+            <span class="qp-label">✏️ Цена:</span>
+            <input class="qp-input" id="qpInput_${a.id}" type="number" value="${a.price}" placeholder="0">
+            <button class="qp-save" onclick="quickSavePrice('${a.id}',${i})">✓</button>
+          </div>
+          <div class="qp-presets">
+            <div class="qp-preset" onclick="qpSet('${a.id}',1500)">1 500</div>
+            <div class="qp-preset" onclick="qpSet('${a.id}',2000)">2 000</div>
+            <div class="qp-preset" onclick="qpSet('${a.id}',2500)">2 500</div>
+            <div class="qp-preset" onclick="qpSet('${a.id}',3000)">3 000</div>
+            <div class="qp-preset" onclick="qpSet('${a.id}',3500)">3 500</div>
+          </div>
+          <div class="qp-sending" id="qpSending_${a.id}">📣 Отправляем уведомление подписчикам...</div>
+        </div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function flipCard(i){ document.getElementById('fw'+i)?.classList.toggle('flipped'); }
+function unflip(i){ document.getElementById('fw'+i)?.classList.remove('flipped'); }
+
+function applyFilter(){
+  const min=parseInt(document.getElementById('minPrice').value)||0;
+  const max=parseInt(document.getElementById('maxPrice').value)||Infinity;
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  LIST=ACCOUNTS.filter(a=>Number(a.price)>=min&&Number(a.price)<=max&&(a.number.toLowerCase().includes(q)||a.price.toString().includes(q)));
+  render(LIST);
+}
+function resetAll(){ ['minPrice','maxPrice','searchInput'].forEach(id=>document.getElementById(id).value=''); LIST=[...ACCOUNTS]; render(LIST); }
+
+// ━━━ ГАЛЕРЕЯ ━━━
+let galPhotos=[],galCur=0,galTx=0;
+function openScreens(i, startIdx){
+  const photos=LIST[i]?.albums||[];
+  const ov=document.getElementById('screensOv');
+  if(!photos.length){
+    ov.style.display='flex';
+    document.getElementById('gfThumbs').innerHTML='';
+    document.getElementById('gfImg').src='';
+    document.getElementById('gfCnt').textContent='Нет фото';
+    document.getElementById('gfProg').style.width='0%';
+    document.getElementById('gfL').style.display='none';
+    document.getElementById('gfR').style.display='none';
+    return;
+  }
+  galPhotos=photos; galCur=startIdx||0;
+  galBuildThumbs(i);
+  // Первое фото
+  document.getElementById('gfImg').src=photos[galCur];
+  document.getElementById('gfCnt').textContent=(galCur+1)+' / '+photos.length;
+  document.getElementById('gfProg').style.width=((galCur+1)/photos.length*100)+'%';
+  document.getElementById('gfL').style.display=photos.length>1?'flex':'none';
+  document.getElementById('gfR').style.display=photos.length>1?'flex':'none';
+  document.getElementById('gfL').onclick=()=>gfGo(galCur-1);
+  document.getElementById('gfR').onclick=()=>gfGo(galCur+1);
+  ov.style.display='flex';
+  // Свайп
+  const wrap=document.getElementById('gfWrap');
+  wrap.ontouchstart=e=>{galTx=e.touches[0].clientX};
+  wrap.ontouchend=e=>{const dx=e.changedTouches[0].clientX-galTx;if(Math.abs(dx)>45)gfGo(dx<0?galCur+1:galCur-1)};
+}
+// ━━━ БЫСТРАЯ ЦЕНА ━━━
+function qpSet(accId, val){
+  const inp = document.getElementById('qpInput_'+accId);
+  if(inp) inp.value = val;
+}
+async function quickSavePrice(accId, idx){
+  const inp = document.getElementById('qpInput_'+accId);
+  if(!inp) return;
+  const newPrice = inp.value.trim();
+  if(!newPrice || isNaN(newPrice)){ toast('❌ Введи цену'); return; }
+  const sendingEl = document.getElementById('qpSending_'+accId);
+  if(sendingEl){ sendingEl.classList.add('show'); }
+  try{
+    const fd = new FormData();
+    fd.append('new_price', newPrice);
+    const r = await fetch(`${API}/accounts/${accId}/price`, {method:'PATCH', body:fd});
+    const data = await r.json();
+    if(data.ok){
+      // Обновляем цену в массиве и карточке
+      const acc = ACCOUNTS.find(a=>a.id===accId);
+      if(acc) acc.price = newPrice;
+      const listAcc = LIST.find(a=>a.id===accId);
+      if(listAcc) listAcc.price = newPrice;
+      // Обновляем отображение цены
+      const priceEl = document.querySelector(`#fw_${accId} .card-price`);
+      if(priceEl) priceEl.innerHTML = Number(newPrice).toLocaleString('ru')+' <span>₽</span>';
+      toast('✅ Цена обновлена, уведомление отправлено!');
+    } else {
+      toast('❌ Ошибка сохранения');
+    }
+  }catch(e){
+    toast('❌ Сервер недоступен');
+  } finally {
+    if(sendingEl){ setTimeout(()=>sendingEl.classList.remove('show'),3000); }
+  }
+}
+
+// ━━━ МИНИАТЮРЫ ГАЛЕРЕИ С УДАЛЕНИЕМ ━━━
+let _galAccIdx = 0;
+function galBuildThumbs(accIdx){
+  _galAccIdx = accIdx;
+  const hint = document.getElementById('gfDelHint');
+  if(hint) hint.style.display = isAdmin ? 'block' : 'none';
+  if(hint) hint.classList.remove('hide');
+
+  const container = document.getElementById('gfThumbs');
+  container.innerHTML = '';
+  galPhotos.forEach((p, idx) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'gft-wrap';
+    wrap.id = 'gftw'+idx;
+    wrap.innerHTML = `
+      <div id="gft${idx}" style="width:62px;height:62px;border-radius:10px;overflow:hidden;cursor:pointer;border:2px solid ${idx===galCur?'#2dd4bf':'transparent'};opacity:${idx===galCur?1:.4};transition:all .2s">
+        <img src="${p}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+      </div>
+      ${isAdmin ? `<div class="gft-del" onclick="galDelPhoto(event,${idx})">✕</div>
+      <svg class="gft-hold-svg" viewBox="0 0 68 68"><circle class="gft-hold-circle" id="ghc${idx}" cx="34" cy="34" r="31"/></svg>` : ''}
+    `;
+
+    // Клик — переключить фото
+    wrap.querySelector('#gft'+idx).addEventListener('click', () => {
+      if(!wrap.classList.contains('del-mode')) gfGo(idx);
+    });
+
+    // Удержание — только для админа
+    if(isAdmin){
+      let holdInt = null, prog = 0;
+      const HOLD = 600, STEP = 20;
+      wrap.addEventListener('touchstart', e => {
+        prog = 0;
+        const circle = document.getElementById('ghc'+idx);
+        if(circle) circle.style.strokeDashoffset = 220;
+        holdInt = setInterval(() => {
+          prog += STEP;
+          if(circle) circle.style.strokeDashoffset = Math.max(220 - (220*prog/HOLD), 0);
+          if(prog >= HOLD){
+            clearInterval(holdInt);
+            wrap.classList.add('del-mode');
+            if(circle) circle.style.strokeDashoffset = 220;
+            const h = document.getElementById('gfDelHint');
+            if(h) h.classList.add('hide');
+            try{ navigator.vibrate && navigator.vibrate(40); }catch(e){}
+          }
+        }, STEP);
+      }, {passive:true});
+      wrap.addEventListener('touchend', () => {
+        clearInterval(holdInt);
+        const circle = document.getElementById('ghc'+idx);
+        if(circle){ circle.style.transition='stroke-dashoffset .2s'; circle.style.strokeDashoffset=220; setTimeout(()=>circle.style.transition='',200); }
+      });
+    }
+
+    container.appendChild(wrap);
+  });
+}
+
+async function galDelPhoto(e, idx){
+  e.stopPropagation();
+  const acc = LIST[_galAccIdx];
+  if(!acc) return;
+  const photoUrl = galPhotos[idx];
+
+  // Удаляем с сервера
+  try{
+    const fd = new FormData();
+    fd.append('remove_photo', photoUrl);
+    await fetch(`${API}/accounts/${acc.id}/photo`, {method:'PATCH', body:fd});
+  }catch(err){ console.warn('Del photo err:', err); }
+
+  // Удаляем локально
+  galPhotos.splice(idx, 1);
+  if(acc.albums) acc.albums = acc.albums.filter(p=>p!==photoUrl);
+
+  // Анимация
+  const wrap = document.getElementById('gftw'+idx);
+  if(wrap){ wrap.style.transition='all .2s'; wrap.style.transform='scale(0)'; wrap.style.opacity='0'; wrap.style.width='0'; wrap.style.marginRight='-7px'; }
+
+  if(!galPhotos.length){ closeOv('screensOv'); toast('Все фото удалены'); return; }
+  if(galCur >= galPhotos.length) galCur = galPhotos.length-1;
+
+  setTimeout(()=>{ galBuildThumbs(_galAccIdx); gfGo(galCur); }, 220);
+  toast('🗑 Фото удалено');
+}
+
+function gfGo(idx){
+  const n=galPhotos.length; galCur=(idx+n)%n;
+  const wrap=document.getElementById('gfWrap');
+  wrap.style.opacity='0'; wrap.style.transform='scale(.97)';
+  setTimeout(()=>{
+    document.getElementById('gfImg').src=galPhotos[galCur];
+    document.getElementById('gfCnt').textContent=(galCur+1)+' / '+n;
+    document.getElementById('gfProg').style.width=((galCur+1)/n*100)+'%';
+    document.querySelectorAll('#gfThumbs>div').forEach((t,i)=>{
+      t.style.borderColor=i===galCur?'#2dd4bf':'transparent';
+      t.style.opacity=i===galCur?'1':'.4';
+    });
+    document.getElementById('gft'+galCur)?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+    wrap.style.opacity='1'; wrap.style.transform='scale(1)';
+  },130);
+}
+
+// ━━━ OVERLAYS ━━━
+function closeOv(id){
+  const el = document.getElementById(id);
+  el.style.display='none';
+}
+function closeIfBg(id,e){ if(e.target===document.getElementById(id)) closeOv(id); }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
+
+// ━━━ ADMIN ━━━
+function openAdmin(){ if(!isAdmin) return; renderHome(); document.getElementById('adminOv').classList.add('open'); }
+
+function renderHome(){
+  document.getElementById('adminBody').innerHTML=`
+    <div class="sheet-title">⚙️ Панель управления</div>
+    <div class="admin-btns">
+      <button class="adm-btn" onclick="renderAdd()"><div class="adm-ic ic-b">➕</div><div><div class="adm-name">Добавить аккаунт</div><div class="adm-desc">Добавить + пост в канал</div></div></button>
+      <button class="adm-btn" onclick="renderEditList()"><div class="adm-ic ic-o">✏️</div><div><div class="adm-name">Редактировать</div><div class="adm-desc">Добавить доп. фото, изменить цену</div></div></button>
+      <button class="adm-btn" onclick="renderDel()"><div class="adm-ic ic-r">🗑</div><div><div class="adm-name">Удалить аккаунт</div><div class="adm-desc">Убрать + удалить из канала</div></div></button>
+      <div class="adm-divider"></div>
+      <button class="adm-btn" onclick="renderStats()"><div class="adm-ic ic-t">📊</div><div><div class="adm-name">Статистика</div><div class="adm-desc">Аккаунтов в магазине</div></div></button>
+      <button class="adm-btn" onclick="closeOv('adminOv')"><div class="adm-ic ic-g">🚪</div><div><div class="adm-name">Закрыть</div><div class="adm-desc">Вернуться в магазин</div></div></button>
+    </div>`;}
+
+// ━━━ ДОБАВИТЬ ━━━
+function renderAdd(){
+  selPhoto=null; extraFiles=[];
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderHome()">← Назад</button>
+    <div class="sheet-title">➕ Добавить аккаунт</div>
+    <div class="form">
+      <div class="fg"><label>Главное фото</label>
+        <label class="photo-label" for="photoIn">📷 Выбрать главное фото</label>
+        <input type="file" id="photoIn" accept="image/*" style="display:none" onchange="previewPh(event)">
+        <img class="photo-preview" id="phPreview">
+      </div>
+      <div class="fg"><label>Число аккаунта</label><input class="fi" id="fNum" placeholder="Например: 007"></div>
+      <div class="fg"><label>Сила аккаунта</label><input class="fi" id="fStrength" placeholder="Например: 3162" type="number"></div>
+      <div class="fg"><label>Цена ₽</label><input class="fi" type="number" id="fPrice" placeholder="Например: 5000"></div>
+      <div class="fg"><label>Клуб (цвет карточки)</label>
+        <select class="fi" id="fClub">
+          <option value="">— Без клуба</option>
+          <option value="psg">🔵 PSG</option>
+          <option value="real">⚪ Real Madrid</option>
+          <option value="barca">🔴 Barcelona</option>
+          <option value="manu">🔴 Man United</option>
+          <option value="juve">⬛ Juventus</option>
+          <option value="chelsea">🔵 Chelsea</option>
+        </select>
+      </div>
+      <div class="fg"><label>Доп. фото — фулл скрины</label>
+        <label class="photo-label" for="extrasIn">📸 Выбрать фото (можно сразу все)</label>
+        <input type="file" id="extrasIn" accept="image/*" multiple style="display:none" onchange="previewExtras(event)">
+        <div class="chips" id="extraChips"></div>
+      </div>
+      <div class="form-btns">
+        <button class="f-submit" id="fSubmit" onclick="saveAcc()">✅ Добавить + пост</button>
+        <button class="f-cancel" onclick="renderHome()">Отмена</button>
+      </div>
+    </div>`;}
+
+function previewPh(e){ const f=e.target.files[0]; if(!f) return; selPhoto=f; const img=document.getElementById('phPreview'); img.src=URL.createObjectURL(f); img.style.display='block'; }
+function previewExtras(e){ extraFiles=Array.from(e.target.files); renderChips(); }
+function rmExtra(i){ extraFiles.splice(i,1); renderChips(); }
+function renderChips(){ document.getElementById('extraChips').innerHTML=extraFiles.map((f,i)=>`<div class="chip"><span>📸 ${f.name}</span><button class="chip-x" onclick="rmExtra(${i})">✕</button></div>`).join(''); }
+
+async function saveAcc(){
+  const num=document.getElementById('fNum').value.trim();
+  const price=document.getElementById('fPrice').value.trim();
+  const club=document.getElementById('fClub').value;
+  const strength=document.getElementById('fStrength').value.trim();
+  if(!num||!price){ toast('⚠️ Заполни число и цену'); return; }
+  const btn=document.getElementById('fSubmit'); btn.disabled=true; btn.textContent='⏳ Отправляю...';
+  const fd=new FormData();
+  fd.append('number',num); fd.append('price',price); fd.append('vk',club); fd.append('strength',strength);
+  if(selPhoto) fd.append('photo',selPhoto);
+  extraFiles.forEach(f=>fd.append('extra_photos',f));
+  try{
+    const r=await fetch(`${API}/accounts`,{method:'POST',body:fd});
+    const d=await r.json();
+    if(d.ok){ toast(d.posted?'✅ Добавлен + пост в канале!':'✅ Добавлен'); await loadAccounts(); renderHome(); }
+    else{ toast('❌ Ошибка сервера'); btn.disabled=false; btn.textContent='✅ Добавить + пост'; }
+  }catch{ toast('❌ Сервер недоступен'); btn.disabled=false; btn.textContent='✅ Добавить + пост'; }
+}
+
+// ━━━ РЕДАКТИРОВАНИЕ ━━━
+function renderEditList(){
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderHome()">← Назад</button>
+    <div class="sheet-title">✏️ Выбери аккаунт</div>
+    <div class="edit-list">
+      ${!ACCOUNTS.length?'<div class="no-albums">Нет аккаунтов</div>':
+        ACCOUNTS.map(a=>`
+          <div class="edit-item">
+            <div><div class="edit-num">#${a.number}</div><div class="edit-price">${Number(a.price).toLocaleString('ru')} ₽ · 📸 ${a.albums?.length||0}</div></div>
+            <button class="edit-btn" onclick="renderEditAcc('${a.id}')">✏️ Изменить</button>
+          </div>`).join('')}
+    </div>`;}
+
+function renderEditAcc(id){
+  const a=ACCOUNTS.find(x=>x.id===id);
+  if(!a) return;
+  selPhoto=null; extraFiles=[];
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderEditList()">← Назад</button>
+    <div class="sheet-title">✏️ Редактировать #${a.number}</div>
+    <div class="form">
+      <div class="fg"><label>Новое главное фото (необязательно)</label>
+        <label class="photo-label" for="photoIn">📷 ${a.photo?'Заменить фото':'Добавить фото'}</label>
+        <input type="file" id="photoIn" accept="image/*" style="display:none" onchange="previewPh(event)">
+        <img class="photo-preview" id="phPreview" ${a.photo?`src="${a.photo}" style="display:block"`:''}></div>
+      <div class="fg"><label>Число аккаунта</label><input class="fi" id="fNum" value="${a.number}"></div>
+      <div class="fg"><label>Сила аккаунта</label><input class="fi" id="fStrength" type="number" value="${a.strength||''}"></div>
+      <div class="fg"><label>Цена ₽</label><input class="fi" type="number" id="fPrice" value="${a.price}"></div>
+      <div class="fg"><label>Клуб</label>
+        <select class="fi" id="fClub">
+          <option value="" ${!a.vk?'selected':''}>— Без клуба</option>
+          <option value="psg" ${a.vk==='psg'?'selected':''}>🔵 PSG</option>
+          <option value="real" ${a.vk==='real'?'selected':''}>⚪ Real Madrid</option>
+          <option value="barca" ${a.vk==='barca'?'selected':''}>🔴 Barcelona</option>
+          <option value="manu" ${a.vk==='manu'?'selected':''}>🔴 Man United</option>
+          <option value="juve" ${a.vk==='juve'?'selected':''}>⬛ Juventus</option>
+          <option value="chelsea" ${a.vk==='chelsea'?'selected':''}>🔵 Chelsea</option>
+        </select>
+      </div>
+      <div class="fg"><label>Текущие доп. фото: ${a.albums?.length||0} шт</label>
+        ${a.albums?.length?`<div style="display:flex;gap:6px;overflow-x:auto;padding:4px 0;scrollbar-width:none">${a.albums.map(p=>`<img src="${p}" style="width:54px;height:54px;object-fit:cover;border-radius:7px;flex-shrink:0">`).join('')}</div>`:'<div style="font-size:11px;color:var(--muted);padding:4px 0">Нет фото</div>'}
+      </div>
+      <div class="fg"><label>Добавить ещё доп. фото</label>
+        <label class="photo-label" for="extrasIn">📸 Выбрать новые фото</label>
+        <input type="file" id="extrasIn" accept="image/*" multiple style="display:none" onchange="previewExtras(event)">
+        <div class="chips" id="extraChips"></div>
+      </div>
+      <div class="form-btns">
+        <button class="f-submit" id="fSubmit" onclick="saveEdit('${id}')">💾 Сохранить</button>
+        <button class="f-cancel" onclick="renderEditList()">Отмена</button>
+      </div>
+    </div>`;}
+
+async function saveEdit(id){
+  const num=document.getElementById('fNum').value.trim();
+  const price=document.getElementById('fPrice').value.trim();
+  const club=document.getElementById('fClub').value;
+  const strength=document.getElementById('fStrength').value.trim();
+  if(!num||!price){ toast('⚠️ Заполни число и цену'); return; }
+  const btn=document.getElementById('fSubmit'); btn.disabled=true; btn.textContent='⏳ Сохраняю...';
+  const fd=new FormData();
+  fd.append('number',num); fd.append('price',price); fd.append('vk',club); fd.append('strength',strength);
+  if(selPhoto) fd.append('photo',selPhoto);
+  extraFiles.forEach(f=>fd.append('extra_photos',f));
+  try{
+    const r=await fetch(`${API}/accounts/${id}`,{method:'PATCH',body:fd});
+    const d=await r.json();
+    if(d.ok){ toast('✅ Сохранено!'); await loadAccounts(); renderEditList(); }
+    else{ toast('❌ Ошибка сервера'); btn.disabled=false; btn.textContent='💾 Сохранить'; }
+  }catch{ toast('❌ Сервер недоступен'); btn.disabled=false; btn.textContent='💾 Сохранить'; }
+}
+
+// ━━━ УДАЛИТЬ ━━━
+function renderDel(){
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderHome()">← Назад</button>
+    <div class="sheet-title">🗑 Удалить аккаунт</div>
+    <div class="del-list">
+      ${!ACCOUNTS.length?'<div class="no-albums">Нет аккаунтов</div>':
+        ACCOUNTS.map(a=>`<div class="del-item"><div><div class="del-num">#${a.number}</div><div class="del-price">${Number(a.price).toLocaleString('ru')} ₽</div></div><button class="del-btn" onclick="delAcc('${a.id}', this)">🗑 Удалить</button></div>`).join('')}
+    </div>`;}
+
+async function delAcc(id, btn){
+  const orig = btn.innerHTML;
+  btn.innerHTML = '⏳ Удаление...';
+  btn.disabled = true;
+  try{ const r=await fetch(`${API}/accounts/${id}`,{method:'DELETE'}); const d=await r.json(); if(d.ok){ toast('🗑 Удалено'); await loadAccounts(); renderDel(); } }
+  catch{ toast('❌ Ошибка'); btn.innerHTML = orig; btn.disabled = false; }
+}
+
+function renderStats(){
+  const prices=ACCOUNTS.map(a=>Number(a.price)).filter(Boolean);
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderHome()">← Назад</button>
+    <div class="sheet-title">📊 Статистика</div>
+    <div class="stats">
+      <div class="stat-item"><div class="stat-ic ic-b">📦</div><div><div class="stat-label">Аккаунтов</div><div class="stat-val">${ACCOUNTS.length} шт</div></div></div>
+      <div class="stat-item"><div class="stat-ic ic-t">📸</div><div><div class="stat-label">С доп. фото</div><div class="stat-val">${ACCOUNTS.filter(a=>a.albums&&a.albums.length).length} из ${ACCOUNTS.length}</div></div></div>
+      <div class="stat-item"><div class="stat-ic ic-g">💰</div><div><div class="stat-label">Диапазон цен</div><div class="stat-val">${prices.length?Math.min(...prices).toLocaleString('ru')+' — '+Math.max(...prices).toLocaleString('ru')+' ₽':'—'}</div></div></div>
+    </div>`;}
+
+// ━━━ ИНЕРЦИОННЫЙ СКРОЛЛ ━━━
+(function(){
+  const sw=document.getElementById('swrap'), sc=document.getElementById('scont'), sb=document.getElementById('sbThumb');
+  let cY=0,tY=0,vel=0,lY=0,lT=0,tVel=0,drag=false;
+  const mx=()=>Math.max(0,sc.scrollHeight-sw.clientHeight);
+  const cl=(v,a,b)=>Math.min(Math.max(v,a),b);
+  function thumb(){ const vH=sw.clientHeight,tH=sc.scrollHeight; if(tH<=vH){sb.style.opacity='0';return;} const tp=Math.max(32,vH*vH/tH),tr=vH-tp; sb.style.height=tp+'px'; sb.style.top=(cY/mx()*tr)+'px'; sb.style.opacity='.5'; }
+  (function loop(){ const m=mx(); if(!drag){vel*=.87;tY=cl(tY+vel,0,m);if(tY<=0||tY>=m)vel*=.4;} cY+=(tY-cY)*.12; if(Math.abs(tY-cY)<.5)cY=tY; sc.style.transform=`translateY(${-cY}px)`; thumb(); requestAnimationFrame(loop); })();
+  sw.addEventListener('touchstart',e=>{drag=true;vel=0;lY=e.touches[0].clientY;lT=Date.now();tVel=0;},{passive:true});
+  sw.addEventListener('touchmove',e=>{const y=e.touches[0].clientY,dy=lY-y,dt=Math.max(1,Date.now()-lT);tVel=dy/dt*16;tY=cl(tY+dy,0,mx());lY=y;lT=Date.now();},{passive:true});
+  sw.addEventListener('touchend',()=>{drag=false;vel=tVel;});
+  sw.addEventListener('wheel',e=>{tY=cl(tY+e.deltaY,0,mx());vel=0;},{passive:true});
+})();
+
+loadAccounts();
+</script>
+</body>
+</html>
