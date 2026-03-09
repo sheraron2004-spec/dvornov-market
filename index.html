@@ -12,9 +12,9 @@
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif}
 
 /* ━━━ SCROLL ━━━ */
-#swrap{position:fixed;inset:0;bottom:80px;overflow:hidden}
+#swrap{position:fixed;inset:0;bottom:72px;overflow:hidden}
 #scont{will-change:transform;padding-bottom:20px}
-.scrollbar{position:fixed;right:3px;top:0;bottom:80px;width:3px;pointer-events:none;z-index:99}
+.scrollbar{position:fixed;right:3px;top:0;bottom:72px;width:3px;pointer-events:none;z-index:99}
 .sb-thumb{position:absolute;width:100%;background:rgba(77,139,255,0.4);border-radius:2px;opacity:0}
 
 /* ━━━ HEADER ━━━ */
@@ -225,19 +225,10 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ━━━ BOTTOM NAV ━━━ */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,12,16,.98);backdrop-filter:blur(24px);border-top:1px solid var(--border);padding:6px 8px 20px;display:flex;gap:0;z-index:50}
-.nav-btn{flex:1;padding:8px 6px 6px;border-radius:10px;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;cursor:pointer;white-space:nowrap;line-height:1;background:none;color:var(--muted);position:relative;transition:color .2s}
-.nav-btn-icon{font-size:20px;line-height:1;transition:transform .2s}
-.nav-btn-label{font-size:10px;font-weight:700;letter-spacing:.2px}
-.nav-btn-bar{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%) scaleX(0);width:32px;height:3px;border-radius:2px;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
-.nav-sell .nav-btn-bar{background:var(--gold)}
-.nav-contact .nav-btn-bar{background:var(--blue)}
-.nav-sell.active,.nav-sell:active{color:var(--gold)}
-.nav-sell.active .nav-btn-icon,.nav-sell:active .nav-btn-icon{transform:scale(1.18)}
-.nav-sell.active .nav-btn-bar,.nav-sell:active .nav-btn-bar{transform:translateX(-50%) scaleX(1)}
-.nav-contact.active,.nav-contact:active{color:var(--blue)}
-.nav-contact.active .nav-btn-icon,.nav-contact:active .nav-btn-icon{transform:scale(1.18)}
-.nav-contact.active .nav-btn-bar,.nav-contact:active .nav-btn-bar{transform:translateX(-50%) scaleX(1)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,12,16,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:8px 10px 14px;display:flex;gap:7px;z-index:50}
+.nav-btn{flex:1;padding:10px 6px;border-radius:9px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:4px;border:none;cursor:pointer;white-space:nowrap;line-height:1}
+.nav-sell{background:var(--card2);border:1px solid var(--border);color:var(--muted2)}
+.nav-contact{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;box-shadow:0 3px 12px rgba(77,139,255,.3)}
 
 /* ━━━ OVERLAYS ━━━ */
 .overlay{display:none;position:fixed;inset:0;background:rgba(5,7,12,.85);backdrop-filter:blur(10px);z-index:200;align-items:flex-end}
@@ -295,7 +286,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
 .stat-val{font-size:15px;font-weight:800;color:var(--text)}
 
 /* ━━━ TOAST ━━━ */
-.toast{position:fixed;bottom:92px;left:50%;transform:translateX(-50%) translateY(10px);background:#1e2433;border:1px solid rgba(77,139,255,.25);color:var(--text);padding:8px 16px;border-radius:20px;font-size:12px;font-weight:700;opacity:0;transition:all .25s;z-index:999;white-space:nowrap;pointer-events:none}
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(10px);background:#1e2433;border:1px solid rgba(77,139,255,.25);color:var(--text);padding:8px 16px;border-radius:20px;font-size:12px;font-weight:700;opacity:0;transition:all .25s;z-index:999;white-space:nowrap;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* ━━━ ГАЛЕРЕЯ v2 ━━━ */
@@ -512,16 +503,8 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
 </div></div>
 
 <div class="bottom-nav">
-  <a href="https://t.me/DvornovNikitos" target="_blank" class="nav-btn nav-sell">
-    <span class="nav-btn-icon">💎</span>
-    <span class="nav-btn-label">Продать акк</span>
-    <span class="nav-btn-bar"></span>
-  </a>
-  <a href="https://t.me/DvornovNikitos" target="_blank" class="nav-btn nav-contact">
-    <span class="nav-btn-icon">✉️</span>
-    <span class="nav-btn-label">Написать Дворнову</span>
-    <span class="nav-btn-bar"></span>
-  </a>
+  <a href="https://t.me/DvornovNikitos" target="_blank" class="nav-btn nav-sell">💎 Продать акк</a>
+  <a href="https://t.me/DvornovNikitos" target="_blank" class="nav-btn nav-contact">✉️ Написать Дворнову</a>
 </div>
 
 <!-- Галерея FULLSCREEN -->
