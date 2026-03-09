@@ -20,10 +20,18 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 /* ━━━ HEADER ━━━ */
 header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:10px 12px 8px}
 .h-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
-.logo{display:flex;align-items:center;gap:7px}
-.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--blue2),var(--blue));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 12px rgba(77,139,255,.35);flex-shrink:0}
-.logo-text{font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;letter-spacing:.5px}
-.logo-text span{color:var(--blue)}
+.logo{display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,rgba(20,14,2,.95),rgba(12,9,2,.95));border:1px solid rgba(200,140,0,.3);border-radius:12px;padding:6px 12px 6px 7px;box-shadow:0 0 18px rgba(180,110,0,.15),inset 0 1px 0 rgba(255,200,50,.06);position:relative;overflow:hidden}
+.logo::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,.5),transparent);pointer-events:none}
+.logo-icon{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff9a00,#c46000 50%,#7a3800);box-shadow:0 0 14px rgba(251,146,0,.7),0 0 28px rgba(251,146,0,.3);flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;animation:logoGlow 2.5s ease-in-out infinite}
+.logo-icon::before{content:'';position:absolute;inset:-5px;border-radius:50%;border:1.5px solid rgba(251,146,0,.25);animation:logoRing1 2.5s ease-in-out infinite}
+.logo-icon::after{content:'';position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(251,146,0,.1);animation:logoRing1 2.5s ease-in-out infinite .4s}
+.logo-icon-inner{width:14px;height:10px;background:radial-gradient(ellipse,#1a0a00,#0a0500);border-radius:50%;border:1.5px solid rgba(251,146,0,.4);position:relative;z-index:1}
+.logo-icon-inner::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:5px;height:5px;background:radial-gradient(circle,#ffcc44,#ff8800);border-radius:50%;box-shadow:0 0 6px #ff8800}
+@keyframes logoGlow{0%,100%{box-shadow:0 0 14px rgba(251,146,0,.7),0 0 28px rgba(251,146,0,.3)}50%{box-shadow:0 0 20px rgba(251,146,0,.9),0 0 40px rgba(251,146,0,.45)}}
+@keyframes logoRing1{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.08);opacity:1}}
+.logo-texts{display:flex;flex-direction:column;gap:1px}
+.logo-text{font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;background:linear-gradient(135deg,#ffe58a,#fbbf24,#e08c00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;text-shadow:none}
+.logo-sub{font-family:'Inter',sans-serif;font-size:8px;font-weight:700;letter-spacing:2.5px;color:rgba(251,191,36,.45);text-transform:uppercase;line-height:1}
 .h-btns{display:flex;gap:5px}
 .h-btn{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;padding:5px 9px;border-radius:6px;border:none;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:3px;white-space:nowrap}
 .btn-reviews{background:rgba(77,139,255,.1);border:1px solid rgba(77,139,255,.2);color:var(--blue)}
@@ -391,8 +399,11 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
 <header>
   <div class="h-row">
     <div class="logo">
-      <div class="logo-icon">⚽</div>
-      <div class="logo-text">DVORNOV <span>MARKET</span></div>
+      <div class="logo-icon"><div class="logo-icon-inner"></div></div>
+      <div class="logo-texts">
+        <div class="logo-text">DVORNOV</div>
+        <div class="logo-sub">efootball market</div>
+      </div>
     </div>
     <div class="h-btns">
       <a href="https://t.me/Dvornov_Otziv" target="_blank" class="h-btn btn-reviews">⭐ Отзывы</a>
