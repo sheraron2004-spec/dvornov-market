@@ -1576,7 +1576,7 @@ function showPage(p){
       var n=document.getElementById('pName');if(n)n.textContent=(u.first_name||'')+' '+(u.last_name||'');
       var i=document.getElementById('pUid');if(i)i.textContent='ID: '+u.id;
       if(u.photo_url){var em=document.getElementById('pAvEm');if(em)em.style.display='none';var im=document.getElementById('pAvImg');if(im){im.src=u.photo_url;im.style.display='block';}}
-      if(window.API){fetch(API+'/profile/'+u.id).then(function(r){return r.json();}).then(function(d){
+      if(API){fetch(API+'/profile/'+u.id).then(function(r){return r.json();}).then(function(d){
         var ba=document.getElementById('pBalAmount');if(ba)ba.textContent=(d.balance||0).toLocaleString('ru')+' ₽';
         window._userBalance=d.balance||0;
         var c=document.querySelectorAll('.p-count');
