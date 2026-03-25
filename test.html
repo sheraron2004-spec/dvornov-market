@@ -1,0 +1,2427 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>🧪 TEST — Dvornov Market v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&family=Righteous&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#0a0c10;--card:#111419;--card2:#181c23;--border:rgba(255,255,255,0.07);--blue:#4d8bff;--blue2:#2563eb;--gold:#fbbf24;--teal:#2dd4bf;--red:#f43f5e;--text:#f1f5f9;--muted:#64748b;--muted2:#94a3b8}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif}
+
+/* ━━━ SCROLL ━━━ */
+#swrap{position:fixed;inset:0;bottom:72px;overflow:hidden}
+#scont{will-change:transform;padding-bottom:20px}
+.scrollbar{position:fixed;right:3px;top:0;bottom:72px;width:3px;pointer-events:none;z-index:99}
+.sb-thumb{position:absolute;width:100%;background:rgba(77,139,255,0.4);border-radius:2px;opacity:0}
+
+/* ━━━ HEADER ━━━ */
+header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:10px 12px 8px}
+.h-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.logo{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0 2px;position:relative;flex:1}
+.logo::before{content:'';position:absolute;top:0;left:25%;right:25%;height:1px;background:linear-gradient(90deg,transparent,rgba(168,85,247,.6),transparent);animation:logoGlow 2s ease-in-out infinite}
+@keyframes logoGlow{0%,100%{opacity:.4}50%{opacity:1}}
+.logo-name{font-family:'Righteous',sans-serif;font-size:34px;letter-spacing:6px;background:linear-gradient(135deg,#f3e8ff 0%,#c084fc 40%,#a855f7 70%,#7c3aed 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;filter:drop-shadow(0 0 10px rgba(168,85,247,.25))}
+.logo-row{display:flex;align-items:center;gap:8px;justify-content:center}
+.logo-div-line{width:36px;height:1px;background:linear-gradient(90deg,transparent,rgba(168,85,247,.35))}
+.logo-div-line2{width:36px;height:1px;background:linear-gradient(270deg,transparent,rgba(168,85,247,.35))}
+.logo-sub{font-family:'Rajdhani',sans-serif;font-size:9px;letter-spacing:5px;color:rgba(168,85,247,.3);text-transform:uppercase}
+.h-btns{display:flex;gap:5px}
+.h-btn{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;padding:5px 9px;border-radius:6px;border:none;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:3px;white-space:nowrap}
+.btn-reviews{background:rgba(77,139,255,.1);border:1px solid rgba(77,139,255,.2);color:var(--blue)}
+.btn-admin{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);color:var(--gold);display:none}
+.btn-admin.show{display:flex}
+.search-box{position:relative}
+.search-box svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);width:14px;height:14px;pointer-events:none}
+.search-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px 8px 30px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--text);outline:none}
+.search-input::placeholder{color:var(--muted)}
+
+/* ━━━ БАННЕРЫ (свайп) ━━━ */
+.banners-wrap{margin:12px 12px 0;border-radius:20px;overflow:hidden;position:relative}
+.banners-track{display:flex;transition:transform .5s cubic-bezier(.4,0,.2,1);will-change:transform}
+.banner{min-width:100%;position:relative;overflow:hidden;padding:22px 20px 24px;display:flex;align-items:center;justify-content:space-between;min-height:168px}
+.banner-left{position:relative;z-index:3;flex:1;min-width:0}
+.banner-right{position:relative;z-index:3;flex-shrink:0;margin-left:10px;display:flex;align-items:center;justify-content:center}
+.banner-tag{display:inline-flex;align-items:center;gap:5px;border-radius:6px;padding:4px 11px;font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px}
+.banner-title{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:1px;line-height:.93;color:#fff;margin-bottom:7px}
+.banner-sub{font-size:11px;font-weight:700;letter-spacing:.2px}
+.banner-emoji{font-size:60px;animation:bnFloat 3s ease-in-out infinite}
+@keyframes bnFloat{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+/* БН1 ФИОЛЕТОВЫЙ */
+.bn1{background:radial-gradient(ellipse at 10% 80%,#0d0520,#080312 50%,#050110)}
+.bn1::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 80% at 90% 40%,rgba(168,85,247,.15),transparent 65%);pointer-events:none}
+.bn1::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(168,85,247,.6),transparent);pointer-events:none}
+.bn1-streak{position:absolute;top:0;bottom:0;width:40%;background:linear-gradient(90deg,transparent,rgba(168,85,247,.06),transparent);animation:bnStreak 3.5s ease-in-out infinite .5s;pointer-events:none}
+.bn1-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(168,85,247,.25);pointer-events:none;z-index:4}
+.bn1-border::before{content:'';position:absolute;inset:-1px;border-radius:20px;background:conic-gradient(from var(--ba,0deg),transparent 0deg,rgba(168,85,247,.7) 50deg,transparent 100deg);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;padding:1px;animation:baBspin 4s linear infinite}
+@keyframes baBspin{to{--ba:360deg}}
+@property --ba{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes bnStreak{0%{left:-40%}100%{left:140%}}
+.bn1-stars{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.bstar1{position:absolute;background:#fff;border-radius:50%;animation:twinkle1 var(--d) ease-in-out infinite var(--dl)}
+@keyframes twinkle1{0%,100%{opacity:.05;transform:scale(1)}50%{opacity:.6;transform:scale(1.5)}}
+.bn1 .banner-tag{background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.35);color:#e9d5ff}
+.bn1 .banner-title span{background:linear-gradient(135deg,#f3e8ff,#c084fc,#9333ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bn1 .banner-sub{color:rgba(233,213,255,.35)}
+.bn1 .banner-emoji{filter:drop-shadow(0 0 22px rgba(168,85,247,.9))}
+/* БН2 ОГОНЬ */
+.bn2{background:radial-gradient(ellipse at 50% 120%,#1a0400,#0d0300,#050100)}
+.bn2::before{content:'';position:absolute;bottom:0;left:0;right:0;height:50px;background:linear-gradient(to top,rgba(239,68,68,.25),transparent);animation:fireFlicker 1.8s ease-in-out infinite alternate;pointer-events:none}
+.bn2::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 80% 50%,rgba(251,146,30,.1),transparent);pointer-events:none}
+.bn2-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(239,68,68,.25);pointer-events:none;z-index:4}
+.bn2-sparks{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+@keyframes fireFlicker{0%{opacity:.7;transform:scaleX(.98)}100%{opacity:1;transform:scaleX(1.02)}}
+.sp{position:absolute;border-radius:50%;background:radial-gradient(circle,#fff8e1,#fb923c);animation:spUp var(--d) ease-out infinite var(--dl);opacity:0}
+@keyframes spUp{0%{transform:translate(0,0);opacity:.9}100%{transform:translate(var(--tx),-80px) scale(.1);opacity:0}}
+.bn2 .banner-tag{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+.bn2 .banner-title span{background:linear-gradient(135deg,#fed7aa,#f97316,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bn2 .banner-sub{color:rgba(252,165,165,.35)}
+.bn2 .banner-emoji{filter:drop-shadow(0 0 22px rgba(239,68,68,.8));animation:flameDance 1.8s ease-in-out infinite alternate}
+@keyframes flameDance{0%{transform:rotate(-5deg) scale(1)}100%{transform:rotate(5deg) scale(1.1)}}
+/* БН3 КОСМОС */
+.bn3{background:radial-gradient(ellipse at 20% 50%,#020818,#030b1a,#010408)}
+.bn3::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 85% 30%,rgba(139,92,246,.1),transparent);pointer-events:none}
+.bn3-stars{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.bstar{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d) ease-in-out infinite var(--dl)}
+@keyframes twinkle{0%,100%{opacity:.05;transform:scale(1)}50%{opacity:.8;transform:scale(1.5)}}
+.bn3-scan{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,.4),transparent);animation:scanDown 5s linear infinite;pointer-events:none}
+@keyframes scanDown{0%{top:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}}
+.bn3-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(139,92,246,.2);pointer-events:none;z-index:4}
+.bn3-orbit{position:absolute;width:80px;height:80px;border-radius:50%;border:1px dashed rgba(139,92,246,.2);animation:orbitSpin 6s linear infinite}
+.bn3-orbit::after{content:'';position:absolute;width:7px;height:7px;background:#7c3aed;border-radius:50%;top:-3.5px;left:50%;margin-left:-3.5px;box-shadow:0 0 10px #7c3aed}
+@keyframes orbitSpin{to{transform:rotate(360deg)}}
+.bn3 .banner-tag{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);color:#c4b5fd}
+.bn3 .banner-title span{background:linear-gradient(135deg,#e9d5ff,#a855f7,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bn3 .banner-sub{color:rgba(196,181,253,.35)}
+.bn3 .banner-emoji{filter:drop-shadow(0 0 22px rgba(139,92,246,.9))}
+/* БН4 НЕОН */
+.bn4{background:radial-gradient(ellipse at 0% 100%,#011004,#020d06,#010703)}
+.bn4::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 70% 60%,rgba(34,197,94,.07),transparent);pointer-events:none}
+.bn4::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(34,197,94,.4),transparent);pointer-events:none}
+.bn4-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(34,197,94,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(34,197,94,.025) 1px,transparent 1px);background-size:30px 30px;pointer-events:none}
+.bn4-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(34,197,94,.2);pointer-events:none;z-index:4}
+.bn4-pulse{position:absolute;width:70px;height:70px;border-radius:50%;background:rgba(34,197,94,.05);animation:pls 2s ease-out infinite}
+.bn4-pulse2{animation-delay:.7s}
+@keyframes pls{0%{transform:scale(.7);opacity:1}100%{transform:scale(1.8);opacity:0}}
+.bn4 .banner-tag{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:#86efac}
+.bn4 .banner-title span{background:linear-gradient(135deg,#bbf7d0,#4ade80,#15803d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bn4 .banner-sub{color:rgba(134,239,172,.35)}
+.bn4 .banner-emoji{filter:drop-shadow(0 0 22px rgba(34,197,94,.9))}
+/* БН5 БЕГУЩАЯ СТРОКА */
+.bn5{background:radial-gradient(ellipse at 50% 0%,#010a18,#020812,#010508);flex-direction:column;align-items:flex-start;justify-content:space-between;padding-bottom:0}
+.bn5::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(45,212,191,.08),transparent 60%);pointer-events:none}
+.bn5-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(45,212,191,.18);pointer-events:none;z-index:4}
+.bn5-top{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;width:100%;padding-bottom:14px}
+.bn5-ticker-wrap{position:relative;z-index:3;width:calc(100% + 40px);margin-left:-20px;border-top:1px solid rgba(45,212,191,.08);background:rgba(45,212,191,.03);overflow:hidden;padding:7px 0}
+.bn5-ticker{display:flex;width:max-content;animation:tickRun 14s linear infinite}
+@keyframes tickRun{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.bn5-tick-item{display:flex;align-items:center;gap:6px;padding:0 16px;font-size:10px;font-weight:700;color:rgba(94,234,212,.45);white-space:nowrap}
+.bn5-tick-item strong{color:#2dd4bf}
+.bn5 .banner-tag{background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.2);color:#5eead4}
+.bn5 .banner-title span{background:linear-gradient(135deg,#ccfbf1,#2dd4bf,#0f766e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+/* БН6 ХАЙП */
+.bn6{background:radial-gradient(ellipse at 100% 0%,#180008,#0d0004,#060002)}
+.bn6::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 20% 60%,rgba(236,72,153,.08),transparent);pointer-events:none}
+.bn6::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(236,72,153,.5),transparent);pointer-events:none}
+.bn6-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(236,72,153,.2);pointer-events:none;z-index:4}
+.bn6-streak{position:absolute;top:0;bottom:0;width:30%;background:linear-gradient(90deg,transparent,rgba(236,72,153,.06),transparent);animation:bnStreak 4s ease-in-out infinite 1s;pointer-events:none}
+.bn6 .banner-tag{background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.3);color:#fbcfe8}
+.bn6 .banner-title span{background:linear-gradient(135deg,#fce7f3,#f472b6,#be185d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bn6 .banner-sub{color:rgba(251,207,232,.35)}
+.bn6 .banner-emoji{filter:drop-shadow(0 0 22px rgba(236,72,153,.9));animation:heartBeat 1.2s ease-in-out infinite}
+@keyframes heartBeat{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.1)}70%{transform:scale(1)}}
+/* Dots */
+.banner-dots{display:flex;justify-content:center;gap:5px;margin-top:8px}
+.bn-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.12);transition:all .35s;cursor:pointer}
+.bn-dot.active{width:22px;border-radius:3px;background:rgba(255,255,255,.4)}
+
+/* ━━━ FILTER ━━━ */
+.filter-wrap{padding:10px 10px 0}
+.filter-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.filter-row{display:flex;gap:5px;align-items:center}
+.filter-input{flex:1;min-width:0;background:var(--card);border:1px solid var(--border);border-radius:7px;padding:7px 9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--text);outline:none}
+.filter-input::placeholder{color:var(--muted)}
+.filter-sep{color:var(--muted);font-size:13px;font-weight:700;flex-shrink:0}
+.filter-go{background:var(--blue2);border:none;color:#fff;padding:7px 12px;border-radius:7px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0}
+.filter-reset{background:var(--card);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:7px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* ━━━ SECTION ━━━ */
+.section{padding:10px 10px 0}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sec-title{font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;letter-spacing:.3px}
+.sec-count{background:rgba(77,139,255,.1);border:1px solid rgba(77,139,255,.2);color:var(--blue);font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px}
+.grid{display:grid;grid-template-columns:1fr;gap:10px}
+
+/* ━━━ FLIP КАРТОЧКА ━━━ */
+.flip-wrap{perspective:1000px;cursor:pointer}
+.flip-card{position:relative;width:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1);border-radius:14px}
+.flip-wrap.flipped .flip-card{transform:rotateY(180deg)}
+.flip-front,.flip-back{backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px;overflow:hidden;width:100%}
+.flip-front{background:linear-gradient(160deg,#0d1018,#080b12);border:1px solid rgba(77,139,255,.2);box-shadow:0 4px 20px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);animation:fadeUp .4s ease forwards;opacity:0}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.flip-back{background:linear-gradient(160deg,#080b12,#060810);border:1px solid rgba(45,212,191,.22);box-shadow:0 4px 20px rgba(0,0,0,.6);transform:rotateY(180deg);position:absolute;top:0;left:0;right:0}
+
+/* ━━━ ЦВЕТА КЛУБОВ ━━━ */
+.club-stripe{height:3px;width:100%}
+.club-psg .flip-front{background:linear-gradient(160deg,#03061a,#060d24);border-color:rgba(0,56,147,.5);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(0,56,147,.15),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-psg .club-stripe{background:linear-gradient(90deg,#001f5c,#003893,#001f5c)}
+.club-psg .card-price{color:#6ba3ff;text-shadow:0 0 14px rgba(77,139,255,.4)}
+.club-real .flip-front{background:linear-gradient(160deg,#131008,#1a1505);border-color:rgba(200,160,0,.35);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(200,160,0,.1),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-real .club-stripe{background:linear-gradient(90deg,#7a5c00,#c8a800,#ffd700,#c8a800,#7a5c00)}
+.club-real .card-price{color:#ffd700;text-shadow:0 0 14px rgba(255,215,0,.4)}
+.club-barca .flip-front{background:linear-gradient(160deg,#0e0408,#160612);border-color:rgba(164,0,0,.4);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(164,0,0,.12),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-barca .club-stripe{background:linear-gradient(90deg,#a40000,#004085,#a40000,#004085,#a40000)}
+.club-barca .card-price{color:#ff7070;text-shadow:0 0 14px rgba(255,100,100,.35)}
+.club-manu .flip-front{background:linear-gradient(160deg,#120404,#1a0505);border-color:rgba(218,41,28,.4);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(218,41,28,.12),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-manu .club-stripe{background:linear-gradient(90deg,#8b0000,#da291c,#ff4136,#da291c,#8b0000)}
+.club-manu .card-price{color:#ff6b6b;text-shadow:0 0 14px rgba(255,100,100,.35)}
+.club-juve .flip-front{background:linear-gradient(160deg,#0c0c0c,#111);border-color:rgba(255,255,255,.12);box-shadow:0 4px 24px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)}
+.club-juve .club-stripe{background:linear-gradient(90deg,#111,#555,#eee,#555,#111)}
+.club-juve .card-price{color:#e2e8f0;text-shadow:0 0 14px rgba(226,232,240,.25)}
+.club-chelsea .flip-front{background:linear-gradient(160deg,#030a18,#050f22);border-color:rgba(3,70,148,.5);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(3,70,148,.15),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-chelsea .club-stripe{background:linear-gradient(90deg,#012055,#034694,#0054b8,#034694,#012055)}
+.club-chelsea .card-price{color:#60a5fa;text-shadow:0 0 14px rgba(96,165,250,.35)}
+
+/* ━━━ ФОТО КАРТОЧКИ ━━━ */
+.card-img{width:100%;aspect-ratio:20/9;background:#060810;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.card-img img{width:100%;height:100%;object-fit:contain}
+.card-placeholder{font-size:40px;opacity:.15}
+.card-num{position:absolute;bottom:7px;left:7px;background:linear-gradient(135deg,#2563eb,#4d8bff);color:#fff;font-size:9px;font-weight:800;padding:3px 9px;border-radius:20px;box-shadow:0 2px 8px rgba(77,139,255,.5);z-index:2}
+
+/* ━━━ БЕЙДЖИ ━━━ */
+.badge-new{position:absolute;top:8px;left:8px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.4);color:#6ee7b7;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:5px;z-index:2}
+.badge-dot{width:6px;height:6px;background:#22c55e;border-radius:50%;position:relative;flex-shrink:0}
+.badge-dot::after{content:'';position:absolute;inset:-3px;background:rgba(34,197,94,.4);border-radius:50%;animation:dotPing 1.5s ease-out infinite}
+@keyframes dotPing{0%{transform:scale(.8);opacity:1}100%{transform:scale(2.2);opacity:0}}
+.badge-hot{position:absolute;top:8px;left:8px;background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(251,146,60,.2));border:1px solid rgba(251,146,60,.45);color:#fed7aa;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;z-index:2;animation:hotShake .45s ease-in-out infinite}
+@keyframes hotShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-1.5deg)}75%{transform:rotate(1.5deg)}}
+.flip-hint{position:absolute;bottom:7px;right:7px;background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.3);color:#2dd4bf;font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;animation:hintPulse 2s ease-in-out infinite;z-index:2}
+@keyframes hintPulse{0%,100%{opacity:.45}50%{opacity:1}}
+
+/* ━━━ ТЕЛО КАРТОЧКИ ━━━ */
+.card-body{padding:10px 12px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-info{flex:1;min-width:0}
+.card-price{font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;color:#fbbf24;line-height:1;margin-bottom:3px;text-shadow:0 0 14px rgba(251,191,36,.35)}
+.card-price span{font-size:14px;color:rgba(251,191,36,.55);font-family:'Inter',sans-serif;font-weight:700}
+.card-sub{font-size:10px;font-weight:600;color:var(--muted)}
+.cbtn-buy{background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:9px 13px;border-radius:8px;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:3px;box-shadow:0 3px 12px rgba(239,68,68,.4);white-space:nowrap;transition:opacity .15s}
+.cbtn-buy:active{opacity:.8}
+
+/* ━━━ ОБОРОТ ━━━ */
+.back-body{padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.back-price-row{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:8px 14px;width:100%}
+.back-price-label{font-size:11px;color:var(--muted);font-weight:600}
+.back-price-val{font-family:'Oswald',sans-serif;font-size:20px;color:#fbbf24;font-weight:700}
+.btn-fullscreen{width:100%;padding:18px 16px;background:linear-gradient(135deg,rgba(45,212,191,.12),rgba(45,212,191,.05));border:1px solid rgba(45,212,191,.35);border-radius:14px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;position:relative;overflow:hidden}
+.btn-fullscreen::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(45,212,191,.5),transparent)}
+.btn-fullscreen:active{background:linear-gradient(135deg,rgba(45,212,191,.2),rgba(45,212,191,.1))}
+.btn-fs-icon{font-size:28px}
+.btn-fs-text{font-family:'Oswald',sans-serif;font-size:21px;font-weight:700;color:#2dd4bf;letter-spacing:1px;text-align:center;line-height:1.2;text-shadow:0 0 20px rgba(45,212,191,.4)}
+.btn-fs-sub{font-size:11px;font-weight:600;color:rgba(45,212,191,.5)}
+.back-btns{display:flex;gap:8px;width:100%}
+.back-btn-buy{flex:1;background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 3px 12px rgba(239,68,68,.35);text-decoration:none;display:flex;align-items:center;justify-content:center;gap:4px}
+.back-btn-flip{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--muted);padding:12px 14px;border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0}
+
+
+/* ━━━ VK КНОПКА ━━━ */
+.vk-btn-wrap{padding:0 12px 12px}
+.vk-btn{width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;background:rgba(39,105,196,.08);border:1px solid rgba(39,105,196,.2);border-radius:10px;color:#5b9bd5;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;text-decoration:none;cursor:pointer;transition:opacity .15s}
+.vk-btn:active{opacity:.7}
+.vk-btn-icon{width:20px;height:20px;background:#2769c4;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.vk-btn-icon svg{width:13px;height:13px;fill:white}
+.vk-btn-top{font-size:11px;font-weight:800;color:#5b9bd5;line-height:1.2}
+.vk-btn-sub{font-size:9px;font-weight:500;color:rgba(91,155,213,.5);line-height:1.2}
+.vk-btn-arrow{margin-left:auto;color:rgba(91,155,213,.4);font-size:16px}
+.card-divider{height:1px;background:rgba(255,255,255,.05);margin:0 12px 10px}
+
+/* ━━━ STATE ━━━ */
+.state-box{text-align:center;padding:40px 20px;color:var(--muted)}
+.state-icon{font-size:36px;margin-bottom:8px}
+.state-text{font-size:12px;font-weight:600;line-height:1.6}
+.spin{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ━━━ BOTTOM NAV ━━━ */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,12,16,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);height:72px;z-index:50;overflow:hidden}
+.nav-btn{flex:1;padding:10px 6px;border-radius:9px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:4px;border:none;cursor:pointer;white-space:nowrap;line-height:1}
+.nav-sell{background:var(--card2);border:1px solid var(--border);color:var(--muted2)}
+.nav-contact{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;box-shadow:0 3px 12px rgba(77,139,255,.3)}
+
+/* ━━━ OVERLAYS ━━━ */
+.overlay{display:none;position:fixed;inset:0;background:rgba(5,7,12,.85);backdrop-filter:blur(10px);z-index:200;align-items:flex-end}
+.overlay.open{display:flex}
+.sheet{background:#13161d;border-radius:16px 16px 0 0;border:1px solid rgba(255,255,255,.06);border-bottom:none;padding:14px 14px 36px;width:100%;max-height:85vh;overflow-y:auto;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:32px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 12px;cursor:pointer}
+.sheet-title{font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;margin-bottom:12px;letter-spacing:.3px}
+.no-albums{text-align:center;padding:24px;color:var(--muted);font-size:12px;font-weight:600;line-height:1.6}
+
+/* ━━━ ADMIN ━━━ */
+.admin-back{background:none;border:none;color:var(--muted);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:10px;padding:0;display:flex;align-items:center;gap:4px}
+.admin-btns{display:flex;flex-direction:column;gap:7px}
+.adm-btn{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:11px 12px;cursor:pointer;text-align:left;width:100%;font-family:'Inter',sans-serif}
+.adm-ic{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ic-b{background:rgba(77,139,255,.12)}.ic-r{background:rgba(244,63,94,.12)}.ic-g{background:rgba(251,191,36,.12)}.ic-t{background:rgba(45,212,191,.12)}.ic-o{background:rgba(251,146,60,.12)}
+.adm-name{font-size:13px;font-weight:700;color:var(--text)}
+.adm-desc{font-size:10px;font-weight:500;color:var(--muted);margin-top:1px}
+.adm-divider{height:1px;background:var(--border);margin:2px 0}
+
+/* ━━━ FORM ━━━ */
+.form{display:flex;flex-direction:column;gap:9px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.fi{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--text);outline:none;width:100%}
+.fi::placeholder{color:var(--muted)}
+.fi:focus{border-color:rgba(77,139,255,.45)}
+.photo-label{display:flex;align-items:center;justify-content:center;gap:6px;background:var(--card2);border:1px dashed rgba(77,139,255,.25);border-radius:7px;padding:12px;cursor:pointer;color:var(--muted2);font-size:12px;font-weight:600}
+.photo-preview{width:100%;border-radius:7px;aspect-ratio:20/9;object-fit:contain;background:#060810;display:none;margin-top:5px}
+.chips{display:flex;flex-direction:column;gap:4px;margin-top:3px}
+.chip{display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid rgba(45,212,191,.2);border-radius:6px;padding:5px 9px;font-size:10px;font-weight:600;color:var(--teal);word-break:break-all}
+.chip-x{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-left:5px;flex-shrink:0}
+.form-btns{display:flex;gap:6px;margin-top:2px}
+.f-submit{flex:1;background:linear-gradient(135deg,var(--blue2),var(--blue));border:none;color:#fff;padding:10px;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(77,139,255,.25)}
+.f-submit:disabled{opacity:.5;cursor:not-allowed}
+.f-cancel{background:var(--card2);border:1px solid var(--border);color:var(--muted2);padding:10px 14px;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+
+/* ━━━ EDIT LIST ━━━ */
+.edit-list{display:flex;flex-direction:column;gap:6px}
+.edit-item{display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 11px}
+.edit-num{font-size:12px;font-weight:700}
+.edit-price{font-size:10px;font-weight:600;color:var(--gold)}
+.edit-btn{background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.25);color:#fb923c;padding:5px 10px;border-radius:6px;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;cursor:pointer}
+
+/* ━━━ DEL + STATS ━━━ */
+.del-list{display:flex;flex-direction:column;gap:6px}
+.del-item{display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 11px}
+.del-num{font-size:12px;font-weight:700}
+.del-price{font-size:10px;font-weight:600;color:var(--gold)}
+.del-btn{background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.2);color:var(--red);padding:5px 10px;border-radius:6px;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;cursor:pointer}
+.stats{display:flex;flex-direction:column;gap:7px}
+.stat-item{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.stat-ic{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.stat-label{font-size:11px;font-weight:600;color:var(--muted2)}
+.stat-val{font-size:15px;font-weight:800;color:var(--text)}
+
+/* ━━━ TOAST ━━━ */
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(10px);background:#1e2433;border:1px solid rgba(77,139,255,.25);color:var(--text);padding:8px 16px;border-radius:20px;font-size:12px;font-weight:700;opacity:0;transition:all .25s;z-index:999;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ━━━ ГАЛЕРЕЯ v2 ━━━ */
+#galFull{display:flex;flex-direction:column;gap:0}
+.gf-main{position:relative;background:#060810;border-radius:12px;overflow:hidden}
+.gf-img-wrap{transition:opacity .15s,transform .15s;transform-origin:center}
+.gf-img-wrap img{width:100%;display:block;object-fit:contain;max-height:56vh;min-height:180px}
+.gf-img-wrap.anim{opacity:0;transform:scale(.97)}
+.gf-arrow{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:#fff;backdrop-filter:blur(8px);z-index:2;transition:all .2s}
+.gf-arrow:active{background:rgba(45,212,191,.25);border-color:rgba(45,212,191,.5)}
+.gf-l{left:10px}.gf-r{right:10px}
+.gf-counter{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);color:#94a3b8;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;z-index:2}
+.gf-prog{height:2px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin:10px 0 8px}
+.gf-prog-fill{height:100%;background:linear-gradient(90deg,#2dd4bf,#0d9488);border-radius:2px;transition:width .3s ease}
+.gf-thumbs{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.gf-thumbs::-webkit-scrollbar{display:none}
+.gf-thumb{width:62px;height:62px;border-radius:10px;overflow:hidden;cursor:pointer;flex-shrink:0;border:2px solid transparent;transition:all .2s;opacity:.4;filter:grayscale(20%)}
+.gf-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.gf-th-active{border-color:#2dd4bf!important;opacity:1!important;filter:none!important;box-shadow:0 0 12px rgba(45,212,191,.35)}
+
+/* ━━━ GALLERY STRIP НА КАРТОЧКЕ ━━━ */
+.card-gallery{border-top:1px solid rgba(255,255,255,.05);padding:8px 10px;display:flex;align-items:center;gap:8px}
+.gal-strip{display:flex;gap:5px;flex:1;overflow:hidden;align-items:center}
+.gal-mini{width:46px;height:46px;border-radius:7px;overflow:hidden;flex-shrink:0;cursor:pointer;border:1.5px solid rgba(255,255,255,.07);transition:all .2s}
+.gal-mini img{width:100%;height:100%;object-fit:cover;display:block}
+.gal-mini:first-child{border-color:rgba(45,212,191,.45);box-shadow:0 0 8px rgba(45,212,191,.2)}
+.gal-more{width:46px;height:46px;border-radius:7px;background:rgba(45,212,191,.07);border:1.5px solid rgba(45,212,191,.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;gap:0px}
+.gal-more-num{font-size:14px;font-weight:900;color:#2dd4bf;line-height:1.1}
+.gal-more-txt{font-size:7px;font-weight:700;color:rgba(45,212,191,.5);text-transform:uppercase;letter-spacing:.3px}
+.gal-open-btn{background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.25);color:#2dd4bf;padding:7px 10px;border-radius:8px;font-family:'Inter',sans-serif;font-size:9px;font-weight:800;cursor:pointer;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:1px;letter-spacing:.2px;flex-shrink:0;line-height:1.3}
+.gal-no-photos{font-size:10px;font-weight:600;color:var(--muted);padding:4px 0;display:flex;align-items:center;gap:5px}
+
+/* ━━━ CARD-WRAP (без флипа) ━━━ */
+.card-wrap{border-radius:14px;overflow:hidden;background:linear-gradient(160deg,#0d1018,#080b12);border:1px solid rgba(77,139,255,.2);box-shadow:0 4px 20px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-psg .card-wrap{background:linear-gradient(160deg,#03061a,#060d24);border-color:rgba(0,56,147,.5);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(0,56,147,.15),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-real .card-wrap{background:linear-gradient(160deg,#131008,#1a1505);border-color:rgba(200,160,0,.35);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(200,160,0,.1),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-barca .card-wrap{background:linear-gradient(160deg,#0e0408,#160612);border-color:rgba(164,0,0,.4)}
+.club-manu .card-wrap{background:linear-gradient(160deg,#120404,#1a0505);border-color:rgba(218,41,28,.4)}
+.club-juve .card-wrap{background:linear-gradient(160deg,#0c0c0c,#111);border-color:rgba(255,255,255,.12)}
+.club-chelsea .card-wrap{background:linear-gradient(160deg,#030a18,#050f22);border-color:rgba(3,70,148,.5)}
+
+/* ━━━ БЫСТРАЯ ЦЕНА ━━━ */
+.qp-wrap{border-top:1px solid rgba(255,255,255,.04);padding:8px 12px 10px;display:flex;flex-direction:column;gap:6px}
+.qp-row{display:flex;align-items:center;gap:7px}
+.qp-label{font-size:9px;font-weight:700;color:var(--muted);white-space:nowrap}
+.qp-input{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(59,130,246,.2);border-radius:8px;color:#fff;font-family:'Oswald',sans-serif;font-size:18px;padding:5px 10px;outline:none;min-width:0}
+.qp-input:focus{border-color:rgba(59,130,246,.45)}
+.qp-save{background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.3);color:#2dd4bf;padding:7px 12px;border-radius:8px;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap}
+.qp-save:active{transform:scale(.95)}
+.qp-presets{display:flex;gap:5px;flex-wrap:wrap}
+.qp-preset{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:4px 9px;font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s}
+.qp-preset:active{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.3);color:#60a5fa}
+.qp-sending{display:none;font-size:10px;font-weight:700;color:#2dd4bf;align-items:center;gap:5px}
+.qp-sending.show{display:flex}
+
+/* ━━━ ПУСТОЙ МАРКЕТ ━━━ */
+.empty-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:65vh;text-align:center;padding:20px;position:relative;z-index:1}
+@keyframes starTwinkle{0%,100%{opacity:var(--op,.4);transform:scale(1)}50%{opacity:1;transform:scale(1.6)}}
+@keyframes shootingStar{0%{transform:translateX(-100px) rotate(20deg);opacity:0}5%{opacity:1}100%{transform:translateX(110vw) rotate(20deg);opacity:0}}
+.empty-ball-wrap{position:relative;width:110px;height:110px;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+.empty-ring1,.empty-ring2,.empty-ring3{position:absolute;border-radius:50%;border:1.5px solid rgba(251,191,36,.15);left:50%;top:50%;transform:translate(-50%,-50%)}
+.empty-ring1{width:90px;height:90px;animation:ringOut 2.5s ease-in-out infinite}
+.empty-ring2{width:120px;height:120px;animation:ringOut 2.5s ease-in-out infinite .5s}
+.empty-ring3{width:150px;height:150px;animation:ringOut 2.5s ease-in-out infinite 1s}
+@keyframes ringOut{0%{transform:translate(-50%,-50%) scale(.7);opacity:0}50%{opacity:1}100%{transform:translate(-50%,-50%) scale(1.2);opacity:0}}
+.empty-ball-inner{width:76px;height:76px;background:radial-gradient(circle at 35% 35%,#2a1f00,#1a1200);border:1.5px solid rgba(251,191,36,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;z-index:2;box-shadow:0 0 24px rgba(251,191,36,.2);animation:ballFloat 3s ease-in-out infinite}
+@keyframes ballFloat{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-10px) rotate(5deg)}}
+.empty-title{font-family:'Oswald',sans-serif;font-size:34px;font-weight:700;letter-spacing:1px;margin-bottom:10px;background:linear-gradient(135deg,#fde68a,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.empty-sub{font-size:13px;font-weight:500;color:var(--muted);line-height:1.8;max-width:260px;margin-bottom:20px}
+.empty-sub b{color:#94a3b8;font-weight:700}
+.empty-next-drop{display:flex;align-items:center;gap:12px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.12);border-radius:14px;padding:12px 20px;margin-bottom:16px;width:100%;max-width:280px}
+.empty-drop-icon{font-size:24px;animation:dropBounce 2s ease-in-out infinite}
+@keyframes dropBounce{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.empty-drop-label{font-size:9px;font-weight:700;letter-spacing:1.5px;color:rgba(251,191,36,.4);text-transform:uppercase;margin-bottom:3px}
+.empty-drop-text{font-size:13px;font-weight:700;color:#fff}
+.empty-drop-text em{font-style:normal;color:#fbbf24}
+.empty-tg-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;max-width:280px;padding:14px;background:linear-gradient(135deg,#2563eb,#4d8bff);color:#fff;border-radius:14px;font-size:13px;font-weight:700;text-decoration:none;box-shadow:0 4px 20px rgba(77,139,255,.3);position:relative;overflow:hidden;margin-bottom:10px}
+.empty-tg-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);animation:btnShine 2.5s ease-in-out infinite}
+@keyframes btnShine{to{left:200%}}
+.empty-ch-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;max-width:280px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#64748b;border-radius:14px;font-size:12px;font-weight:600;text-decoration:none}
+.empty-ring{position:relative;display:inline-block;margin-bottom:0}
+.empty-ring::before,.empty-ring::after{content:'';position:absolute;top:50%;left:50%;border-radius:50%;border:2px solid rgba(251,191,36,.12);animation:rPulse 2.5s ease-in-out infinite}
+.empty-ring::before{width:120px;height:120px;margin:-60px}
+.empty-ring::after{width:165px;height:165px;margin:-82px;border-color:rgba(251,191,36,.06);animation-delay:.8s;animation-duration:3.2s}
+@keyframes rPulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.08);opacity:1}}
+.empty-title{font-family:'Oswald',sans-serif;font-size:36px;font-weight:700;letter-spacing:1px;margin-bottom:8px;background:linear-gradient(135deg,#fde68a,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.empty-sub{font-size:13px;font-weight:600;color:var(--muted);line-height:1.75;max-width:260px;margin-bottom:20px}
+.empty-sub b{color:#94a3b8;font-weight:700}
+.empty-soon{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:14px;padding:12px 24px;margin-bottom:20px;width:100%;max-width:280px}
+.empty-soon-label{font-size:9px;font-weight:800;color:rgba(251,191,36,.4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
+.empty-soon-text{font-size:13px;font-weight:700;color:#fbbf24}
+.empty-tg-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff;text-decoration:none;padding:14px 28px;border-radius:14px;font-size:13px;font-weight:800;box-shadow:0 6px 24px rgba(37,99,235,.3);width:100%;max-width:280px}
+.empty-tg-btn:active{transform:scale(.97)}
+.cf-item{position:fixed;animation:cfFall var(--d) linear infinite var(--dl);pointer-events:none;z-index:0}
+@keyframes cfFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+
+/* ━━━ УДАЛЕНИЕ ФОТО В ГАЛЕРЕЕ ━━━ */
+.gft-wrap{position:relative;width:62px;height:62px;flex-shrink:0}
+.gft-wrap .gft-del{position:absolute;top:-7px;right:-7px;width:20px;height:20px;background:linear-gradient(135deg,#dc2626,#ef4444);border:2px solid #07080f;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:900;cursor:pointer;z-index:10;opacity:0;transform:scale(0);transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 8px rgba(239,68,68,.5)}
+.gft-wrap.del-mode .gft-del{opacity:1;transform:scale(1)}
+.gft-hold-svg{position:absolute;inset:-3px;width:calc(100% + 6px);height:calc(100% + 6px);pointer-events:none;z-index:5}
+.gft-hold-circle{fill:none;stroke:#2dd4bf;stroke-width:3;stroke-dasharray:220;stroke-dashoffset:220;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%}
+.gal-del-hint{font-size:10px;font-weight:700;color:#334155;text-align:center;margin-bottom:8px;transition:opacity .3s}
+.gal-del-hint.hide{opacity:0}
+
+.page-wrap{transition:transform .35s cubic-bezier(.25,.46,.45,.94);will-change:transform;}
+.page-accounts{transform:translateX(0);}
+.page-profile-active .page-accounts{transform:translateX(-100%);}
+</style>
+</head>
+<body>
+
+<div class="scrollbar"><div class="sb-thumb" id="sbThumb"></div></div>
+
+<div id="swrap">
+<div id="scont">
+
+<header>
+  <div class="h-row">
+    <div class="logo">
+      <div class="logo-name">DVORNOV</div>
+      <div class="logo-row">
+        <div class="logo-div-line"></div>
+        <div class="logo-sub">eFootball Market</div>
+        <div class="logo-div-line2"></div>
+      </div>
+    </div>
+    <div class="h-btns">
+      <button class="h-btn btn-admin" id="adminBtn" onclick="openAdmin()" style="display:none">⚙️</button>
+    </div>
+  </div>
+  <div class="search-box">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input class="search-input" id="searchInput" placeholder="Поиск по числу или цене..." oninput="applyFilter()">
+  </div>
+</header>
+
+<!-- БАННЕРЫ -->
+<div class="banners-wrap">
+  <div class="banners-track" id="bnTrack">
+    <div class="banner bn1">
+      <div class="bn1-border"></div>
+      <div class="bn1-streak"></div>
+      <div class="bn1-stars" id="bnStars1"></div>
+      <div class="banner-left">
+        <div class="banner-tag">💎 Premium Shop</div>
+        <div class="banner-title">Dvornov<br><span>Market</span></div>
+        <div class="banner-sub">Продажа · Обмен · Быстро</div>
+      </div>
+      <div class="banner-right"><div class="banner-emoji">💎</div></div>
+    </div>
+    <div class="banner bn2">
+      <div class="bn2-border"></div>
+      <div class="bn2-sparks" id="bnSparks"></div>
+      <div class="banner-left">
+        <div class="banner-tag">🔥 Горячие акки</div>
+        <div class="banner-title">Успей<br><span>Купить</span></div>
+        <div class="banner-sub">Лимитированные · По огню</div>
+      </div>
+      <div class="banner-right"><div class="banner-emoji">🔥</div></div>
+    </div>
+    <div class="banner bn3">
+      <div class="bn3-border"></div>
+      <div class="bn3-stars" id="bnStars"></div>
+      <div class="bn3-scan"></div>
+      <div class="banner-left">
+        <div class="banner-tag">⚡ Быстрая сделка</div>
+        <div class="banner-title">Лучшие<br><span>Акки</span></div>
+        <div class="banner-sub">Топовые игроки · Рейтинг</div>
+      </div>
+      <div class="banner-right">
+        <div style="position:relative;width:70px;height:70px;display:flex;align-items:center;justify-content:center">
+          <div class="bn3-orbit"></div>
+          <div class="banner-emoji" style="font-size:52px;margin:0">🏆</div>
+        </div>
+      </div>
+    </div>
+    <div class="banner bn4">
+      <div class="bn4-border"></div>
+      <div class="bn4-grid"></div>
+      <div class="banner-left">
+        <div class="banner-tag">✅ Гарантия</div>
+        <div class="banner-title">Честно<br><span>Надёжно</span></div>
+        <div class="banner-sub">Отзывы · Быстрый ответ</div>
+      </div>
+      <div class="banner-right">
+        <div style="position:relative;width:70px;height:70px;display:flex;align-items:center;justify-content:center">
+          <div class="bn4-pulse"></div>
+          <div class="bn4-pulse bn4-pulse2"></div>
+          <div class="banner-emoji" style="font-size:52px;margin:0">🛡️</div>
+        </div>
+      </div>
+    </div>
+    <div class="banner bn5">
+      <div class="bn5-border"></div>
+      <div class="bn5-top">
+        <div>
+          <div class="banner-tag" style="background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.2);color:#5eead4;margin-bottom:10px">⚡ Новый завоз</div>
+          <div class="banner-title" style="font-size:36px">Свежие<br><span style="background:linear-gradient(135deg,#ccfbf1,#2dd4bf,#0f766e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Акки</span></div>
+        </div>
+        <div class="banner-emoji" style="filter:drop-shadow(0 0 22px rgba(45,212,191,.8));font-size:52px;animation:bnFloat 3s ease-in-out infinite">⚽</div>
+      </div>
+      <div class="bn5-ticker-wrap">
+        <div class="bn5-ticker" id="bnTicker"></div>
+      </div>
+    </div>
+    <div class="banner bn6">
+      <div class="bn6-border"></div>
+      <div class="bn6-streak"></div>
+      <div class="banner-left">
+        <div class="banner-tag">🎯 Топ продажи</div>
+        <div class="banner-title">Только<br><span>Хиты</span></div>
+        <div class="banner-sub">Самые популярные акки</div>
+      </div>
+      <div class="banner-right"><div class="banner-emoji">❤️‍🔥</div></div>
+    </div>
+  </div>
+  <div class="banner-dots" id="bnDots"></div>
+</div>
+
+
+<div class="filter-wrap">
+  <div class="filter-label">Фильтр по цене</div>
+  <div class="filter-row">
+    <input type="number" class="filter-input" id="minPrice" placeholder="От">
+    <span class="filter-sep">—</span>
+    <input type="number" class="filter-input" id="maxPrice" placeholder="До">
+    <button class="filter-go" onclick="applyFilter()">Найти</button>
+    <button class="filter-reset" onclick="resetAll()">✕</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-head">
+    <div class="sec-title">Все аккаунты</div>
+    <div class="sec-count" id="countBadge">...</div>
+  </div>
+  <div class="grid" id="grid">
+    <div class="state-box"><div class="state-icon spin">⚽</div><div class="state-text">Загрузка...</div></div>
+  </div>
+</div>
+
+</div></div>
+
+<div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#f59e0b;color:#000;text-align:center;padding:6px;font-size:12px;font-weight:800;letter-spacing:1px">🧪 ТЕСТОВЫЙ РЕЖИМ</div><div style="height:30px"></div><div class="bottom-nav" id="navOuter">
+  <div id="navInner" style="position:absolute;top:0;left:0;bottom:0;display:flex;align-items:center;gap:7px;padding:8px 10px 14px;transform:translateX(0);transition:transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);will-change:transform;width:100%;box-sizing:border-box" id="navInner">
+    <button id="navAccBtn" class="nav-btn nav-sell" onclick="showPage('accounts')" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#f87171">🏪 Аккаунты</button>
+    <button id="navProfBtn" class="nav-btn nav-sell" onclick="showPage('profile')">👤 Профиль</button>
+    <button id="navAdminPanelBtn" class="nav-btn" onclick="openAdmin()" style="display:none;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);color:#c084fc;flex:1">⚙️ Панель</button>
+  </div>
+
+</div>
+
+<!-- Галерея FULLSCREEN -->
+<div id="screensOv" style="display:none;position:fixed;inset:0;z-index:300;flex-direction:column;background:rgba(2,3,8,.98)">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0">
+    <div style="font-family:'Oswald',sans-serif;font-size:16px;font-weight:600">📸 Фулл скрины</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div id="gfCnt" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:800;color:#64748b"></div>
+      <div onclick="closeOv('screensOv')" style="width:34px;height:34px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:#64748b">✕</div>
+    </div>
+  </div>
+  <div style="flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#030612">
+    <div id="gfWrap" style="width:100%;display:flex;align-items:center;justify-content:center;transition:opacity .15s,transform .15s">
+      <img id="gfImg" src="" style="width:100%;display:block;object-fit:contain;max-height:52vh;transform-origin:center center;touch-action:none;user-select:none">
+    </div>
+    <button id="gfL" style="position:absolute;left:18px;top:50%;transform:translateY(-50%);width:40px;height:40px;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.12);border-radius:50%;font-size:22px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);z-index:2">&#8249;</button>
+    <button id="gfR" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);width:40px;height:40px;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.12);border-radius:50%;font-size:22px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);z-index:2">&#8250;</button>
+  </div>
+  <div style="padding:0 16px;flex-shrink:0">
+    <div style="height:2px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden">
+      <div id="gfProg" style="height:100%;background:linear-gradient(90deg,#2dd4bf,#0d9488);transition:width .3s ease;border-radius:2px"></div>
+    </div>
+  </div>
+  <div style="padding:10px 16px;flex-shrink:0">
+    <div id="gfThumbs" style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px"></div>
+  </div>
+  <div style="padding:0 16px 28px;display:flex;flex-direction:column;gap:8px;flex-shrink:0">
+    <div style="display:flex;gap:8px">
+      <button onclick="doBuyGal()" style="flex:1;background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:13px;border-radius:12px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer">🔴 Купить</button>
+      <button onclick="doSwapGal()" style="background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.2);color:#2dd4bf;padding:13px 14px;border-radius:12px;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">🔄 Обмен</button>
+      <a href="https://t.me/DvornovNikitos" target="_blank" style="background:rgba(77,139,255,.1);border:1px solid rgba(77,139,255,.25);color:#4d8bff;padding:13px 16px;border-radius:12px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:4px;white-space:nowrap">&#128172; Спросить</a>
+    </div>
+    <div id="gfVkRow" style="display:none;flex-direction:column;gap:6px">
+      <div style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+        <span style="font-size:14px">⚠️</span>
+        <span style="font-size:11px;color:#475569;line-height:1.4">Если скрины не грузятся — все фото есть во ВКонтакте</span>
+      </div>
+      <a id="gfVkBtn" href="#" target="_blank" class="vk-btn">
+        <div class="vk-btn-icon"><svg viewBox="0 0 24 24"><path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14C20.67 22 22 20.67 22 15.07V8.93C22 3.33 20.67 2 15.07 2zm3.08 13.5h-1.57c-.59 0-.77-.47-1.83-1.55-.92-.9-1.33-.9-1.56-.9-.32 0-.41.09-.41.53v1.42c0 .38-.12.6-1.13.6-1.65 0-3.49-1-4.78-2.87C5.45 10.7 5 8.83 5 8.44c0-.23.09-.44.53-.44h1.57c.4 0 .55.18.7.6.77 2.14 2.06 4.02 2.59 4.02.2 0 .29-.09.29-.59V9.92c-.06-1.05-.62-1.14-.62-1.51 0-.18.15-.36.38-.36h2.47c.33 0 .44.18.44.56v2.98c0 .33.15.44.24.44.2 0 .37-.11.74-.5 1.14-1.28 1.95-3.25 1.95-3.25.11-.23.29-.44.68-.44h1.57c.47 0 .58.24.47.56-.2.91-2.12 3.63-2.12 3.63-.17.27-.23.39 0 .7.17.23.71.7 1.07 1.13.67.76 1.18 1.4 1.32 1.84.12.44-.11.67-.55.67z"/></svg></div>
+        <div style="flex:1">
+          <div class="vk-btn-top">Все фото в VK</div>
+          <div class="vk-btn-sub">Открыть полный альбом</div>
+        </div>
+        <div class="vk-btn-arrow">›</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Админ -->
+<div class="overlay" id="adminOv">
+  <div class="sheet">
+    <div class="sheet-handle" onclick="closeOv('adminOv')"></div>
+    <div id="adminBody"></div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div id="faqOv" style="display:none;position:fixed;inset:0;z-index:400;flex-direction:column;background:#07080f">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0">
+    <div style="font-size:17px;font-weight:800;color:#f1f5f9">❓ FAQ</div>
+    <div onclick="document.getElementById('faqOv').style.display='none'" style="width:34px;height:34px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:#64748b">✕</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;padding-bottom:40px">
+
+    <div style="background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.12);border-radius:14px;padding:16px">
+      <div style="font-size:13px;font-weight:800;color:#fbbf24;margin-bottom:6px">💳 Как оплатить?</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6">Оплата на карту / СБП после договорённости. Реквизиты скидываю в личке. Предоплата 100%.</div>
+    </div>
+
+    <div style="background:rgba(45,212,191,.04);border:1px solid rgba(45,212,191,.12);border-radius:14px;padding:16px">
+      <div style="font-size:13px;font-weight:800;color:#2dd4bf;margin-bottom:6px">🔐 Как передаётся аккаунт?</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6">После оплаты скидываю логин и пароль в личку. Смена почты/пароля — сразу после получения. Помогу если что-то непонятно.</div>
+    </div>
+
+    <div style="background:rgba(168,85,247,.04);border:1px solid rgba(168,85,247,.12);border-radius:14px;padding:16px">
+      <div style="font-size:13px;font-weight:800;color:#a855f7;margin-bottom:6px">🔄 Можно обменять?</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6">Да, обмен возможен. Скинь скрины своего аккаунта в личку — оценю и предложу варианты с доплатой или без.</div>
+    </div>
+
+    <div style="background:rgba(77,139,255,.04);border:1px solid rgba(77,139,255,.12);border-radius:14px;padding:16px">
+      <div style="font-size:13px;font-weight:800;color:#4d8bff;margin-bottom:6px">🛡 Есть ли гарантия?</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6">Да. Все аккаунты проверяю лично перед продажей. Если что-то не так — решаем. Не веришь на слово — загляни в отзывы и напиши любому кто оставил отзыв, спроси лично.</div>
+    </div>
+
+    <div style="background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.12);border-radius:14px;padding:16px">
+      <div style="font-size:13px;font-weight:800;color:#fbbf24;margin-bottom:6px">⚡ Что такое "сила аккаунта"?</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6">Это общий рейтинг игроков в составе. Чем выше — тем сильнее команда. Указываю честно, без приукрашивания.</div>
+    </div>
+
+    <div style="background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.12);border-radius:14px;padding:16px">
+      <div style="font-size:13px;font-weight:800;color:#f87171;margin-bottom:6px">🚫 Могут ли заблокировать аккаунт?</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6">Все аккаунты чистые, без читов и нарушений. После смены данных аккаунт полностью твой — риск блокировки минимален.</div>
+    </div>
+
+    <div style="background:rgba(45,212,191,.04);border:1px solid rgba(45,212,191,.12);border-radius:14px;padding:16px">
+      <div style="font-size:13px;font-weight:800;color:#2dd4bf;margin-bottom:6px">🔔 Как узнать о новых аккаунтах?</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6">Подпишись на бота — он автоматически уведомит когда появится новый аккаунт или снизится цена.</div>
+    </div>
+
+    <a href="https://t.me/DvornovNikitos" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);border:none;color:#fff;padding:14px;border-radius:12px;font-size:14px;font-weight:800;text-decoration:none;margin-top:4px">
+      💬 Остались вопросы? Написать
+    </a>
+  </div>
+</div></div>
+
+
+
+<script>
+// URL сервера — загружается динамически
+const API_BASE = "https://sewing-suits-produces-subcommittee.trycloudflare.com";
+let API = API_BASE;
+
+async function initAPI(){
+  try{
+    const r = await fetch(`${API_BASE}/api-url`, {signal: AbortSignal.timeout(5000)});
+    const d = await r.json();
+    if(d.url) API = d.url;
+  } catch(e){
+    console.log('Используем базовый URL');
+  }
+  // Загружаем баланс при старте
+  try{
+    const u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+    if(u){
+      const r2=await fetch(API+'/balance/'+u.id);
+      const d2=await r2.json();
+      window._userBalance=d2.balance||0;
+    }
+  }catch(e){}
+}
+const ADMIN_TG_ID = 568518218;
+let ACCOUNTS=[], LIST=[], isAdmin=false, selPhoto=null, extraFiles=[];
+
+if(window.Telegram?.WebApp){
+  Telegram.WebApp.ready(); Telegram.WebApp.expand();
+  const u=Telegram.WebApp.initDataUnsafe?.user;
+  if(u&&u.id===ADMIN_TG_ID) isAdmin=true;
+}
+if(isAdmin){
+  const ab=document.getElementById('adminBtn'); if(ab) ab.classList.add('show');
+  const nb=document.getElementById('navAdminPanelBtn'); if(nb) nb.style.display='flex';
+  const bb=document.getElementById('adminBadgesBtn'); if(bb) bb.style.display='block';
+}
+
+// ━━━ БАННЕРЫ СВАЙП ━━━
+(function(){
+  const track = document.getElementById('bnTrack');
+  const dotsWrap = document.getElementById('bnDots');
+  let cur=0, total=6, dragging=false, startX=0;
+  // Генерируем 6 точек
+  for(let i=0;i<total;i++){const d=document.createElement('div');d.className='bn-dot'+(i===0?' active':'');d.onclick=(n=>()=>go(n))(i);dotsWrap.appendChild(d);}
+  const dots = dotsWrap.children;
+
+  function go(idx){
+    cur=(idx+total)%total;
+    track.style.transform=`translateX(${-cur*100}%)`;
+    [...dots].forEach((d,i)=>d.classList.toggle('active',i===cur));
+  }
+  window.bnGoTo = go;
+
+  // Искры баннер 2
+  const bnSparks=document.getElementById('bnSparks');
+  if(bnSparks){for(let i=0;i<12;i++){const s=document.createElement('div');s.className='sp';const sz=2+Math.random()*3;s.style.cssText=`width:${sz}px;height:${sz}px;left:${10+Math.random()*80}%;bottom:${Math.random()*35}%;--d:${.9+Math.random()*1.3}s;--dl:-${Math.random()*2}s;--tx:${(Math.random()*20-10)}px`;bnSparks.appendChild(s);}}
+  // Звёзды баннер 1 (фиолетовые)
+  const bnStars1=document.getElementById('bnStars1');
+  if(bnStars1){for(let i=0;i<18;i++){const s=document.createElement('div');s.className='bstar1';const sz=Math.random()*1.8+.4;s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*3}s;--dl:-${Math.random()*3}s`;bnStars1.appendChild(s);}}
+  // Звёзды баннер 3
+  const bnStars=document.getElementById('bnStars');
+  if(bnStars){for(let i=0;i<28;i++){const s=document.createElement('div');s.className='bstar';const sz=Math.random()*1.8+.4;s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--dl:-${Math.random()*4}s`;bnStars.appendChild(s);}}
+  // Бегущая строка баннер 5 — заполняем после загрузки аккаунтов
+  window._fillBnTicker = function(accs){
+    const bnTicker=document.getElementById('bnTicker');
+    if(!bnTicker) return;
+    const items=accs.length?accs.slice(0,8).map(a=>`<span class="bn5-tick-item">⚽ <strong>#${a.number||'—'}</strong> · <strong>${Number(a.price).toLocaleString('ru')}₽</strong><span style="opacity:.2;margin:0 6px">·</span></span>`).join(''):`<span class="bn5-tick-item">⚽ <strong>Dvornov Market</strong> · Лучшие акки eFootball<span style="opacity:.2;margin:0 6px">·</span></span>`.repeat(5);
+    bnTicker.innerHTML=items+items;
+  };
+
+  // Авто-слайд каждые 4 сек
+  let timer = setInterval(()=>go(cur+1), 4000);
+  function resetTimer(){ clearInterval(timer); timer=setInterval(()=>go(cur+1),4000); }
+
+  track.addEventListener('touchstart',e=>{ startX=e.touches[0].clientX; dragging=true; },{ passive:true });
+  track.addEventListener('touchend',e=>{
+    if(!dragging) return; dragging=false;
+    const dx=e.changedTouches[0].clientX-startX;
+    if(Math.abs(dx)>40){ go(dx<0?cur+1:cur-1); resetTimer(); }
+  });
+})();
+
+// ━━━ КЛУБЫ ━━━
+function getClubClass(v){
+  if(!v) return '';
+  v=v.toLowerCase();
+  if(v==='psg') return 'club-psg';
+  if(v==='real') return 'club-real';
+  if(v==='barca') return 'club-barca';
+  if(v==='manu') return 'club-manu';
+  if(v==='juve') return 'club-juve';
+  if(v==='chelsea') return 'club-chelsea';
+  return '';
+}
+
+// ━━━ ЗАГРУЗКА ━━━
+async function loadAccounts(){
+  try{
+    const controller = new AbortController();
+    const timeout = setTimeout(()=>controller.abort(), 8000);
+    const r=await fetch(`${API}/accounts`, {signal: controller.signal});
+    clearTimeout(timeout);
+    ACCOUNTS=await r.json(); LIST=[...ACCOUNTS]; render(LIST); if(window._fillBnTicker) _fillBnTicker(ACCOUNTS);
+  }catch(e){
+    document.getElementById('grid').innerHTML=`<div class="state-box"><div class="state-icon">⚠️</div><div class="state-text">Сервер недоступен.<br>Проверь tunnel.</div></div>`;
+    document.getElementById('countBadge').textContent='—';
+  }
+}
+
+// ━━━ РЕНДЕР ━━━
+function render(list){
+  document.getElementById('countBadge').textContent=list.length+' шт';
+  const g=document.getElementById('grid');
+  if(!list.length && !ACCOUNTS.length){
+    g.innerHTML=`<div class="empty-screen">
+      <div class="empty-ball-wrap">
+        <div class="empty-ring1"></div>
+        <div class="empty-ring2"></div>
+        <div class="empty-ring3"></div>
+        <div class="empty-ball-inner">⚽</div>
+      </div>
+      <div class="empty-title">Всё продано!</div>
+      <div class="empty-sub">Все аккаунты нашли своих владельцев.<br><b>Уже готовлю новые</b> — следи за обновлениями!</div>
+      <div class="empty-next-drop">
+        <div class="empty-drop-icon">📦</div>
+        <div>
+          <div class="empty-drop-label">Следующий завоз</div>
+          <div class="empty-drop-text">Сегодня <em>🔥 скоро</em></div>
+        </div>
+      </div>
+      <a href="https://t.me/DvornovNikitos" target="_blank" class="empty-tg-btn">💬 Написать продавцу →</a>
+      <a href="https://t.me/Dvornov_channel" target="_blank" class="empty-ch-btn">🔔 Подписаться — узнать первым</a>
+    </div>`;
+    return;
+  }
+  if(!list.length){ g.innerHTML=`<div class="state-box"><div class="state-icon">🔍</div><div class="state-text">Ничего не найдено</div></div>`; return; }
+  g.innerHTML=list.map((a,i)=>{
+    const cc=getClubClass(a.vk||'');
+    const hp=a.albums&&a.albums.length>0;
+    const cnt=hp?a.albums.length:0;
+    const isHot=i<2;
+    const badge=isHot?`<div class="badge-hot">🔥 ГОРЯЧИЙ</div>`:`<div class="badge-new"><span class="badge-dot"></span> НОВЫЙ</div>`;
+
+    // Миниатюры — показываем первые 4
+    let galStrip='';
+    if(hp){
+      const show=a.albums.slice(0,4);
+      const extra=cnt-4;
+      galStrip=`
+        <div class="card-gallery">
+          <div class="gal-strip">
+            ${show.map((p,idx)=>`<div class="gal-mini" onclick="openScreens(${i},${idx})"><img src="${p}" loading="lazy"></div>`).join('')}
+            ${extra>0?`<div class="gal-more" onclick="openScreens(${i},0)"><div class="gal-more-num">+${extra}</div><div class="gal-more-txt">фото</div></div>`:''}
+          </div>
+          <button class="gal-open-btn" onclick="openScreens(${i},0)">📸 Все<br>скрины</button>
+        </div>`;
+    } else {
+      galStrip=`<div class="card-gallery"><div class="gal-no-photos">😔 Скрины не добавлены</div></div>`;
+    }
+
+    return `
+    <div class="card-wrap ${cc}" id="fw_${a.id}" style="animation:fadeUp .4s ease ${i*0.06}s forwards;opacity:0">
+      <div class="flip-front">
+        <div class="club-stripe"></div>
+        <div class="card-img">
+          ${a.photo?`<img src="${a.photo}" alt="" loading="lazy">`:`<div class="card-placeholder">⚽</div>`}
+          <div class="card-num">#${a.number}</div>
+          ${badge}
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <div class="card-price">${Number(a.price).toLocaleString('ru')} <span>₽</span></div>
+            <div class="card-sub">Число: ${a.number}</div>
+          </div>
+          <button class="cbtn-buy" data-id="${a.id}" data-num="${a.number}" data-price="${a.price}" onclick="event.stopPropagation();doBuy(this)">🔴 Купить</button>
+          <button style="background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.2);color:#2dd4bf;padding:9px 10px;border-radius:8px;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap" data-id="${a.id}" data-num="${a.number}" data-price="${a.price}" onclick="event.stopPropagation();doSwap(this)">🔄 Обмен</button>
+        </div>
+        ${galStrip}
+        ${isAdmin ? `
+        <div class="qp-wrap" id="qpWrap_${a.id}">
+          <div class="qp-row">
+            <span class="qp-label">✏️ Цена:</span>
+            <input class="qp-input" id="qpInput_${a.id}" type="number" value="${a.price}" placeholder="0">
+            <button class="qp-save" onclick="quickSavePrice('${a.id}',${i})">✓</button>
+          </div>
+          <div class="qp-presets">
+            <div class="qp-preset" onclick="qpSet('${a.id}',1500)">1 500</div>
+            <div class="qp-preset" onclick="qpSet('${a.id}',2000)">2 000</div>
+            <div class="qp-preset" onclick="qpSet('${a.id}',2500)">2 500</div>
+            <div class="qp-preset" onclick="qpSet('${a.id}',3000)">3 000</div>
+            <div class="qp-preset" onclick="qpSet('${a.id}',3500)">3 500</div>
+          </div>
+          <div class="qp-sending" id="qpSending_${a.id}">📣 Отправляем уведомление подписчикам...</div>
+        </div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function flipCard(i){ document.getElementById('fw'+i)?.classList.toggle('flipped'); }
+function unflip(i){ document.getElementById('fw'+i)?.classList.remove('flipped'); }
+
+function applyFilter(){
+  const min=parseInt(document.getElementById('minPrice').value)||0;
+  const max=parseInt(document.getElementById('maxPrice').value)||Infinity;
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  LIST=ACCOUNTS.filter(a=>Number(a.price)>=min&&Number(a.price)<=max&&(a.number.toLowerCase().includes(q)||a.price.toString().includes(q)));
+  render(LIST);
+}
+function resetAll(){ ['minPrice','maxPrice','searchInput'].forEach(id=>document.getElementById(id).value=''); LIST=[...ACCOUNTS]; render(LIST); }
+
+// ━━━ ГАЛЕРЕЯ ━━━
+let galPhotos=[],galCur=0,galTx=0;
+function openScreens(i, startIdx){
+  const photos=LIST[i]?.albums||[];
+  const ov=document.getElementById('screensOv');
+  if(!photos.length){
+    ov.style.display='flex';
+    document.getElementById('gfThumbs').innerHTML='';
+    document.getElementById('gfImg').src='';
+    document.getElementById('gfCnt').textContent='Нет фото';
+    document.getElementById('gfProg').style.width='0%';
+    document.getElementById('gfL').style.display='none';
+    document.getElementById('gfR').style.display='none';
+    return;
+  }
+  galPhotos=photos; galCur=startIdx||0;
+  window._gId=LIST[i]?.id||""; window._gNum=LIST[i]?.number||""; window._gPrice=LIST[i]?.price||0;
+  galBuildThumbs(i);
+  // VK кнопка
+  const acc = LIST[i];
+  const vkRow = document.getElementById('gfVkRow');
+  const vkBtn = document.getElementById('gfVkBtn');
+  if(acc?.vk_topic_id && vkRow && vkBtn){
+    vkBtn.href = `https://vk.com/topic-221069846_${acc.vk_topic_id}`;
+    vkRow.style.display = 'flex';
+  } else if(vkRow){
+    vkRow.style.display = 'none';
+  }
+  // Первое фото
+  document.getElementById('gfImg').src=photos[galCur];
+  document.getElementById('gfCnt').textContent=(galCur+1)+' / '+photos.length;
+  document.getElementById('gfProg').style.width=((galCur+1)/photos.length*100)+'%';
+  document.getElementById('gfL').style.display=photos.length>1?'flex':'none';
+  document.getElementById('gfR').style.display=photos.length>1?'flex':'none';
+  document.getElementById('gfL').onclick=()=>gfGo(galCur-1);
+  document.getElementById('gfR').onclick=()=>gfGo(galCur+1);
+  ov.style.display='flex';
+  // Свайп
+  const wrap=document.getElementById('gfWrap');
+  wrap.ontouchstart=e=>{galTx=e.touches[0].clientX};
+  wrap.ontouchend=e=>{const dx=e.changedTouches[0].clientX-galTx;if(Math.abs(dx)>45)gfGo(dx<0?galCur+1:galCur-1)};
+}
+// ━━━ БЫСТРАЯ ЦЕНА ━━━
+function qpSet(accId, val){
+  const inp = document.getElementById('qpInput_'+accId);
+  if(inp) inp.value = val;
+}
+async function quickSavePrice(accId, idx){
+  const inp = document.getElementById('qpInput_'+accId);
+  if(!inp) return;
+  const newPrice = inp.value.trim();
+  if(!newPrice || isNaN(newPrice)){ toast('❌ Введи цену'); return; }
+  const sendingEl = document.getElementById('qpSending_'+accId);
+  if(sendingEl){ sendingEl.classList.add('show'); }
+  try{
+    const fd = new FormData();
+    fd.append('new_price', newPrice);
+    const r = await fetch(`${API}/accounts/${accId}/price`, {method:'PATCH', body:fd});
+    const data = await r.json();
+    if(data.ok){
+      // Обновляем цену в массиве и карточке
+      const acc = ACCOUNTS.find(a=>a.id===accId);
+      if(acc) acc.price = newPrice;
+      const listAcc = LIST.find(a=>a.id===accId);
+      if(listAcc) listAcc.price = newPrice;
+      // Обновляем отображение цены
+      const priceEl = document.querySelector(`#fw_${accId} .card-price`);
+      if(priceEl) priceEl.innerHTML = Number(newPrice).toLocaleString('ru')+' <span>₽</span>';
+      toast('✅ Цена обновлена, уведомление отправлено!');
+    } else {
+      toast('❌ Ошибка сохранения');
+    }
+  }catch(e){
+    toast('❌ Сервер недоступен');
+  } finally {
+    if(sendingEl){ setTimeout(()=>sendingEl.classList.remove('show'),3000); }
+  }
+}
+
+// ━━━ МИНИАТЮРЫ ГАЛЕРЕИ С УДАЛЕНИЕМ ━━━
+let _galAccIdx = 0;
+function galBuildThumbs(accIdx){
+  _galAccIdx = accIdx;
+  const hint = document.getElementById('gfDelHint');
+  if(hint) hint.style.display = isAdmin ? 'block' : 'none';
+  if(hint) hint.classList.remove('hide');
+
+  const container = document.getElementById('gfThumbs');
+  container.innerHTML = '';
+  galPhotos.forEach((p, idx) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'gft-wrap';
+    wrap.id = 'gftw'+idx;
+    wrap.innerHTML = `
+      <div id="gft${idx}" style="width:62px;height:62px;border-radius:10px;overflow:hidden;cursor:pointer;border:2px solid ${idx===galCur?'#2dd4bf':'transparent'};opacity:${idx===galCur?1:.4};transition:all .2s">
+        <img src="${p}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+      </div>
+      ${isAdmin ? `<div class="gft-del" onclick="galDelPhoto(event,${idx})">✕</div>
+      <svg class="gft-hold-svg" viewBox="0 0 68 68"><circle class="gft-hold-circle" id="ghc${idx}" cx="34" cy="34" r="31"/></svg>` : ''}
+    `;
+
+    // Клик — переключить фото
+    wrap.querySelector('#gft'+idx).addEventListener('click', () => {
+      if(!wrap.classList.contains('del-mode')) gfGo(idx);
+    });
+
+    // Удержание — только для админа
+    if(isAdmin){
+      let holdInt = null, prog = 0;
+      const HOLD = 600, STEP = 20;
+      wrap.addEventListener('touchstart', e => {
+        prog = 0;
+        const circle = document.getElementById('ghc'+idx);
+        if(circle) circle.style.strokeDashoffset = 220;
+        holdInt = setInterval(() => {
+          prog += STEP;
+          if(circle) circle.style.strokeDashoffset = Math.max(220 - (220*prog/HOLD), 0);
+          if(prog >= HOLD){
+            clearInterval(holdInt);
+            wrap.classList.add('del-mode');
+            if(circle) circle.style.strokeDashoffset = 220;
+            const h = document.getElementById('gfDelHint');
+            if(h) h.classList.add('hide');
+            try{ navigator.vibrate && navigator.vibrate(40); }catch(e){}
+          }
+        }, STEP);
+      }, {passive:true});
+      wrap.addEventListener('touchend', () => {
+        clearInterval(holdInt);
+        const circle = document.getElementById('ghc'+idx);
+        if(circle){ circle.style.transition='stroke-dashoffset .2s'; circle.style.strokeDashoffset=220; setTimeout(()=>circle.style.transition='',200); }
+      });
+    }
+
+    container.appendChild(wrap);
+  });
+}
+
+async function galDelPhoto(e, idx){
+  e.stopPropagation();
+  const acc = LIST[_galAccIdx];
+  if(!acc) return;
+  const photoUrl = galPhotos[idx];
+
+  // Удаляем с сервера
+  try{
+    const fd = new FormData();
+    fd.append('remove_photo', photoUrl);
+    await fetch(`${API}/accounts/${acc.id}/photo`, {method:'PATCH', body:fd});
+  }catch(err){ console.warn('Del photo err:', err); }
+
+  // Удаляем локально
+  galPhotos.splice(idx, 1);
+  if(acc.albums) acc.albums = acc.albums.filter(p=>p!==photoUrl);
+
+  // Анимация
+  const wrap = document.getElementById('gftw'+idx);
+  if(wrap){ wrap.style.transition='all .2s'; wrap.style.transform='scale(0)'; wrap.style.opacity='0'; wrap.style.width='0'; wrap.style.marginRight='-7px'; }
+
+  if(!galPhotos.length){ closeOv('screensOv'); toast('Все фото удалены'); return; }
+  if(galCur >= galPhotos.length) galCur = galPhotos.length-1;
+
+  setTimeout(()=>{ galBuildThumbs(_galAccIdx); gfGo(galCur); }, 220);
+  toast('🗑 Фото удалено');
+}
+
+function gfGo(idx){
+  if(window._galZoomScale && window._galZoomScale > 1.05) return; // не листать при зуме
+  const n=galPhotos.length; galCur=(idx+n)%n;
+  const wrap=document.getElementById('gfWrap');
+  wrap.style.opacity='0'; wrap.style.transform='scale(.97)';
+  setTimeout(()=>{
+    document.getElementById('gfImg').src=galPhotos[galCur];
+    document.getElementById('gfCnt').textContent=(galCur+1)+' / '+n;
+    document.getElementById('gfProg').style.width=((galCur+1)/n*100)+'%';
+    document.querySelectorAll('#gfThumbs>div').forEach((t,i)=>{
+      t.style.borderColor=i===galCur?'#2dd4bf':'transparent';
+      t.style.opacity=i===galCur?'1':'.4';
+    });
+    document.getElementById('gft'+galCur)?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+    wrap.style.opacity='1'; wrap.style.transform='scale(1)';
+  },130);
+}
+
+// ━━━ OVERLAYS ━━━
+function closeOv(id){
+  const el = document.getElementById(id);
+  el.style.display='none';
+}
+function closeIfBg(id,e){ if(e.target===document.getElementById(id)) closeOv(id); }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
+
+// ━━━ ADMIN ━━━
+function openFaq(){ document.getElementById('faqOv').style.display='flex'; }
+function openAdmin(){ if(!isAdmin) return; renderHome(); document.getElementById('adminOv').classList.add('open'); }
+
+function renderHome(){
+  document.getElementById('adminBody').innerHTML=`
+    <div class="sheet-title">⚙️ Панель управления</div>
+    <div class="admin-btns">
+      <button class="adm-btn" onclick="renderAdd()"><div class="adm-ic ic-b">➕</div><div><div class="adm-name">Добавить аккаунт</div><div class="adm-desc">Добавить + пост в канал</div></div></button>
+      <button class="adm-btn" onclick="renderEditList()"><div class="adm-ic ic-o">✏️</div><div><div class="adm-name">Редактировать</div><div class="adm-desc">Добавить доп. фото, изменить цену</div></div></button>
+      <button class="adm-btn" onclick="renderDel()"><div class="adm-ic ic-r">🗑</div><div><div class="adm-name">Удалить аккаунт</div><div class="adm-desc">Убрать + удалить из канала</div></div></button>
+      <div class="adm-divider"></div>
+      <button class="adm-btn" onclick="renderStats()"><div class="adm-ic ic-t">📊</div><div><div class="adm-name">Статистика</div><div class="adm-desc">Аккаунтов в магазине</div></div></button>
+      <button class="adm-btn" onclick="renderBuyAccount()"><div class="adm-ic" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3)">💰</div><div><div class="adm-name">Купить аккаунт</div><div class="adm-desc">Принять оплату от покупателя</div></div></button>
+      <button class="adm-btn" onclick="closeOv('adminOv')"><div class="adm-ic ic-g">🚪</div><div><div class="adm-name">Закрыть</div><div class="adm-desc">Вернуться в магазин</div></div></button>
+    </div>`;}
+
+// ━━━ ДОБАВИТЬ ━━━
+function renderAdd(){
+  selPhoto=null; extraFiles=[];
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderHome()">← Назад</button>
+    <div class="sheet-title">➕ Добавить аккаунт</div>
+    <div class="form">
+      <div class="fg"><label>Главное фото</label>
+        <label class="photo-label" for="photoIn">📷 Выбрать главное фото</label>
+        <input type="file" id="photoIn" accept="image/*" style="display:none" onchange="previewPh(event)">
+        <img class="photo-preview" id="phPreview">
+      </div>
+      <div class="fg"><label>Число аккаунта</label><input class="fi" id="fNum" placeholder="Например: 007"></div>
+      <div class="fg"><label>Сила аккаунта</label><input class="fi" id="fStrength" placeholder="Например: 3162" type="number"></div>
+      <div class="fg"><label>Цена ₽</label><input class="fi" type="number" id="fPrice" placeholder="Например: 5000"></div>
+      <div class="fg"><label>Клуб (цвет карточки)</label>
+        <select class="fi" id="fClub">
+          <option value="">— Без клуба</option>
+          <option value="psg">🔵 PSG</option>
+          <option value="real">⚪ Real Madrid</option>
+          <option value="barca">🔴 Barcelona</option>
+          <option value="manu">🔴 Man United</option>
+          <option value="juve">⬛ Juventus</option>
+          <option value="chelsea">🔵 Chelsea</option>
+        </select>
+      </div>
+      <div class="fg"><label>Доп. фото — фулл скрины</label>
+        <label class="photo-label" for="extrasIn">📸 Выбрать фото (можно сразу все)</label>
+        <input type="file" id="extrasIn" accept="image/*" multiple style="display:none" onchange="previewExtras(event)">
+        <div class="chips" id="extraChips"></div>
+      </div>
+      <div class="form-btns">
+        <button class="f-submit" id="fSubmit" onclick="saveAcc()">✅ Добавить + пост</button>
+        <button class="f-cancel" onclick="renderHome()">Отмена</button>
+      </div>
+    </div>`;}
+
+function previewPh(e){ const f=e.target.files[0]; if(!f) return; selPhoto=f; const img=document.getElementById('phPreview'); img.src=URL.createObjectURL(f); img.style.display='block'; }
+function previewExtras(e){ extraFiles=Array.from(e.target.files); renderChips(); }
+function rmExtra(i){ extraFiles.splice(i,1); renderChips(); }
+function renderChips(){ document.getElementById('extraChips').innerHTML=extraFiles.map((f,i)=>`<div class="chip"><span>📸 ${f.name}</span><button class="chip-x" onclick="rmExtra(${i})">✕</button></div>`).join(''); }
+
+async function saveAcc(){
+  const num=document.getElementById('fNum').value.trim();
+  const price=document.getElementById('fPrice').value.trim();
+  const club=document.getElementById('fClub').value;
+  const strength=document.getElementById('fStrength').value.trim();
+  if(!num||!price){ toast('⚠️ Заполни число и цену'); return; }
+  const btn=document.getElementById('fSubmit'); btn.disabled=true; btn.textContent='⏳ Отправляю...';
+  const fd=new FormData();
+  fd.append('number',num); fd.append('price',price); fd.append('vk',club); fd.append('strength',strength);
+  if(selPhoto) fd.append('photo',selPhoto);
+  extraFiles.forEach(f=>fd.append('extra_photos',f));
+  try{
+    const r=await fetch(`${API}/accounts`,{method:'POST',body:fd});
+    const d=await r.json();
+    if(d.ok){
+      if(d.tg_failed){
+        toast('⚠️ Добавлен, но TG пост не удался — VK и FunPay пропущены');
+      } else {
+        toast('✅ Добавлен + пост в канале!');
+      }
+      await loadAccounts(); renderHome();
+    }
+    else{ toast('❌ Ошибка сервера'); btn.disabled=false; btn.textContent='✅ Добавить + пост'; }
+  }catch{ toast('❌ Сервер недоступен'); btn.disabled=false; btn.textContent='✅ Добавить + пост'; }
+}
+
+// ━━━ РЕДАКТИРОВАНИЕ ━━━
+function renderEditList(){
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderHome()">← Назад</button>
+    <div class="sheet-title">✏️ Выбери аккаунт</div>
+    <div class="edit-list">
+      ${!ACCOUNTS.length?'<div class="no-albums">Нет аккаунтов</div>':
+        ACCOUNTS.map(a=>`
+          <div class="edit-item">
+            <div><div class="edit-num">#${a.number}</div><div class="edit-price">${Number(a.price).toLocaleString('ru')} ₽ · 📸 ${a.albums?.length||0}</div></div>
+            <button class="edit-btn" onclick="renderEditAcc('${a.id}')">✏️ Изменить</button>
+          </div>`).join('')}
+    </div>`;}
+
+function renderEditAcc(id){
+  const a=ACCOUNTS.find(x=>x.id===id);
+  if(!a) return;
+  selPhoto=null; extraFiles=[];
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderEditList()">← Назад</button>
+    <div class="sheet-title">✏️ Редактировать #${a.number}</div>
+    <div class="form">
+      <div class="fg"><label>Новое главное фото (необязательно)</label>
+        <label class="photo-label" for="photoIn">📷 ${a.photo?'Заменить фото':'Добавить фото'}</label>
+        <input type="file" id="photoIn" accept="image/*" style="display:none" onchange="previewPh(event)">
+        <img class="photo-preview" id="phPreview" ${a.photo?`src="${a.photo}" style="display:block"`:''}></div>
+      <div class="fg"><label>Число аккаунта</label><input class="fi" id="fNum" value="${a.number}"></div>
+      <div class="fg"><label>Сила аккаунта</label><input class="fi" id="fStrength" type="number" value="${a.strength||''}"></div>
+      <div class="fg"><label>Цена ₽</label><input class="fi" type="number" id="fPrice" value="${a.price}"></div>
+      <div class="fg"><label>Клуб</label>
+        <select class="fi" id="fClub">
+          <option value="" ${!a.vk?'selected':''}>— Без клуба</option>
+          <option value="psg" ${a.vk==='psg'?'selected':''}>🔵 PSG</option>
+          <option value="real" ${a.vk==='real'?'selected':''}>⚪ Real Madrid</option>
+          <option value="barca" ${a.vk==='barca'?'selected':''}>🔴 Barcelona</option>
+          <option value="manu" ${a.vk==='manu'?'selected':''}>🔴 Man United</option>
+          <option value="juve" ${a.vk==='juve'?'selected':''}>⬛ Juventus</option>
+          <option value="chelsea" ${a.vk==='chelsea'?'selected':''}>🔵 Chelsea</option>
+        </select>
+      </div>
+      <div class="fg"><label>Текущие доп. фото: ${a.albums?.length||0} шт</label>
+        ${a.albums?.length?`<div style="display:flex;gap:6px;overflow-x:auto;padding:4px 0;scrollbar-width:none">${a.albums.map(p=>`<img src="${p}" style="width:54px;height:54px;object-fit:cover;border-radius:7px;flex-shrink:0">`).join('')}</div>`:'<div style="font-size:11px;color:var(--muted);padding:4px 0">Нет фото</div>'}
+      </div>
+      <div class="fg"><label>Добавить ещё доп. фото</label>
+        <label class="photo-label" for="extrasIn">📸 Выбрать новые фото</label>
+        <input type="file" id="extrasIn" accept="image/*" multiple style="display:none" onchange="previewExtras(event)">
+        <div class="chips" id="extraChips"></div>
+      </div>
+      <div class="form-btns">
+        <button class="f-submit" id="fSubmit" onclick="saveEdit('${id}')">💾 Сохранить</button>
+        <button class="f-cancel" onclick="renderEditList()">Отмена</button>
+      </div>
+    </div>`;}
+
+async function saveEdit(id){
+  const num=document.getElementById('fNum').value.trim();
+  const price=document.getElementById('fPrice').value.trim();
+  const club=document.getElementById('fClub').value;
+  const strength=document.getElementById('fStrength').value.trim();
+  if(!num||!price){ toast('⚠️ Заполни число и цену'); return; }
+  const btn=document.getElementById('fSubmit'); btn.disabled=true; btn.textContent='⏳ Сохраняю...';
+  const fd=new FormData();
+  fd.append('number',num); fd.append('price',price); fd.append('vk',club); fd.append('strength',strength);
+  if(selPhoto) fd.append('photo',selPhoto);
+  extraFiles.forEach(f=>fd.append('extra_photos',f));
+  try{
+    const r=await fetch(`${API}/accounts/${id}`,{method:'PATCH',body:fd});
+    const d=await r.json();
+    if(d.ok){ toast('✅ Сохранено!'); await loadAccounts(); renderEditList(); }
+    else{ toast('❌ Ошибка сервера'); btn.disabled=false; btn.textContent='💾 Сохранить'; }
+  }catch{ toast('❌ Сервер недоступен'); btn.disabled=false; btn.textContent='💾 Сохранить'; }
+}
+
+// ━━━ УДАЛИТЬ ━━━
+function renderDel(){
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderHome()">← Назад</button>
+    <div class="sheet-title">🗑 Удалить аккаунт</div>
+    <div class="del-list">
+      ${!ACCOUNTS.length?'<div class="no-albums">Нет аккаунтов</div>':
+        ACCOUNTS.map(a=>`<div class="del-item"><div><div class="del-num">#${a.number}</div><div class="del-price">${Number(a.price).toLocaleString('ru')} ₽</div></div><button class="del-btn" onclick="delAcc('${a.id}', this)">🗑 Удалить</button></div>`).join('')}
+    </div>`;}
+
+async function delAcc(id, btn){
+  const orig = btn.innerHTML;
+  btn.innerHTML = '⏳ Удаление...';
+  btn.disabled = true;
+  try{ const r=await fetch(`${API}/accounts/${id}`,{method:'DELETE'}); const d=await r.json(); if(d.ok){ toast('🗑 Удалено'); await loadAccounts(); renderDel(); } }
+  catch{ toast('❌ Ошибка'); btn.innerHTML = orig; btn.disabled = false; }
+}
+
+function renderStats(){
+  const prices=ACCOUNTS.map(a=>Number(a.price)).filter(Boolean);
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderHome()">← Назад</button>
+    <div class="sheet-title">📊 Статистика</div>
+    <div class="stats">
+      <div class="stat-item"><div class="stat-ic ic-b">📦</div><div><div class="stat-label">Аккаунтов</div><div class="stat-val">${ACCOUNTS.length} шт</div></div></div>
+      <div class="stat-item"><div class="stat-ic ic-t">📸</div><div><div class="stat-label">С доп. фото</div><div class="stat-val">${ACCOUNTS.filter(a=>a.albums&&a.albums.length).length} из ${ACCOUNTS.length}</div></div></div>
+      <div class="stat-item"><div class="stat-ic ic-g">💰</div><div><div class="stat-label">Диапазон цен</div><div class="stat-val">${prices.length?Math.min(...prices).toLocaleString('ru')+' — '+Math.max(...prices).toLocaleString('ru')+' ₽':'—'}</div></div></div>
+    </div>`;}
+
+// ━━━ НАВИГАЦИЯ СВАЙП (только для админа) ━━━
+(function(){
+  if(!isAdmin) return;
+  const navAdminBtn = document.getElementById('navAdminBtn');
+  if(navAdminBtn) navAdminBtn.style.display = 'flex';
+  const navOuter = document.getElementById('navOuter');
+  const navInner = document.getElementById('navInner');
+  if(!navOuter||!navInner) return;
+  navInner.style.paddingRight = '0px';
+  let startX=0, startY=0, currentX=0, isDragging=false, revealed=false;
+  const REVEAL = 68;
+  function setPos(x, animated){
+    navInner.style.transition = animated ? 'transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94)' : 'none';
+    navInner.style.transform = `translateX(${x}px)`;
+  }
+  navOuter.addEventListener('touchstart', e=>{
+    startX=e.touches[0].clientX; startY=e.touches[0].clientY;
+    currentX=revealed?-REVEAL:0; isDragging=true;
+  },{passive:true});
+  navOuter.addEventListener('touchmove', e=>{
+    if(!isDragging) return;
+    const dx=e.touches[0].clientX-startX;
+    const dy=Math.abs(e.touches[0].clientY-startY);
+    if(dy>8&&Math.abs(dx)<dy){isDragging=false;return;}
+    setPos(Math.min(0,Math.max(-REVEAL,currentX+dx)),false);
+  },{passive:true});
+  navOuter.addEventListener('touchend', e=>{
+    if(!isDragging) return; isDragging=false;
+    const dx=e.changedTouches[0].clientX-startX;
+    if(!revealed&&dx<-20){setPos(-REVEAL,true);revealed=true;}
+    else if(revealed&&dx>20){setPos(0,true);revealed=false;}
+    else{setPos(revealed?-REVEAL:0,true);}
+  });
+  document.addEventListener('touchstart', e=>{
+    if(revealed&&!navOuter.contains(e.target)){setPos(0,true);revealed=false;}
+  },{passive:true});
+})();
+
+// ━━━ PINCH ZOOM ФОТО ━━━
+(function(){
+  const img = document.getElementById('galImg')||document.getElementById('gfImg');
+  if(!img) return;
+  let scale=1, posX=0, posY=0;
+  let startScale=1, startPosX=0, startPosY=0;
+  let startDist=0, startMidX=0, startMidY=0;
+  let lastTap=0, isPinching=false, isDragging=false;
+  let dragStartX=0, dragStartY=0;
+  window._galZoomScale=1;
+
+  function midpoint(t){ return {x:(t[0].clientX+t[1].clientX)/2, y:(t[0].clientY+t[1].clientY)/2}; }
+  function dist(t){ return Math.hypot(t[0].clientX-t[1].clientX, t[0].clientY-t[1].clientY); }
+
+  function applyTransform(animated){
+    img.style.transition = animated ? 'transform .25s ease' : 'none';
+    img.style.transform = `translate(${posX}px,${posY}px) scale(${scale})`;
+    window._galZoomScale = scale;
+  }
+
+  function resetZoom(animated){
+    scale=1; posX=0; posY=0;
+    window._galZoomScale=1;
+    applyTransform(animated);
+  }
+
+  function clampPos(){
+    const rect = img.getBoundingClientRect();
+    const pw = img.parentElement.clientWidth;
+    const ph = img.parentElement.clientHeight;
+    const maxX = Math.max(0,(rect.width - pw)/2);
+    const maxY = Math.max(0,(rect.height - ph)/2);
+    posX = Math.min(maxX, Math.max(-maxX, posX));
+    posY = Math.min(maxY, Math.max(-maxY, posY));
+  }
+
+  img.addEventListener('touchstart', e=>{
+    const now = Date.now();
+    // Двойной тап
+    if(e.touches.length===1 && now-lastTap<280){
+      e.preventDefault();
+      if(scale>1){ resetZoom(true); }
+      else { scale=2.5; posX=0; posY=0; applyTransform(true); }
+      lastTap=0; return;
+    }
+    lastTap = e.touches.length===1 ? now : 0;
+
+    if(e.touches.length===2){
+      e.preventDefault();
+      isPinching=true; isDragging=false;
+      startDist = dist(e.touches);
+      startScale = scale;
+      startPosX = posX; startPosY = posY;
+      const mid = midpoint(e.touches);
+      startMidX = mid.x; startMidY = mid.y;
+    } else if(e.touches.length===1 && scale>1){
+      isDragging=true;
+      dragStartX = e.touches[0].clientX - posX;
+      dragStartY = e.touches[0].clientY - posY;
+    }
+  },{passive:false});
+
+  img.addEventListener('touchmove', e=>{
+    if(e.touches.length===2 && isPinching){
+      e.preventDefault();
+      const newDist = dist(e.touches);
+      const newScale = Math.min(5, Math.max(1, startScale * (newDist/startDist)));
+      // Zoom вокруг центра жестов
+      const mid = midpoint(e.touches);
+      const dMidX = mid.x - startMidX;
+      const dMidY = mid.y - startMidY;
+      scale = newScale;
+      posX = startPosX + dMidX;
+      posY = startPosY + dMidY;
+      applyTransform(false);
+    } else if(e.touches.length===1 && isDragging && scale>1){
+      e.preventDefault();
+      posX = e.touches[0].clientX - dragStartX;
+      posY = e.touches[0].clientY - dragStartY;
+      clampPos();
+      applyTransform(false);
+    }
+  },{passive:false});
+
+  img.addEventListener('touchend', e=>{
+    if(e.touches.length===0){
+      if(scale<=1){ resetZoom(true); }
+      else { clampPos(); applyTransform(true); }
+      setTimeout(()=>{ isPinching=false; isDragging=false; },50);
+    } else if(e.touches.length===1 && isPinching){
+      // Убрали один палец — переходим в режим drag
+      isPinching=false; isDragging=true;
+      dragStartX = e.touches[0].clientX - posX;
+      dragStartY = e.touches[0].clientY - posY;
+    }
+  },{passive:true});
+
+  // Сброс при смене фото
+  const gfL = document.getElementById('gfL');
+  const gfR = document.getElementById('gfR');
+  if(gfL) gfL.addEventListener('click',()=>resetZoom(false));
+  if(gfR) gfR.addEventListener('click',()=>resetZoom(false));
+
+  // Свайп — только когда не зумировано
+  const gfWrap = document.getElementById('gfWrap');
+  if(gfWrap){
+    let swipeTx=0, swipeTy=0;
+    gfWrap.addEventListener('touchstart',e=>{
+      if(scale>1.05||isPinching) return;
+      swipeTx=e.touches[0].clientX;
+      swipeTy=e.touches[0].clientY;
+    },{passive:true});
+    gfWrap.addEventListener('touchend',e=>{
+      if(scale>1.05||isPinching) return;
+      const dx=e.changedTouches[0].clientX-swipeTx;
+      const dy=Math.abs(e.changedTouches[0].clientY-swipeTy);
+      if(Math.abs(dx)>45 && dy<60) gfGo(dx<0?galCur+1:galCur-1);
+    },{passive:true});
+  }
+})();
+
+// ━━━ КУПИТЬ АККАУНТ — ОБЪЯВЛЕНИЯ ━━━
+async function renderBuyAccount(){
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderHome()">← Назад</button>
+    <div class="sheet-title">🛒 Куплю аккаунт</div>
+    <div class="form">
+      <div class="fg"><label>Минимальная цена (₽)</label>
+        <input class="fi" id="buyMin" type="number" placeholder="1500">
+      </div>
+      <div class="fg"><label>Максимальная цена (₽)</label>
+        <input class="fi" id="buyMax" type="number" placeholder="3000">
+      </div>
+      <div class="fg"><label>Описание</label>
+        <input class="fi" id="buyDesc" placeholder="Нужен аккаунт с хорошими игроками...">
+      </div>
+      <div class="fg"><label>Цвет баннера</label>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <div id="color-purple" onclick="selectBuyColor('purple')" style="flex:1;padding:10px;border-radius:8px;border:2px solid rgba(168,85,247,.5);background:rgba(168,85,247,.1);color:#c084fc;font-size:11px;font-weight:700;text-align:center;cursor:pointer">💜 Фиолет</div>
+          <div id="color-gold" onclick="selectBuyColor('gold')" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(251,191,36,.05);color:#94a3b8;font-size:11px;font-weight:700;text-align:center;cursor:pointer">💛 Золото</div>
+          <div id="color-blue" onclick="selectBuyColor('blue')" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(77,139,255,.05);color:#94a3b8;font-size:11px;font-weight:700;text-align:center;cursor:pointer">💙 Синий</div>
+        </div>
+      </div>
+      <button class="submit-btn" id="buyLaunchBtn" onclick="launchBuyAnn()">🚀 Запустить рассылку</button>
+    </div>
+    <div style="margin-top:8px;padding:0 16px 4px">
+      <div style="font-size:11px;font-weight:700;color:#334155;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Активные объявления</div>
+      <div id="buyAnnList"><div class="state-box"><div class="state-icon spin">⚽</div></div></div>
+    </div>`;
+
+  window._buyColor = 'purple';
+  loadBuyAnns();
+}
+
+function selectBuyColor(c){
+  window._buyColor = c;
+  const cols = {purple:'rgba(168,85,247,.5)',gold:'rgba(251,191,36,.5)',blue:'rgba(77,139,255,.5)'};
+  const bgs = {purple:'rgba(168,85,247,.1)',gold:'rgba(251,191,36,.08)',blue:'rgba(77,139,255,.08)'};
+  const txts = {purple:'#c084fc',gold:'#fbbf24',blue:'#4d8bff'};
+  ['purple','gold','blue'].forEach(k=>{
+    const el = document.getElementById('color-'+k);
+    if(!el) return;
+    if(k===c){
+      el.style.border=`2px solid ${cols[k]}`;
+      el.style.background=bgs[k];
+      el.style.color=txts[k];
+    } else {
+      el.style.border='1px solid rgba(255,255,255,.08)';
+      el.style.background='rgba(255,255,255,.02)';
+      el.style.color='#64748b';
+    }
+  });
+}
+
+async function launchBuyAnn(){
+  const min = document.getElementById('buyMin').value.trim();
+  const max = document.getElementById('buyMax').value.trim();
+  const desc = document.getElementById('buyDesc').value.trim();
+  if(!min||!max||!desc){toast('⚠️ Заполни все поля');return;}
+  const btn = document.getElementById('buyLaunchBtn');
+  btn.textContent='⏳ Запускаем...'; btn.disabled=true;
+  try{
+    const fd = new FormData();
+    fd.append('price_min', min);
+    fd.append('price_max', max);
+    fd.append('description', desc);
+    fd.append('color', window._buyColor||'purple');
+    const r = await fetch(`${API}/buy-announcement`, {method:'POST', body:fd});
+    const data = await r.json();
+    if(data.ok){
+      toast(`✅ Разослано ${data.sent} подписчикам`);
+      document.getElementById('buyMin').value='';
+      document.getElementById('buyMax').value='';
+      document.getElementById('buyDesc').value='';
+      loadBuyAnns();
+    } else {
+      toast('❌ Ошибка: '+data.error);
+    }
+  }catch(e){toast('❌ Ошибка сервера');}
+  btn.textContent='🚀 Запустить рассылку'; btn.disabled=false;
+}
+
+async function loadBuyAnns(){
+  try{
+    const r = await fetch(`${API}/buy-announcements`);
+    const list = await r.json();
+    const el = document.getElementById('buyAnnList');
+    if(!el) return;
+    if(!list.length){
+      el.innerHTML='<div style="color:#334155;font-size:12px;text-align:center;padding:16px 0">Нет активных объявлений</div>';
+      return;
+    }
+    const colorIcon = {purple:'💜',gold:'💛',blue:'💙'};
+    el.innerHTML = list.map(a=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;margin-bottom:8px;gap:10px">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+            <span>${colorIcon[a.color]||'🛒'}</span>
+            <span style="font-weight:800;font-size:13px;color:#f1f5f9">${a.price_min} — ${a.price_max} ₽</span>
+          </div>
+          <div style="font-size:11px;color:#475569;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.description}</div>
+        </div>
+        <button onclick="deleteBuyAnn('${a.id}')" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171;padding:7px 12px;border-radius:8px;font-family:'Inter',sans-serif;font-size:11px;font-weight:800;cursor:pointer;flex-shrink:0;white-space:nowrap">🗑 Удалить</button>
+      </div>`).join('');
+  }catch(e){
+    const el = document.getElementById('buyAnnList');
+    if(el) el.innerHTML='<div style="color:#ef4444;font-size:12px;text-align:center;padding:16px">Ошибка загрузки</div>';
+  }
+}
+
+async function deleteBuyAnn(id){
+  if(!confirm('Удалить объявление из канала и бота?')) return;
+  const btn = document.querySelector(`[onclick="deleteBuyAnn('${id}')"]`);
+  if(btn){ btn.textContent='⏳ Удаляем...'; btn.disabled=true; }
+  try{
+    const r = await fetch(`${API}/buy-announcement/${id}`, {method:'DELETE'});
+    const data = await r.json();
+    if(data.ok){ toast('🗑 Объявление удалено'); loadBuyAnns(); }
+    else { toast('❌ Ошибка'); if(btn){btn.textContent='🗑 Удалить';btn.disabled=false;} }
+  }catch(e){ toast('❌ Ошибка сервера'); if(btn){btn.textContent='🗑 Удалить';btn.disabled=false;} }
+}
+
+// ━━━ ИНЕРЦИОННЫЙ СКРОЛЛ ━━━
+(function(){
+  const sw=document.getElementById('swrap'), sc=document.getElementById('scont'), sb=document.getElementById('sbThumb');
+  let cY=0,tY=0,vel=0,lY=0,lT=0,tVel=0,drag=false;
+  const mx=()=>Math.max(0,sc.scrollHeight-sw.clientHeight);
+  const cl=(v,a,b)=>Math.min(Math.max(v,a),b);
+  function thumb(){ const vH=sw.clientHeight,tH=sc.scrollHeight; if(tH<=vH){sb.style.opacity='0';return;} const tp=Math.max(32,vH*vH/tH),tr=vH-tp; sb.style.height=tp+'px'; sb.style.top=(cY/mx()*tr)+'px'; sb.style.opacity='.5'; }
+  (function loop(){ const m=mx(); if(!drag){vel*=.87;tY=cl(tY+vel,0,m);if(tY<=0||tY>=m)vel*=.4;} cY+=(tY-cY)*.12; if(Math.abs(tY-cY)<.5)cY=tY; sc.style.transform=`translateY(${-cY}px)`; thumb(); requestAnimationFrame(loop); })();
+  sw.addEventListener('touchstart',e=>{drag=true;vel=0;lY=e.touches[0].clientY;lT=Date.now();tVel=0;},{passive:true});
+  sw.addEventListener('touchmove',e=>{const y=e.touches[0].clientY,dy=lY-y,dt=Math.max(1,Date.now()-lT);tVel=dy/dt*16;tY=cl(tY+dy,0,mx());lY=y;lT=Date.now();},{passive:true});
+  sw.addEventListener('touchend',()=>{drag=false;vel=tVel;});
+  sw.addEventListener('wheel',e=>{tY=cl(tY+e.deltaY,0,mx());vel=0;},{passive:true});
+})();
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', async()=>{ await initAPI(); loadAccounts(); });
+} else {
+  initAPI().then(()=>loadAccounts());
+}
+
+function showPage(p){
+  var o=document.getElementById('profileOv');
+  var a=document.getElementById('navAccBtn');
+  var b=document.getElementById('navProfBtn');
+  if(p==='profile'){
+    if(o)o.style.display='flex';
+    if(a){a.style.background='';a.style.borderColor='';a.style.color='';}
+    if(b){b.style.background='rgba(239,68,68,.1)';b.style.borderColor='rgba(239,68,68,.2)';b.style.color='#f87171';}
+    var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+    if(u){
+      // Проверяем верификацию
+      fetch(API+'/profile/check/'+u.id).then(function(r){return r.json();}).then(function(vc){
+        var vbadge=document.getElementById('pVerified');
+        if(vbadge)vbadge.style.display=vc.verified?'inline-flex':'none';
+        var vwarn=document.getElementById('pVerifyWarn');
+        if(vwarn)vwarn.style.display=vc.verified?'none':'flex';
+      }).catch(function(){});
+      var n=document.getElementById('pName');if(n)n.textContent=(u.first_name||'')+' '+(u.last_name||'');
+      var i=document.getElementById('pUid');if(i)i.textContent='ID: '+u.id;
+      if(u.photo_url){var em=document.getElementById('pAvEm');if(em)em.style.display='none';var im=document.getElementById('pAvImg');if(im){im.src=u.photo_url;im.style.display='block';}}
+      if(window.API){fetch(API+'/profile/'+u.id).then(function(r){return r.json();}).then(function(d){
+        var ba=document.getElementById('pBalAmount');if(ba)ba.textContent=(d.balance||0).toLocaleString('ru')+' ₽';
+        window._userBalance=d.balance||0;
+        var c=document.querySelectorAll('.p-count');
+        if(c[0])c[0].textContent=d.purchases;if(c[1])c[1].textContent=d.swaps;
+        var blk=document.getElementById('pBlockBanner');if(blk)blk.style.display=d.blocked?'flex':'none';
+        var fc=document.getElementById('pFailCount');if(fc)fc.textContent=d.fail_count+'/5';
+        if(window.renderHistory)renderHistory(d.history);
+        if(window.renderBadges)renderBadges(d.badges||[]);
+        var bc=document.getElementById('pBadgeCount');
+        if(bc)bc.textContent=(d.badges||[]).filter(function(b){return b.earned;}).length;
+      }).catch(function(){});}
+    }
+  } else {
+    if(o)o.style.display='none';
+    if(b){b.style.background='';b.style.borderColor='';b.style.color='';}
+    if(a){a.style.background='rgba(239,68,68,.1)';a.style.borderColor='rgba(239,68,68,.2)';a.style.color='#f87171';}
+  }
+}
+function openProfile(){showPage('profile');}
+
+// ── ПОПОЛНЕНИЕ БАЛАНСА ──
+var _topupAmount=500;
+function openTopup(){
+  var o=document.getElementById('topupOv');
+  if(!o)return;
+  document.getElementById('topupForm').style.display='block';
+  document.getElementById('topupReceiptForm').style.display='none';
+  document.getElementById('topupDone').style.display='none';
+  o.style.display='flex';
+}
+function selTopup(el,amt){
+  document.querySelectorAll('#topupGrid>div').forEach(function(c){c.style.background='#0d1117';c.style.borderColor='rgba(255,255,255,.07)';});
+  el.style.background='rgba(168,85,247,.1)';el.style.borderColor='rgba(168,85,247,.4)';
+  var w=document.getElementById('topupCustom');if(w)w.style.display=amt===0?'block':'none';
+  _topupAmount=amt||0;
+  var s=document.getElementById('topupSumLabel');if(s)s.textContent=amt?amt.toLocaleString('ru')+' ₽':'свою сумму';
+}
+function openTopupReceipt(){
+  var amt=_topupAmount||parseInt(document.getElementById('topupAmt')&&document.getElementById('topupAmt').value)||0;
+  if(amt<100){if(window.toast)toast('⚠️ Минимум 100 ₽');return;}
+  _topupAmount=amt;
+  document.getElementById('topupForm').style.display='none';
+  document.getElementById('topupReceiptForm').style.display='block';
+  document.getElementById('topupPhotoPrev').innerHTML='';
+  if(document.getElementById('topupPhotoInput'))document.getElementById('topupPhotoInput').value='';
+}
+function topupPhotoPreview(input){
+  if(!input.files||!input.files[0])return;
+  document.getElementById('topupPhotoPrev').innerHTML='<img src="'+URL.createObjectURL(input.files[0])+'" style="width:100%;border-radius:10px;max-height:200px;object-fit:cover">';
+}
+async function sendTopupReceipt(){
+  var inp=document.getElementById('topupPhotoInput');
+  if(!inp||!inp.files||!inp.files[0]){if(window.toast)toast('⚠️ Добавь скрин');return;}
+  var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+  document.getElementById('topupReceiptForm').style.display='none';
+  document.getElementById('topupDone').style.display='block';
+  try{
+    var fd=new FormData();
+    fd.append('user_id',u?u.id:0);
+    fd.append('user_name',u?(u.first_name||''):'');
+    fd.append('amount',_topupAmount);
+    fd.append('photo',inp.files[0]);
+    await fetch(API+'/balance/topup/receipt',{method:'POST',body:fd});
+  }catch(e){}
+}
+
+// ── ПРОФИЛЬ И ПОПОЛНЕНИЕ ──
+var _topupAmount=500;
+
+async function grantAllBadges(){
+  var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+  if(!u)return;
+  var badges=['newcomer','regular','vip','spender','king','trader','merchant','loyal','patient','speedster'];
+  for(var i=0;i<badges.length;i++){
+    await fetch(API+'/badges/add/'+u.id+'/'+badges[i],{method:'POST'});
+  }
+  toast('✅ Все бейджи выданы!');
+  showPage('profile');
+}
+function renderBadges(badges){
+  var el=document.getElementById('pBadges');
+  if(!el||!badges) return;
+  var out='';
+  badges.forEach(function(b){
+    var opacity=b.earned?'1':'0.25';
+    out+='<div style="background:#0d1117;border:1px solid rgba(255,255,255,'+( b.earned?'.12':'.04')+');border-radius:10px;padding:10px 8px;text-align:center;opacity:'+opacity+'">';
+    out+='<div style="font-size:22px;margin-bottom:4px">'+b.emoji+'</div>';
+    out+='<div style="font-size:11px;font-weight:800;color:#f1f5f9;margin-bottom:2px">'+b.name+'</div>';
+    out+='<div style="font-size:9px;color:#475569;line-height:1.3">'+b.desc+'</div>';
+    out+='</div>';
+  });
+  el.innerHTML=out||'<div style="font-size:12px;color:#334155;text-align:center;padding:16px;grid-column:1/-1">Покупок пока нет</div>';
+}
+function renderHistory(history){
+  var el=document.getElementById('pHistory');
+  if(!el)return;
+  if(!history||!history.length){el.innerHTML='<div style="font-size:12px;color:#334155;text-align:center;padding:16px">Покупок пока нет</div>';return;}
+  var out='';
+  history.forEach(function(h){
+    var icon=h.status==='success'?'✅':h.status==='expired'?'⏰':'❌';
+    var color=h.status==='success'?'#2dd4bf':h.status==='expired'?'#f59e0b':'#f87171';
+    var date=new Date(h.created_at*1000).toLocaleDateString('ru',{day:'2-digit',month:'2-digit'});
+    out+='<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)">';
+    out+='<div style="display:flex;align-items:center;gap:9px"><div style="font-size:16px">'+icon+'</div>';
+    out+='<div><div style="font-size:12px;font-weight:700">#'+h.acc_num+'</div>';
+    out+='<div style="font-size:10px;color:#475569">'+date+'</div></div></div>';
+    out+='<div style="font-size:13px;font-weight:800;color:'+color+'">'+Number(h.total).toLocaleString('ru')+' ₽</div></div>';
+  });
+  el.innerHTML=out;
+}
+function subscribeNotify(){
+  var btn=document.getElementById('notifyBtn');
+  var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+  if(btn){btn.disabled=true;btn.textContent='⏳ Подписываемся...';}
+  var fd=new FormData();
+  fd.append('buyer_id',u?u.id:0);fd.append('buyer_name',u?(u.first_name||''):'');
+  fd.append('acc_id',window._boId||'');fd.append('acc_num',window._boNum||'');
+  fetch(API+'/notify/subscribe',{method:'POST',body:fd})
+    .then(function(r){return r.json();})
+    .then(function(d){if(btn){btn.textContent='✅ Подписан!';btn.style.background='rgba(45,212,191,.15)';btn.style.color='#2dd4bf';}})
+    .catch(function(){if(btn){btn.disabled=false;btn.textContent='❌ Ошибка';btn.style.opacity='1';}});
+}
+</script>
+
+
+<!-- ПОПОЛНЕНИЕ БАЛАНСА -->
+<div id="topupOv" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.92);align-items:flex-end;justify-content:center">
+  <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 18px"></div>
+    <div id="topupForm">
+      <div style="font-size:17px;font-weight:800;margin-bottom:4px">💜 Пополнить баланс</div>
+      <div style="font-size:12px;color:#64748b;margin-bottom:18px">Деньги только для покупок — вывод невозможен</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px" id="topupGrid">
+        <div onclick="selTopup(this,500)" style="padding:11px 6px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.4);border-radius:9px;text-align:center;cursor:pointer"><div style="font-size:14px;font-weight:800;color:#c084fc">500 ₽</div></div>
+        <div onclick="selTopup(this,1000)" style="padding:11px 6px;background:#0d1117;border:1px solid rgba(255,255,255,.07);border-radius:9px;text-align:center;cursor:pointer"><div style="font-size:14px;font-weight:800">1 000 ₽</div></div>
+        <div onclick="selTopup(this,2000)" style="padding:11px 6px;background:#0d1117;border:1px solid rgba(255,255,255,.07);border-radius:9px;text-align:center;cursor:pointer"><div style="font-size:14px;font-weight:800">2 000 ₽</div></div>
+        <div onclick="selTopup(this,3000)" style="padding:11px 6px;background:#0d1117;border:1px solid rgba(255,255,255,.07);border-radius:9px;text-align:center;cursor:pointer"><div style="font-size:14px;font-weight:800">3 000 ₽</div></div>
+        <div onclick="selTopup(this,5000)" style="padding:11px 6px;background:#0d1117;border:1px solid rgba(255,255,255,.07);border-radius:9px;text-align:center;cursor:pointer"><div style="font-size:14px;font-weight:800">5 000 ₽</div></div>
+        <div onclick="selTopup(this,0)" style="padding:11px 6px;background:#0d1117;border:1px solid rgba(255,255,255,.07);border-radius:9px;text-align:center;cursor:pointer"><div style="font-size:14px;font-weight:800">Другое</div></div>
+      </div>
+      <div id="topupCustom" style="display:none;margin-bottom:12px"><input id="topupAmt" type="number" placeholder="Сумма (₽)" style="width:100%;background:#0d1117;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:11px 13px;color:#f1f5f9;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;outline:none"></div>
+      <div style="background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:13px;margin-bottom:14px">
+        <div style="font-size:9px;color:#475569;font-weight:700;letter-spacing:2px;margin-bottom:6px">ПЕРЕВЕДИ НА КАРТУ</div>
+        <div style="font-size:17px;font-weight:900;letter-spacing:3px;color:#f1f5f9;margin-bottom:2px">2200 7009 4514 4961</div>
+        <div style="font-size:11px;color:#475569">Никита Д. · Сбербанк · <strong id="topupSumLabel" style="color:#f1f5f9">500 ₽</strong></div>
+      </div>
+      <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15);border-radius:9px;padding:10px 12px;margin-bottom:14px;font-size:11px;color:rgba(239,68,68,.7);line-height:1.5">🚫 <strong>Вывод невозможен.</strong> Деньги только для покупок. Возврат не предусмотрен.</div>
+      <button onclick="openTopupReceipt()" style="width:100%;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;padding:13px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:9px">📸 Я перевёл — отправить скрин</button>
+      <button onclick="document.getElementById('topupOv').style.display='none'" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:11px;border-radius:11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Отмена</button>
+    </div>
+    <div id="topupReceiptForm" style="display:none">
+      <div style="font-size:17px;font-weight:800;margin-bottom:4px">📸 Скрин чека</div>
+      <div style="font-size:12px;color:#64748b;margin-bottom:18px">Прикрепи скрин перевода</div>
+      <input id="topupPhotoInput" type="file" accept="image/*" style="display:none" onchange="topupPhotoPreview(this)">
+      <div onclick="document.getElementById('topupPhotoInput').click()" style="width:100%;background:#0d1117;border:2px dashed rgba(255,255,255,.1);border-radius:12px;padding:24px;text-align:center;cursor:pointer;margin-bottom:12px">
+        <div style="font-size:28px;margin-bottom:8px">📷</div>
+        <div style="font-size:13px;font-weight:700;color:#475569">Нажми чтобы выбрать фото</div>
+      </div>
+      <div id="topupPhotoPrev" style="margin-bottom:14px"></div>
+      <button onclick="sendTopupReceipt()" style="width:100%;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;padding:13px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:9px">✅ Отправить скрин</button>
+      <button onclick="document.getElementById('topupReceiptForm').style.display='none';document.getElementById('topupForm').style.display='block'" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:11px;border-radius:11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer">← Назад</button>
+    </div>
+    <div id="topupDone" style="display:none;text-align:center;padding:10px 0">
+      <div style="font-size:48px;margin-bottom:14px">✅</div>
+      <div style="font-size:18px;font-weight:800;margin-bottom:8px">Скрин отправлен!</div>
+      <div style="font-size:13px;color:#64748b;line-height:1.6">Продавец проверит и пополнит баланс</div>
+    </div>
+  </div>
+</div>
+
+<!-- ОПЛАТА БАЛАНСОМ УСПЕШНА -->
+<div id="balanceDoneOv" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.92);align-items:flex-end;justify-content:center">
+  <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 40px;width:100%;max-width:480px;text-align:center">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:48px;margin-bottom:14px">⚡</div>
+    <div style="font-size:18px;font-weight:800;margin-bottom:8px">Оплачено с баланса!</div>
+    <div style="font-size:13px;color:#64748b;line-height:1.6;margin-bottom:20px">Продавец получил уведомление и скоро пришлёт данные аккаунта</div>
+    <div style="background:rgba(45,212,191,.05);border:1px solid rgba(45,212,191,.15);border-radius:12px;padding:16px;margin-bottom:20px">
+      <div style="font-size:12px;color:rgba(45,212,191,.6);font-weight:700;margin-bottom:8px">ЧТО ДАЛЬШЕ?</div>
+      <div style="font-size:13px;color:#94a3b8;line-height:1.6">Проверь бот — туда придут данные аккаунта.<br>Если не пришло через 15 минут — напиши Дворнову.</div>
+    </div>
+    <a href="https://t.me/DvornovNikitos" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;padding:13px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;text-decoration:none;margin-bottom:9px">✉️ Написать @DvornovNikitos</a>
+    <button onclick="document.getElementById('balanceDoneOv').style.display='none'" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:12px;border-radius:11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Закрыть</button>
+  </div>
+</div>
+
+<!-- НЕДОСТАТОЧНО СРЕДСТВ -->
+<div id="insufficientOv" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.88);align-items:flex-end;justify-content:center">
+  <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px;text-align:center">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:36px;margin-bottom:12px">💜</div>
+    <div style="font-size:17px;font-weight:800;margin-bottom:8px">Недостаточно средств</div>
+    <div style="background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px;margin-bottom:16px;text-align:left">
+      <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)"><span style="font-size:11px;color:#64748b">Цена аккаунта</span><span id="insuffAmt" style="font-size:12px;font-weight:700;color:#fbbf24"></span></div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)"><span style="font-size:11px;color:#64748b">Твой баланс</span><span id="insuffBal" style="font-size:12px;font-weight:700;color:#2dd4bf"></span></div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="font-size:11px;color:#64748b">Не хватает</span><span id="insuffNeed" style="font-size:12px;font-weight:700;color:#f87171"></span></div>
+    </div>
+    <button onclick="document.getElementById('insufficientOv').style.display='none';openTopup()" style="width:100%;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;padding:13px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:9px">💜 Пополнить баланс</button>
+    <button onclick="document.getElementById('insufficientOv').style.display='none';doPay('card')" style="width:100%;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171;padding:12px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:9px">💳 Оплатить картой</button>
+    <button onclick="document.getElementById('insufficientOv').style.display='none'" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:11px;border-radius:11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Закрыть</button>
+  </div>
+</div>
+
+<!-- НЕ ВЕРИФИЦИРОВАН -->
+<div id="notVerifiedOv" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.88);align-items:flex-end;justify-content:center">
+  <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px;text-align:center">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:42px;margin-bottom:12px">📱</div>
+    <div style="font-size:17px;font-weight:800;margin-bottom:8px">Нужна верификация</div>
+    <div style="font-size:13px;color:#64748b;line-height:1.6;margin-bottom:20px">Для покупки и обмена нужно подтвердить номер телефона.<br>Это займёт 10 секунд.</div>
+    <a href="https://t.me/Tetsjxbot?start=verify" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#fff;padding:13px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;text-decoration:none;margin-bottom:9px" onclick="document.getElementById('notVerifiedOv').style.display='none'">📱 Верифицироваться в боте</a>
+    <button onclick="document.getElementById('notVerifiedOv').style.display='none'" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:12px;border-radius:11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Закрыть</button>
+  </div>
+</div>
+
+<!-- ЗАБЛОКИРОВАН -->
+<div id="blockedOv" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);align-items:flex-end;justify-content:center">
+  <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px;text-align:center">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:42px;margin-bottom:12px">🚫</div>
+    <div style="font-size:17px;font-weight:800;margin-bottom:8px;color:#f87171">Покупки заблокированы</div>
+    <div style="font-size:13px;color:#64748b;line-height:1.6;margin-bottom:20px">Ты 5 раз не оплатил заказ.<br>Разблокировка стоит <strong style="color:#fbbf24">100 ₽</strong></div>
+    <a href="https://t.me/DvornovNikitos" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;padding:13px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;text-decoration:none;margin-bottom:9px">✉️ Написать @DvornovNikitos</a>
+    <button onclick="document.getElementById('blockedOv').style.display='none'" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:12px;border-radius:11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Закрыть</button>
+  </div>
+</div>
+
+<div id="profileOv" style="display:none;position:fixed;inset:0;z-index:500;flex-direction:column;background:#07080f;overflow-y:auto">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0">
+    <div style="font-size:17px;font-weight:800">👤 Профиль</div>
+    <div onclick="document.getElementById('profileOv').style.display='none'" style="width:34px;height:34px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:#64748b">✕</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;padding:20px 16px 0">
+    <div style="position:relative;flex-shrink:0">
+      <div style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;align-items:center;justify-content:center;font-size:28px;border:2px solid rgba(168,85,247,.4);overflow:hidden">
+        <span id="pAvEm">🧑</span><img id="pAvImg" src="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
+      </div>
+      <div style="position:absolute;bottom:0;right:0;width:20px;height:20px;background:#2dd4bf;border-radius:50%;border:2px solid #07080f;display:flex;align-items:center;justify-content:center;font-size:9px">✓</div>
+    </div>
+    <div>
+      <div id="pName" style="font-size:18px;font-weight:800;margin-bottom:2px">Покупатель</div>
+      <div id="pUid" style="font-size:11px;color:#475569;margin-bottom:8px"></div>
+      <div style="display:inline-flex;align-items:center;gap:4px;background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.2);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;color:#2dd4bf">🎮 Покупатель eFootball</div>
+    </div>
+  </div>
+  <div style="display:flex;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05);margin-top:16px">
+    <div style="flex:1;padding:12px 6px;text-align:center"><div class="p-count" style="font-size:18px;font-weight:900">0</div><div style="font-size:9px;color:#475569;font-weight:600">Покупок</div></div>
+    <div style="flex:1;padding:12px 6px;text-align:center;border-left:1px solid rgba(255,255,255,.05);border-right:1px solid rgba(255,255,255,.05)"><div class="p-count" style="font-size:18px;font-weight:900">0</div><div style="font-size:9px;color:#475569;font-weight:600">Обменов</div></div>
+    <div style="flex:1;padding:12px 6px;text-align:center"><div id="pBadgeCount" style="font-size:18px;font-weight:900;color:#c084fc">0</div><div style="font-size:9px;color:#475569;font-weight:600">Бейджей</div></div>
+  </div>
+  <!-- Верификация -->
+  <div id="pVerifyWarn" style="display:none;margin:14px 16px 0;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:14px;align-items:center;gap:12px">
+    <div style="font-size:24px;flex-shrink:0">📱</div>
+    <div>
+      <div style="font-size:13px;font-weight:800;color:#fbbf24;margin-bottom:4px">Верификация не пройдена</div>
+      <div style="font-size:11px;color:rgba(251,191,36,.6);line-height:1.5">Напиши боту /start чтобы подтвердить номер телефона</div>
+    </div>
+  </div>
+
+  <!-- Баланс -->
+  <div style="margin:14px 16px 0;background:linear-gradient(135deg,#0f0a1e,#1a0f35);border:1px solid rgba(168,85,247,.25);border-radius:14px;padding:18px;position:relative">
+    <div style="position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:radial-gradient(circle,rgba(168,85,247,.2),transparent 70%)"></div>
+    <div style="font-size:9px;font-weight:700;color:rgba(168,85,247,.5);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Баланс аккаунта</div>
+    <div id="pBalAmount" style="font-size:32px;font-weight:900;color:#fff;margin-bottom:3px">0 ₽</div>
+    <div style="font-size:10px;color:rgba(239,68,68,.5);margin-bottom:6px">⚠️ Вывод невозможен — только для покупок</div>
+    <div style="font-size:11px;color:rgba(168,85,247,.4);margin-bottom:14px;line-height:1.5">Пополни баланс как обычную покупку — переведи деньги на карту и скинь чек. После подтверждения деньги появятся здесь и ты сможешь платить одной кнопкой.</div>
+    <button onclick="openTopup()" style="width:100%;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;padding:11px;border-radius:9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer">💜 Пополнить баланс</button>
+  </div>
+
+
+  <!-- Бейджи -->
+  <div style="padding:14px 16px 0">
+    <div style="font-size:10px;font-weight:700;color:#334155;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">Бейджи</div>
+    <div id="pBadges" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px"></div>
+    <button id="adminBadgesBtn" style="display:none;width:100%;margin-top:8px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);color:#c084fc;padding:10px;border-radius:9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer" onclick="grantAllBadges()">⚙️ Выдать все бейджи</button>
+  </div>
+
+  <!-- Баннер блокировки -->
+  <div id="pBlockBanner" style="display:none;margin:14px 16px 0;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:12px;padding:14px;align-items:center;gap:12px">
+    <div style="font-size:24px;flex-shrink:0">🚫</div>
+    <div>
+      <div style="font-size:13px;font-weight:800;color:#f87171;margin-bottom:4px">Покупки заблокированы</div>
+      <div style="font-size:11px;color:rgba(239,68,68,.6);line-height:1.5">Ты 5 раз не оплатил заказ.<br>Разблокировка стоит <strong style="color:#f87171">100 ₽</strong> — напиши @DvornovNikitos</div>
+      <a href="https://t.me/DvornovNikitos" target="_blank" style="display:inline-flex;margin-top:8px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#f87171;padding:5px 12px;border-radius:7px;font-size:11px;font-weight:700;text-decoration:none">Написать →</a>
+    </div>
+  </div>
+  <!-- Предупреждение о неоплатах -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin:14px 16px 0;background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:11px 13px">
+    <div style="font-size:12px;color:#64748b">Незакрытых заказов</div>
+    <div id="pFailCount" style="font-size:13px;font-weight:800;color:#f59e0b">0/5</div>
+  </div>
+  <!-- История -->
+  <div style="padding:14px 16px 0">
+    <div style="font-size:10px;font-weight:700;color:#334155;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">История покупок</div>
+    <div id="pHistory" style="font-size:12px;color:#334155;text-align:center;padding:16px">Покупок пока нет</div>
+  </div>
+
+  <div style="margin:14px 16px 40px">
+    <div style="background:#111419;border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:16px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:6px">💬 Нужна помощь?</div>
+      <div style="font-size:12px;color:#64748b;margin-bottom:12px">Напишите Дворнову — ответит быстро</div>
+      <a href="https://t.me/DvornovNikitos" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;text-decoration:none">✉️ Написать @DvornovNikitos</a>
+    </div>
+  </div>
+</div>
+
+<!-- ЗАНЯТО -->
+<div id="busyOv" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);align-items:flex-end;justify-content:center">
+  <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px;text-align:center">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:36px;margin-bottom:12px">⏳</div>
+    <div style="font-size:17px;font-weight:800;margin-bottom:8px">Аккаунт занят</div>
+    <div style="font-size:13px;color:#64748b;margin-bottom:18px">Другой покупатель оформляет покупку</div>
+    <div style="display:flex;align-items:center;justify-content:center;padding:14px;background:#0d1117;border:1px solid rgba(239,68,68,.2);border-radius:12px;margin-bottom:18px">
+      <div style="font-size:9px;color:rgba(239,68,68,.5);font-weight:700;letter-spacing:1px;margin-right:10px">ОСВОБОДИТСЯ ЧЕРЕЗ</div>
+      <div id="busyTimer" style="font-size:22px;font-weight:900;color:#f87171;letter-spacing:2px">05:00</div>
+    </div>
+    <div style="font-size:12px;color:#475569;margin-bottom:18px">Если покупатель не оплатит — аккаунт снова станет доступен</div>
+    <button onclick="subscribeNotify()" id="notifyBtn" style="width:100%;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;padding:13px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:9px">🔔 Уведоми меня когда освободится</button>
+    <button onclick="document.getElementById('busyOv').style.display='none'" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:12px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Закрыть</button>
+  </div>
+</div>
+
+<!-- ПОДТВЕРЖДЕНИЕ ПЕРЕД ОПЛАТОЙ -->
+<div id="prePayOv" style="display:none;position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.88);align-items:flex-end;justify-content:center">
+  <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:36px;text-align:center;margin-bottom:12px">⏱️</div>
+    <div style="font-size:17px;font-weight:800;margin-bottom:6px;text-align:center">Готовы оплатить?</div>
+    <div style="font-size:12px;color:#64748b;margin-bottom:20px;text-align:center">Аккаунт <span id="prePayNum" style="color:#fbbf24;font-weight:700"></span> · <span id="prePayPrice" style="color:#fbbf24;font-weight:700"></span> ₽</div>
+    <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15);border-radius:11px;padding:14px;margin-bottom:18px">
+      <div style="font-size:13px;color:#f1f5f9;font-weight:700;margin-bottom:6px">⚠️ После нажатия:</div>
+      <div style="font-size:12px;color:#94a3b8;line-height:1.7">• Запустится таймер <strong style="color:#f87171">5 минут</strong><br>• Покажем реквизиты карты<br>• Таймер продолжит идти если закроешь</div>
+    </div>
+    <button onclick="confirmPay()" style="width:100%;background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:14px;border-radius:11px;font-family:'Inter',sans-serif;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:9px">✅ Да, начать оплату</button>
+    <button onclick="document.getElementById('prePayOv').style.display='none'" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:12px;border-radius:11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Отмена</button>
+  </div>
+</div>
+
+<!-- ОПЛАТА КАРТОЙ -->
+<div id="payCardOv" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.92);align-items:flex-end;justify-content:center">
+  <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:17px;font-weight:800;margin-bottom:3px">💳 Реквизиты</div>
+    <div style="font-size:12px;color:#64748b;margin-bottom:12px">Аккаунт <span id="pcNum" style="color:#fbbf24;font-weight:700"></span></div>
+    <div style="display:flex;align-items:center;justify-content:center;padding:10px;background:#0d1117;border:1px solid rgba(239,68,68,.2);border-radius:10px;margin-bottom:14px">
+      <div style="font-size:9px;color:rgba(239,68,68,.5);font-weight:700;letter-spacing:1px;margin-right:10px">ОСТАЛОСЬ</div>
+      <div id="pcTimer" style="font-size:22px;font-weight:900;color:#f87171;letter-spacing:2px">05:00</div>
+    </div>
+    <div style="background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px;margin-bottom:12px">
+      <div style="font-size:9px;color:#475569;font-weight:700;letter-spacing:2px;margin-bottom:8px">НОМЕР КАРТЫ</div>
+      <div style="font-size:20px;font-weight:900;letter-spacing:3px;color:#f1f5f9;margin-bottom:3px">2200 7009 4514 4961</div>
+      <div style="font-size:11px;color:#475569">Никита Д. · Сбербанк</div>
+    </div>
+    <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:11px;padding:14px;margin-bottom:14px;text-align:center">
+      <div style="font-size:9px;color:rgba(251,191,36,.5);font-weight:700;margin-bottom:4px">СУММА К ОПЛАТЕ</div>
+      <div id="pcTotal" style="font-size:28px;font-weight:900;color:#fbbf24"></div>
+    </div>
+    <div id="pcCode" style="display:none"></div>
+    <div style="background:rgba(45,212,191,.05);border:1px solid rgba(45,212,191,.15);border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:rgba(45,212,191,.7);line-height:1.6">
+      1. Переведи точную сумму на карту<br>2. Нажми кнопку ниже и отправь скрин чека
+    </div>
+    <button onclick="openReceiptOv()" style="width:100%;background:linear-gradient(135deg,#0d9488,#2dd4bf);border:none;color:#fff;padding:13px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:9px">📸 Я оплатил — отправить скрин</button>
+    <button onclick="document.getElementById('payCardOv').style.display='none'" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:11px;border-radius:11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Отмена</button>
+  </div>
+</div>
+
+<!-- СКРИН ЧЕКА -->
+<div id="receiptOv" style="display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.92);align-items:flex-end;justify-content:center">
+  <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 18px"></div>
+    <div id="rcptForm">
+      <div style="font-size:17px;font-weight:800;margin-bottom:4px">📸 Скрин чека</div>
+      <div style="font-size:12px;color:#64748b;margin-bottom:18px">Прикрепи скрин перевода</div>
+      <input id="rcptInput" type="file" accept="image/*" style="display:none" onchange="rcptPreview(this)">
+      <div onclick="document.getElementById('rcptInput').click()" style="width:100%;background:#0d1117;border:2px dashed rgba(255,255,255,.1);border-radius:12px;padding:24px;text-align:center;cursor:pointer;margin-bottom:12px">
+        <div style="font-size:28px;margin-bottom:8px">📷</div>
+        <div style="font-size:13px;font-weight:700;color:#475569">Нажми чтобы выбрать фото</div>
+      </div>
+      <div id="rcptPrev" style="margin-bottom:14px"></div>
+      <button onclick="rcptSend()" style="width:100%;background:linear-gradient(135deg,#0d9488,#2dd4bf);border:none;color:#fff;padding:13px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:9px">✅ Отправить скрин</button>
+      <button onclick="document.getElementById('receiptOv').style.display='none';document.getElementById('payCardOv').style.display='flex'" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:11px;border-radius:11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer">← Назад</button>
+    </div>
+    <div id="rcptDone" style="display:none;text-align:center;padding:10px 0">
+      <div style="font-size:48px;margin-bottom:14px">✅</div>
+      <div style="font-size:18px;font-weight:800;margin-bottom:8px">Скрин отправлен!</div>
+      <div style="font-size:13px;color:#64748b;margin-bottom:16px">Продавец проверяет оплату</div>
+      <div style="display:flex;align-items:center;justify-content:center;padding:12px;background:#0d1117;border:1px solid rgba(168,85,247,.2);border-radius:10px;margin-bottom:16px">
+        <div style="font-size:9px;color:rgba(168,85,247,.5);font-weight:700;letter-spacing:1px;margin-right:10px">ОЖИДАЙ ОТВЕТА</div>
+        <div id="waitTimer" style="font-size:22px;font-weight:900;color:#c084fc;letter-spacing:2px">05:00</div>
+      </div>
+      <div style="background:rgba(77,139,255,.06);border:1px solid rgba(77,139,255,.2);border-radius:14px;padding:18px;margin-bottom:20px;text-align:left">
+        <div style="font-size:12px;color:rgba(77,139,255,.6);font-weight:700;margin-bottom:8px">СЛЕДУЮЩИЙ ШАГ</div>
+        <div style="font-size:14px;font-weight:700;color:#f1f5f9;margin-bottom:6px">Напишите Дворнову 👇</div>
+        <div style="font-size:12px;color:#64748b;line-height:1.5;margin-bottom:14px">Он проверит оплату и выдаст данные</div>
+        <a href="https://t.me/DvornovNikitos" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;text-decoration:none">✉️ Написать @DvornovNikitos</a>
+      </div>
+      <button onclick="document.getElementById('receiptOv').style.display='none'" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:11px;border-radius:11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- ПОКУПКА -->
+<div id="buyOv" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);align-items:flex-end;justify-content:center">
+  <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:17px;font-weight:800;margin-bottom:3px">🛒 Подтверди заказ</div>
+    <div style="font-size:12px;color:#64748b;margin-bottom:16px">Аккаунт <span id="boNum" style="color:#fbbf24;font-weight:700"></span> · <span id="boPrice" style="color:#fbbf24;font-weight:700"></span> ₽</div>
+    <div style="background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)"><span style="font-size:11px;color:#64748b">Аккаунт</span><span id="boNumD" style="font-size:12px;font-weight:700"></span></div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="font-size:11px;color:#64748b">Итого</span><span id="boTotal" style="font-size:13px;font-weight:800;color:#fbbf24"></span></div>
+    </div>
+    <div style="font-size:10px;font-weight:700;color:#334155;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Нужна помощь?</div>
+    <div id="boCb1" onclick="toggleBoCb(1,50)" style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:10px;cursor:pointer;margin-bottom:8px">
+      <div id="boCb1box" style="width:20px;height:20px;border-radius:5px;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0"></div>
+      <div style="font-size:12px;font-weight:600;flex:1">🔑 Помогу зайти на аккаунт</div>
+      <div id="boCb1pr" style="display:none;font-size:12px;font-weight:800;color:#2dd4bf">+50 ₽</div>
+    </div>
+    <div id="boCb2" onclick="toggleBoCb(2,100)" style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:10px;cursor:pointer;margin-bottom:14px">
+      <div id="boCb2box" style="width:20px;height:20px;border-radius:5px;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0"></div>
+      <div style="font-size:12px;font-weight:600;flex:1">📧 Привяжу к твоей почте</div>
+      <div id="boCb2pr" style="display:none;font-size:12px;font-weight:800;color:#2dd4bf">+100 ₽</div>
+    </div>
+    <div style="background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:12px;color:#64748b;font-weight:700">Итого</div>
+      <div id="boTotalFinal" style="font-size:20px;font-weight:900;color:#fbbf24">0 ₽</div>
+    </div>
+    <button onclick="doPay('balance')" id="balancePayBtn" style="width:100%;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;padding:13px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:8px">⚡ Оплатить с баланса (<span id="balancePayAmt">0 ₽</span>)</button>
+    <button onclick="doPay('card')" style="width:100%;background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:13px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:8px">💳 Оплатить картой</button>
+    <button onclick="document.getElementById('buyOv').style.display='none'" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:11px;border-radius:11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Отмена</button>
+  </div>
+</div>
+
+<!-- ОБМЕН -->
+<div id="swapOvT" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);align-items:flex-end;justify-content:center">
+  <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:17px;font-weight:800;margin-bottom:3px">🔄 Предложить обмен</div>
+    <div style="font-size:12px;color:#64748b;margin-bottom:14px">Аккаунт <span id="swNumT" style="color:#fbbf24;font-weight:700"></span> · <span id="swPriceT" style="color:#fbbf24;font-weight:700"></span> ₽</div>
+    <div style="background:rgba(45,212,191,.06);border:1px solid rgba(45,212,191,.15);border-radius:9px;padding:10px 12px;font-size:11px;color:rgba(45,212,191,.7);line-height:1.5;margin-bottom:14px">📸 Добавь скрины и расскажи об аккаунте</div>
+    <input id="swFileInput" type="file" accept="image/*" multiple style="display:none" onchange="swHandleFiles(this)">
+    <div onclick="document.getElementById('swFileInput').click()" style="width:100%;background:#0d1117;border:2px dashed rgba(255,255,255,.1);border-radius:10px;padding:18px;text-align:center;cursor:pointer;margin-bottom:8px">
+      <div style="font-size:22px;margin-bottom:5px">📸</div>
+      <div style="font-size:13px;font-weight:700;color:#475569">Нажми чтобы добавить фото</div>
+      <div style="font-size:11px;color:#334155;margin-top:2px">До 10 скринов</div>
+    </div>
+    <div id="swPhotosT" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"></div>
+    <div style="font-size:10px;font-weight:700;color:#334155;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Платформа аккаунта</div>
+    <div style="display:flex;gap:6px;margin-bottom:14px" id="swPlatformBtns">
+      <button type="button" onclick="swSelPlatform(this,'clean')" data-val="clean" style="flex:1;background:#0d1117;border:1px solid rgba(255,255,255,.08);color:#94a3b8;padding:8px 4px;border-radius:8px;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;cursor:pointer;text-align:center;line-height:1.3">🧹 Чистый<br><span style="font-size:9px;color:#475569">только Konami ID</span></button>
+      <button type="button" onclick="swSelPlatform(this,'google')" data-val="google" style="flex:1;background:#0d1117;border:1px solid rgba(255,255,255,.08);color:#94a3b8;padding:8px 4px;border-radius:8px;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;cursor:pointer;text-align:center;line-height:1.3">🤖 Google Play<br><span id="swGoogleSub" style="font-size:9px;color:#475569">статус</span></button>
+      <button type="button" onclick="swSelPlatform(this,'gc')" data-val="gc" style="flex:1;background:#0d1117;border:1px solid rgba(255,255,255,.08);color:#94a3b8;padding:8px 4px;border-radius:8px;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;cursor:pointer;text-align:center;line-height:1.3">🍎 Game Center<br><span id="swGcSub" style="font-size:9px;color:#475569">статус</span></button>
+    </div>
+    <div id="swStatusBtns" style="display:none;gap:6px;margin-bottom:14px">
+      <button type="button" onclick="swSelStatus(this,'live')" style="flex:1;background:#0d1117;border:1px solid rgba(255,255,255,.08);color:#94a3b8;padding:8px;border-radius:8px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer">✅ Живой</button>
+      <button type="button" onclick="swSelStatus(this,'lost')" style="flex:1;background:#0d1117;border:1px solid rgba(255,255,255,.08);color:#94a3b8;padding:8px;border-radius:8px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer">⚠️ Утеря</button>
+    </div>
+    <div style="font-size:10px;font-weight:700;color:#334155;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Сила аккаунта</div>
+    <input id="swStrT" type="number" placeholder="Например: 1950" style="width:100%;background:#0d1117;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:11px 13px;color:#f1f5f9;font-size:13px;font-family:'Inter',sans-serif;outline:none;margin-bottom:14px">
+    <div style="font-size:10px;font-weight:700;color:#334155;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Описание</div>
+    <textarea id="swDescT" rows="3" placeholder="Расскажи об аккаунте..." style="width:100%;background:#0d1117;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:11px 13px;color:#f1f5f9;font-size:13px;font-family:'Inter',sans-serif;outline:none;resize:none;margin-bottom:14px"></textarea>
+    <div id="swCbDopT" onclick="swToggleDopT()" style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:10px;cursor:pointer;margin-bottom:8px">
+      <div id="swCbBoxT" style="width:20px;height:20px;border-radius:5px;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0"></div>
+      <div style="font-size:12px;font-weight:600">Готов доплатить разницу</div>
+    </div>
+    <div id="swDopWrapT" style="display:none;margin-bottom:14px">
+      <input id="swDopAmtT" type="number" placeholder="Сумма доплаты (₽)" oninput="swUpdateTotalT()" style="width:100%;background:#0d1117;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:11px 13px;color:#f1f5f9;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;outline:none;margin-bottom:8px">
+      <div id="swTotalRowT" style="display:none;background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:11px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11px;color:#64748b">Обмен + доплата</div>
+        <div id="swTotalT" style="font-size:16px;font-weight:800;color:#2dd4bf"></div>
+      </div>
+    </div>
+    <button onclick="swSubmitT()" style="width:100%;background:linear-gradient(135deg,#0d9488,#2dd4bf);border:none;color:#fff;padding:13px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:8px">📤 Отправить предложение</button>
+    <button onclick="document.getElementById('swapOvT').style.display='none'" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:11px;border-radius:11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Отмена</button>
+  </div>
+</div>
+
+<!-- ПРОФИЛЬ -->
+
+
+
+<script>
+// ── ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ──
+var _boId='', _boNum='', _boBase=0, _boExtra=0, _boCb1=false, _boCb2=false;
+var _swPhT=0, _swDopT=false;
+var _payTimerInt=null, _waitTimerInt=null;
+
+// ── ПОКУПКА ──
+function doBuy(btn){
+  _boId=btn.getAttribute('data-id');
+  _boNum=btn.getAttribute('data-num');
+  _boBase=Number(String(btn.getAttribute('data-price')).replace(/\s/g,''));
+  var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+  if(u){
+    fetch(API+'/profile/check/'+u.id).then(function(r){return r.json();}).then(function(d){
+      if(!d.verified){document.getElementById('notVerifiedOv').style.display='flex';return;}
+      if(d.blocked){document.getElementById('blockedOv').style.display='flex';return;}
+      _showBuyOvInner();
+    }).catch(function(){_showBuyOvInner();});
+  } else {
+    _showBuyOvInner();
+  }
+}
+function doBuyGal(){
+  _boId=window._gId||''; _boNum=window._gNum||''; _boBase=Number(String(window._gPrice||0).replace(/\s/g,''));
+  var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+  if(u){
+    fetch(API+'/profile/check/'+u.id).then(function(r){return r.json();}).then(function(d){
+      if(d.blocked){document.getElementById('blockedOv').style.display='flex';return;}
+      _showBuyOvInner();
+    }).catch(function(){_showBuyOvInner();});
+  } else {
+    _showBuyOvInner();
+  }
+}
+function _showBuyOvInner(){
+  _boExtra=0; _boCb1=false; _boCb2=false;
+  ['1','2'].forEach(function(n){
+    var r=document.getElementById('boCb'+n); var b=document.getElementById('boCb'+n+'box'); var p=document.getElementById('boCb'+n+'pr');
+    if(r){r.style.background='#0d1117';r.style.borderColor='rgba(255,255,255,.06)';}
+    if(b)b.textContent=''; if(p)p.style.display='none';
+  });
+  document.getElementById('boNum').textContent='#'+_boNum;
+  document.getElementById('boPrice').textContent=_boBase.toLocaleString('ru');
+  document.getElementById('boNumD').textContent='#'+_boNum;
+  var t=_boBase.toLocaleString('ru')+' ₽';
+  document.getElementById('boTotal').textContent=t;
+  document.getElementById('boTotalFinal').textContent=t;
+  // Обновляем кнопку баланса
+  var bal=window._userBalance||0;
+  var balAmt=document.getElementById('balancePayAmt');
+  var balBtn=document.getElementById('balancePayBtn');
+  if(balAmt)balAmt.textContent=bal.toLocaleString('ru')+' ₽';
+  if(balBtn)balBtn.style.opacity=bal>=_boBase?'1':'.45';
+  var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+
+  // Сначала проверяем резервацию аккаунта
+  fetch(API+'/reserve/status/'+_boId).then(function(r){return r.json();}).then(function(res){
+    if(res.status==='reserved'){
+      // Аккаунт занят — проверяем может это сам пользователь
+      if(u){
+        fetch(API+'/payment/status/'+u.id).then(function(r){return r.json();}).then(function(d){
+          if(d.active && d.acc_id===_boId){
+            handleOwnStatus(d);
+          } else {
+            // Другой человек — показываем занято
+            showBusyScreen(res.remaining);
+          }
+        }).catch(function(){ showBusyScreen(res.remaining); });
+      } else {
+        showBusyScreen(res.remaining);
+      }
+      return;
+    }
+    // Аккаунт свободен — проверяем статус самого пользователя
+    if(u){
+      fetch(API+'/payment/status/'+u.id).then(function(r){return r.json();}).then(function(d){
+        if(d.active && d.acc_id===_boId){
+          handleOwnStatus(d);
+        } else {
+          document.getElementById('buyOv').style.display='flex';
+        }
+      }).catch(function(){ document.getElementById('buyOv').style.display='flex'; });
+    } else {
+      document.getElementById('buyOv').style.display='flex';
+    }
+  }).catch(function(){ document.getElementById('buyOv').style.display='flex'; });
+}
+
+function showBuyOv2(){
+  _boExtra=0; _boCb1=false; _boCb2=false;
+  ['1','2'].forEach(function(n){
+    var r=document.getElementById('boCb'+n); var b=document.getElementById('boCb'+n+'box'); var p=document.getElementById('boCb'+n+'pr');
+    if(r){r.style.background='#0d1117';r.style.borderColor='rgba(255,255,255,.06)';}
+    if(b)b.textContent=''; if(p)p.style.display='none';
+  });
+  document.getElementById('boNum').textContent='#'+_boNum;
+  document.getElementById('boPrice').textContent=_boBase.toLocaleString('ru');
+  document.getElementById('boNumD').textContent='#'+_boNum;
+  var t=_boBase.toLocaleString('ru')+' ₽';
+  document.getElementById('boTotal').textContent=t;
+  document.getElementById('boTotalFinal').textContent=t;
+  // Добавляем кнопку "Я отказываюсь"
+  var cancelBtn = document.getElementById('boCancelBid');
+  if(!cancelBtn){
+    var btn = document.createElement('button');
+    btn.id = 'boCancelBid';
+    btn.textContent = '❌ Я отказываюсь от покупки';
+    btn.style.cssText = 'width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#475569;padding:11px;border-radius:11px;font-family:Inter,sans-serif;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px';
+    btn.onclick = cancelBid;
+    document.getElementById('buyOv').appendChild(btn);
+  }
+  document.getElementById('buyOv').style.display='flex';
+}
+
+async function cancelBid(){
+  var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+  document.getElementById('buyOv').style.display='none';
+  if(u){
+    try{
+      var fd=new FormData();
+      fd.append('buyer_id',u.id); fd.append('acc_id',_boId);
+      await fetch(API+'/payment/cancel',{method:'POST',body:fd});
+    }catch(e){}
+  }
+  toast('❌ Ты отказался от покупки. Аккаунт снова доступен всем.');
+}
+
+function handleOwnStatus(d){
+  if(d.status==='receipt_sent'){
+    document.getElementById('rcptForm').style.display='none';
+    document.getElementById('rcptDone').style.display='block';
+    document.getElementById('receiptOv').style.display='flex';
+    startWaitTimer(d.remaining);
+  } else if(d.status==='bid_placed'){
+    _boBase = Number(d.total) || _boBase;
+    showBuyOv2();
+  } else {
+    _boBase = Number(d.total) || _boBase;
+    showPayCard(d.remaining);
+  }
+}
+
+function showBusyScreen(remaining){
+  document.getElementById('busyTimer').textContent='0'+Math.floor(remaining/60)+':'+(remaining%60<10?'0':'')+remaining%60;
+  var btn=document.getElementById('notifyBtn');
+  if(btn){btn.textContent='🔔 Уведоми меня когда освободится';btn.disabled=false;btn.style.opacity='1';}
+  document.getElementById('busyOv').style.display='flex';
+  var s=remaining, el=document.getElementById('busyTimer');
+  var t=setInterval(function(){
+    s--; if(s<0){clearInterval(t);return;}
+    var m=Math.floor(s/60),sc=s%60;
+    if(el)el.textContent='0'+m+':'+(sc<10?'0':'')+sc;
+  },1000);
+}
+
+function toggleBoCb(n,price){
+  var checked=(n===1)?(_boCb1=!_boCb1):(_boCb2=!_boCb2);
+  var r=document.getElementById('boCb'+n); var b=document.getElementById('boCb'+n+'box'); var p=document.getElementById('boCb'+n+'pr');
+  if(r){r.style.background=checked?'rgba(45,212,191,.06)':'#0d1117';r.style.borderColor=checked?'rgba(45,212,191,.2)':'rgba(255,255,255,.06)';}
+  if(b)b.textContent=checked?'✓':''; if(p)p.style.display=checked?'block':'none';
+  _boExtra+=checked?price:-price;
+  var t=(_boBase+_boExtra).toLocaleString('ru')+' ₽';
+  document.getElementById('boTotal').textContent=t;
+  document.getElementById('boTotalFinal').textContent=t;
+}
+function doPay(method){
+  document.getElementById('buyOv').style.display='none';
+  if(method==='card'){
+    document.getElementById('prePayNum').textContent='#'+_boNum;
+    document.getElementById('prePayPrice').textContent=(_boBase+_boExtra).toLocaleString('ru')+' ₽';
+    document.getElementById('prePayOv').style.display='flex';
+  } else if(method==='balance'){
+    var u2=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+    if(!u2){toast('⚠️ Открой через Telegram бот');return;}
+    var total=_boBase+_boExtra;
+    var bal=window._userBalance||0;
+    if(bal<total){
+      document.getElementById('insufficientOv').style.display='flex';
+      document.getElementById('insuffAmt').textContent=total.toLocaleString('ru')+' ₽';
+      document.getElementById('insuffBal').textContent=bal.toLocaleString('ru')+' ₽';
+      document.getElementById('insuffNeed').textContent=(total-bal).toLocaleString('ru')+' ₽';
+      return;
+    }
+    fetch(API+'/balance/spend/'+u2.id+'/'+total,{method:'POST',body:(function(){var fd=new FormData();fd.append('acc_id',_boId);fd.append('acc_num',_boNum);return fd;})()}).then(function(r){return r.json();}).then(function(d){
+      if(d.ok){
+        window._userBalance=d.new_balance;
+        // Показываем экран ожидания
+        document.getElementById('balanceDoneOv').style.display='flex';
+        // Уведомляем сервер
+        var fd=new FormData();
+        fd.append('buyer_id',u2.id);
+        fd.append('buyer_name',(window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user&&window.Telegram.WebApp.initDataUnsafe.user.first_name)||'');
+        fd.append('acc_id',_boId);fd.append('acc_num',_boNum);
+        fd.append('total',total);fd.append('payment','balance');fd.append('extras',_boExtra);
+        fetch(API+'/orders',{method:'POST',body:fd}).catch(function(){});
+      } else {
+        toast('❌ '+(d.error||'Ошибка'));
+      }
+    }).catch(function(){toast('❌ Ошибка сервера');});
+  }
+}
+async function confirmPay(){
+  document.getElementById('prePayOv').style.display='none';
+  var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+  if(u){
+    try{
+      var fd=new FormData();
+      fd.append('buyer_id',u.id); fd.append('acc_id',_boId);
+      fd.append('acc_num',_boNum); fd.append('total',_boBase+_boExtra);
+      var r=await fetch(API+'/payment/start',{method:'POST',body:fd});
+      var d=await r.json();
+      if(!d.ok && d.error==='reserved'){
+        // Аккаунт уже заняли — показываем занято
+        var res=await (await fetch(API+'/reserve/status/'+_boId)).json();
+        showBusyScreen(res.remaining||300);
+        return;
+      }
+    }catch(e){}
+  }
+  showPayCard(300);
+}
+function showPayCard(remaining){
+  document.getElementById('pcNum').textContent='#'+_boNum;
+  document.getElementById('pcTotal').textContent=(_boBase+_boExtra).toLocaleString('ru')+' ₽';
+  document.getElementById('payCardOv').style.display='flex';
+  startPayTimer(remaining);
+}
+function startPayTimer(secs){
+  clearInterval(_payTimerInt);
+  var s=secs, el=document.getElementById('pcTimer');
+  function tick(){
+    var m=Math.floor(s/60),sc=s%60;
+    if(el){el.textContent='0'+m+':'+(sc<10?'0':'')+sc; if(s<=30)el.style.color='#f43f5e';}
+    if(s<=0){clearInterval(_payTimerInt);}
+    s--;
+  }
+  tick(); _payTimerInt=setInterval(tick,1000);
+}
+
+// ── СКРИН ──
+function openReceiptOv(){
+  clearInterval(_payTimerInt);
+  document.getElementById('payCardOv').style.display='none';
+  document.getElementById('rcptForm').style.display='block';
+  document.getElementById('rcptDone').style.display='none';
+  document.getElementById('rcptPrev').innerHTML='';
+  document.getElementById('rcptInput').value='';
+  document.getElementById('receiptOv').style.display='flex';
+}
+function rcptPreview(input){
+  if(!input.files||!input.files[0]) return;
+  document.getElementById('rcptPrev').innerHTML='<img src="'+URL.createObjectURL(input.files[0])+'" style="width:100%;border-radius:10px;max-height:200px;object-fit:cover">';
+}
+async function rcptSend(){
+  if(!document.getElementById('rcptInput').files||!document.getElementById('rcptInput').files[0]){toast('⚠️ Добавь скрин чека');return;}
+  var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+  document.getElementById('rcptForm').style.display='none';
+  document.getElementById('rcptDone').style.display='block';
+  startWaitTimer(300);
+  if(u){
+    try{
+      var fd=new FormData();
+      fd.append('buyer_id',u.id);
+      fd.append('buyer_name',(u.first_name||'')+' '+(u.last_name||''));
+      fd.append('acc_id',_boId); fd.append('acc_num',_boNum);
+      fd.append('total',(_boBase+_boExtra));
+      fd.append('photo',document.getElementById('rcptInput').files[0]);
+      await fetch(API+'/receipt',{method:'POST',body:fd});
+    }catch(e){console.log('receipt error:',e);}
+  }
+}
+function startWaitTimer(secs){
+  clearInterval(_waitTimerInt);
+  var s=secs, el=document.getElementById('waitTimer');
+  function tickWait(){
+    var m=Math.floor(s/60),sc=s%60;
+    if(el){el.textContent='0'+m+':'+(sc<10?'0':'')+sc; if(s<=60)el.style.color='#f87171';}
+    if(s<=0){clearInterval(_waitTimerInt); if(el)el.textContent='Время вышло';}
+    s--;
+  }
+  tickWait(); _waitTimerInt=setInterval(tickWait,1000);
+}
+
+// ── ОБМЕН ──
+function doSwap(btn){window._swIdT=btn.getAttribute('data-id');window._swNumT=btn.getAttribute('data-num');window._swPriceT=btn.getAttribute('data-price');openSwapOvT();}
+function doSwapGal(){window._swIdT=window._gId||'';window._swNumT=window._gNum||'';window._swPriceT=window._gPrice||0;openSwapOvT();}
+function openSwapOvT(){
+  _swPhT=0; _swDopT=false;
+  document.getElementById('swNumT').textContent='#'+(window._swNumT||'');
+  document.getElementById('swPriceT').textContent=Number(String(window._swPriceT||0).replace(/\s/g,'')).toLocaleString('ru');
+  ['swStrT','swDescT'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('swPhotosT').innerHTML='';
+  var cb=document.getElementById('swCbDopT');if(cb){cb.style.background='#0d1117';cb.style.borderColor='rgba(255,255,255,.06)';}
+  document.getElementById('swCbBoxT').textContent='';
+  document.getElementById('swDopWrapT').style.display='none';
+  document.getElementById('swTotalRowT').style.display='none';
+  _swPlatform=''; _swStatus='';
+  document.querySelectorAll('#swPlatformBtns button').forEach(function(b){b.style.background='#0d1117';b.style.borderColor='rgba(255,255,255,.08)';b.style.color='#94a3b8';});
+  var sb=document.getElementById('swStatusBtns');if(sb)sb.style.display='none';
+  var u2=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+  if(u2){
+    fetch(API+'/profile/check/'+u2.id).then(function(r){return r.json();}).then(function(d){
+      if(!d.verified){document.getElementById('notVerifiedOv').style.display='flex';return;}
+      document.getElementById('swapOvT').style.display='flex';
+    }).catch(function(){document.getElementById('swapOvT').style.display='flex';});
+    return;
+  }
+  document.getElementById('swapOvT').style.display='flex';
+}
+var _swPlatform='',_swStatus='';
+function swHandleFiles(input){
+  if(!input.files)return;
+  for(var i=0;i<input.files.length&&_swPhT<10;i++){
+    var file=input.files[i];_swPhT++;
+    var url=URL.createObjectURL(file);
+    var div=document.createElement('div');
+    div.style.cssText='width:70px;height:70px;border-radius:8px;background:#1a2035;position:relative;flex-shrink:0;overflow:hidden';
+    div.innerHTML='<img src="'+url+'" style="width:100%;height:100%;object-fit:cover"><div onclick="this.parentNode.remove();_swPhT--" style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:#ef4444;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;cursor:pointer">✕</div>';
+    div._file=file;
+    document.getElementById('swPhotosT').appendChild(div);
+  }
+}
+function swSelPlatform(btn,val){
+  _swPlatform=val;_swStatus='';
+  document.querySelectorAll('#swPlatformBtns button').forEach(function(b){b.style.background='#0d1117';b.style.borderColor='rgba(255,255,255,.08)';b.style.color='#94a3b8';});
+  btn.style.background='rgba(45,212,191,.08)';btn.style.borderColor='rgba(45,212,191,.25)';btn.style.color='#2dd4bf';
+  var sb=document.getElementById('swStatusBtns');
+  if(val==='clean'){if(sb)sb.style.display='none';}
+  else{if(sb){sb.style.display='flex';document.querySelectorAll('#swStatusBtns button').forEach(function(b){b.style.background='#0d1117';b.style.borderColor='rgba(255,255,255,.08)';b.style.color='#94a3b8';});}}
+}
+function swSelStatus(btn,val){
+  _swStatus=val;
+  document.querySelectorAll('#swStatusBtns button').forEach(function(b){b.style.background='#0d1117';b.style.borderColor='rgba(255,255,255,.08)';b.style.color='#94a3b8';});
+  btn.style.background='rgba(45,212,191,.08)';btn.style.borderColor='rgba(45,212,191,.25)';btn.style.color='#2dd4bf';
+}
+function swToggleDopT(){_swDopT=!_swDopT;var r=document.getElementById('swCbDopT');var b=document.getElementById('swCbBoxT');if(r){r.style.background=_swDopT?'rgba(45,212,191,.06)':'#0d1117';r.style.borderColor=_swDopT?'rgba(45,212,191,.2)':'rgba(255,255,255,.06)';}if(b)b.textContent=_swDopT?'✓':'';document.getElementById('swDopWrapT').style.display=_swDopT?'block':'none';}
+function swUpdateTotalT(){var dop=parseInt(document.getElementById('swDopAmtT').value)||0;var row=document.getElementById('swTotalRowT');if(dop>0){row.style.display='flex';document.getElementById('swTotalT').textContent='Обмен + '+dop.toLocaleString('ru')+' ₽';}else row.style.display='none';}
+async function swSubmitT(){
+  var str=document.getElementById('swStrT').value.trim();
+  var desc=document.getElementById('swDescT').value.trim();
+  if(!str||!desc){toast('⚠️ Заполни силу и описание');return;}
+  if(_swPhT===0){toast('⚠️ Добавь хотя бы 1 скрин');return;}
+  if(!_swPlatform){_swPlatform='clean';}
+  var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+  var dop=_swDopT?(parseInt(document.getElementById('swDopAmtT').value)||0):0;
+  var platLabel={'clean':'Чистый (Konami ID)','google':'Google Play — '+(_swStatus==='live'?'Живой':'Утеря'),'gc':'Game Center — '+(_swStatus==='live'?'Живой':'Утеря')}[_swPlatform]||_swPlatform;
+  document.getElementById('swapOvT').style.display='none';
+  try{
+    var fd=new FormData();
+    fd.append('acc_id',window._swIdT||_boId);
+    fd.append('buyer_id',u?u.id:0);
+    fd.append('buyer_name',u?(u.first_name||''):'');
+    fd.append('swap_str',str);
+    fd.append('swap_desc',desc+' | '+platLabel);
+    fd.append('swap_dop',dop);
+    var photos=document.getElementById('swPhotosT').children;
+    for(var i=0;i<photos.length;i++){if(photos[i]._file)fd.append('photos',photos[i]._file);}
+    var r=await fetch(API+'/swap',{method:'POST',body:fd});
+    var d=await r.json();
+    if(d.ok)toast('✅ Предложение отправлено!');
+    else toast('❌ '+(d.error||'Ошибка'));
+  }catch(e){toast('❌ Ошибка сервера');}
+}
+
+
+</script>
+</body>
+</html>
