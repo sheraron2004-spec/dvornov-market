@@ -684,7 +684,7 @@ async function initAPI(){
     if(u){
       const r2=await fetch(API+'/balance/'+u.id);
       const d2=await r2.json();
-      window._userBalance=d2.balance||0;
+      window._userBalance=d2.balance!=null?d2.balance:0;
     }
   }catch(e){}
 }
@@ -914,8 +914,7 @@ function openScreens(i, startIdx){
   ov.style.display='flex';
   // Свайп
   const wrap=document.getElementById('gfWrap');
-  wrap.ontouchstart=e=>{galTx=e.touches[0].clientX};
-  wrap.ontouchend=e=>{const dx=e.changedTouches[0].clientX-galTx;if(Math.abs(dx)>45)gfGo(dx<0?galCur+1:galCur-1)};
+  // Свайп обрабатывается в IIFE с проверкой зума — здесь не дублируем
 }
 // ━━━ БЫСТРАЯ ЦЕНА ━━━
 function qpSet(accId, val){
@@ -1023,8 +1022,9 @@ async function galDelPhoto(e, idx){
   try{
     const fd = new FormData();
     fd.append('remove_photo', photoUrl);
-    await fetch(`${API}/accounts/${acc.id}/photo`, {method:'PATCH', body:fd});
-  }catch(err){ console.warn('Del photo err:', err); }
+    const r=await fetch(`${API}/accounts/${acc.id}/photo`, {method:'PATCH', body:fd});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+  }catch(err){ toast('❌ Ошибка удаления фото'); return; }
 
   // Удаляем локально
   galPhotos.splice(idx, 1);
@@ -1524,15 +1524,23 @@ async function loadBuyAnns(){
 }
 
 async function deleteBuyAnn(id){
-  if(!confirm('Удалить объявление из канала и бота?')) return;
   const btn = document.querySelector(`[onclick="deleteBuyAnn('${id}')"]`);
-  if(btn){ btn.textContent='⏳ Удаляем...'; btn.disabled=true; }
+  // Telegram блокирует confirm() — используем двойной клик
+  if(!btn) return;
+  if(btn.dataset.confirm!=='1'){
+    btn.dataset.confirm='1';
+    btn.textContent='❓ Уверен?';
+    setTimeout(()=>{ if(btn.dataset.confirm==='1'){btn.dataset.confirm='';btn.textContent='🗑 Удалить';} },3000);
+    return;
+  }
+  btn.dataset.confirm='';
+  btn.textContent='⏳ Удаляем...'; btn.disabled=true;
   try{
     const r = await fetch(`${API}/buy-announcement/${id}`, {method:'DELETE'});
     const data = await r.json();
     if(data.ok){ toast('🗑 Объявление удалено'); loadBuyAnns(); }
-    else { toast('❌ Ошибка'); if(btn){btn.textContent='🗑 Удалить';btn.disabled=false;} }
-  }catch(e){ toast('❌ Ошибка сервера'); if(btn){btn.textContent='🗑 Удалить';btn.disabled=false;} }
+    else { toast('❌ Ошибка'); btn.textContent='🗑 Удалить'; btn.disabled=false; }
+  }catch(e){ toast('❌ Ошибка сервера'); btn.textContent='🗑 Удалить'; btn.disabled=false; }
 }
 
 // ━━━ ИНЕРЦИОННЫЙ СКРОЛЛ ━━━
@@ -1628,20 +1636,26 @@ async function sendTopupReceipt(){
   var inp=document.getElementById('topupPhotoInput');
   if(!inp||!inp.files||!inp.files[0]){if(window.toast)toast('⚠️ Добавь скрин');return;}
   var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
-  document.getElementById('topupReceiptForm').style.display='none';
-  document.getElementById('topupDone').style.display='block';
+  var sendBtn=document.querySelector('#topupReceiptForm button');
+  if(sendBtn){sendBtn.disabled=true;sendBtn.textContent='⏳ Отправляем...';}
   try{
     var fd=new FormData();
     fd.append('user_id',u?u.id:0);
     fd.append('user_name',u?(u.first_name||''):'');
     fd.append('amount',_topupAmount);
     fd.append('photo',inp.files[0]);
-    await fetch(API+'/balance/topup/receipt',{method:'POST',body:fd});
-  }catch(e){}
+    var r=await fetch(API+'/balance/topup/receipt',{method:'POST',body:fd});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+  }catch(e){
+    if(sendBtn){sendBtn.disabled=false;sendBtn.textContent='✅ Я перевёл';}
+    toast('❌ Ошибка отправки, попробуй ещё раз');
+    return;
+  }
+  document.getElementById('topupReceiptForm').style.display='none';
+  document.getElementById('topupDone').style.display='block';
 }
 
 // ── ПРОФИЛЬ И ПОПОЛНЕНИЕ ──
-var _topupAmount=500;
 
 function renderHistory(history){
   var el=document.getElementById('pHistory');
