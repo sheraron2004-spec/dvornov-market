@@ -560,6 +560,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
   <div id="navInner" style="position:absolute;top:0;left:0;bottom:0;display:flex;align-items:center;gap:7px;padding:8px 10px 14px;transform:translateX(0);transition:transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);will-change:transform;width:100%;box-sizing:border-box" id="navInner">
     <a href="https://t.me/Dvornov_Otziv" target="_blank" class="nav-btn nav-sell">⭐ Отзывы</a>
     <button class="nav-btn nav-sell" onclick="openFaq()">❓ FAQ</button>
+    <button class="nav-btn nav-sell" onclick="openProfile()">👤 Профиль</button>
     <a href="https://t.me/DvornovNikitos" target="_blank" class="nav-btn nav-contact">✉️ Написать</a>
   </div>
   <div id="navAdminBtn" style="display:none;position:absolute;right:0;top:0;bottom:0;width:68px;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;font-family:'Inter',sans-serif;background:rgba(168,85,247,.06);border-left:1px solid rgba(168,85,247,.15)" onclick="openAdmin()">
@@ -629,6 +630,15 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
     <div class="sheet-handle" onclick="closeOv('swapOv')"></div>
     <div id="swapBody"></div>
   </div>
+</div>
+
+<!-- PROFILE OVERLAY -->
+<div id="profileOv" style="display:none;position:fixed;inset:0;z-index:400;flex-direction:column;background:#07080f">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0">
+    <div style="font-size:17px;font-weight:800;color:#f1f5f9">👤 Профиль</div>
+    <div onclick="document.getElementById('profileOv').style.display='none'" style="width:34px;height:34px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:#64748b">✕</div>
+  </div>
+  <div id="profileBody" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;padding-bottom:40px"></div>
 </div>
 
 <!-- BUY OVERLAY -->
@@ -1307,6 +1317,78 @@ function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg
 
 // ━━━ ADMIN ━━━
 function openFaq(){ document.getElementById('faqOv').style.display='flex'; }
+
+// ━━━ ПРОФИЛЬ ━━━
+async function openProfile(){
+  const ov=document.getElementById('profileOv');
+  const body=document.getElementById('profileBody');
+  if(!TG_USER.id){
+    body.innerHTML=`<div style="text-align:center;padding:40px 16px;color:var(--muted)">Открой маркет через Telegram-бота чтобы видеть профиль</div>`;
+    ov.style.display='flex'; return;
+  }
+  body.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)">⏳ Загружаем...</div>`;
+  ov.style.display='flex';
+  try{
+    const r=await fetch(`${API}/profile/${TG_USER.id}`);
+    const d=await r.json();
+    const name=(TG_USER.first_name||'')+(TG_USER.last_name?' '+TG_USER.last_name:'');
+    const username=TG_USER.username?`@${TG_USER.username}`:'';
+    const statusLabel={pending:'⏳ Ожидает',accepted:'💳 Ожидает оплаты',completed:'✅ Куплен',cancelled:'❌ Отменён',rejected:'❌ Отклонён'};
+    body.innerHTML=`
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px">
+        <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">👤</div>
+        <div>
+          <div style="font-size:16px;font-weight:800;color:#f1f5f9">${name||'Покупатель'}</div>
+          ${username?`<div style="font-size:12px;color:var(--muted);margin-top:2px">${username}</div>`:''}
+          <div style="font-size:11px;color:#475569;margin-top:2px">ID: ${TG_USER.id}</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div style="background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.15);border-radius:12px;padding:12px;text-align:center">
+          <div style="font-size:22px;font-weight:800;color:#4ade80">${d.stats.orders_completed}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px">куплено</div>
+        </div>
+        <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:12px;padding:12px;text-align:center">
+          <div style="font-size:22px;font-weight:800;color:#fbbf24">${d.stats.orders_total}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px">заказов</div>
+        </div>
+        <div style="background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.15);border-radius:12px;padding:12px;text-align:center">
+          <div style="font-size:22px;font-weight:800;color:#a78bfa">${d.stats.swaps_total}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px">обменов</div>
+        </div>
+      </div>
+
+      ${d.orders.length?`
+      <div style="font-size:13px;font-weight:800;color:#94a3b8;margin-bottom:-4px">📦 История заказов</div>
+      ${d.orders.map(o=>`
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#f1f5f9">Аккаунт #${o.acc_number}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">${o.created_at?.slice(0,10)||''} · ${Number(o.price).toLocaleString('ru')} ₽</div>
+          </div>
+          <div style="font-size:11px;font-weight:700;padding:4px 8px;border-radius:8px;background:rgba(255,255,255,.05)">${statusLabel[o.status]||o.status}</div>
+        </div>`).join('')}`:''}
+
+      ${d.swaps.length?`
+      <div style="font-size:13px;font-weight:800;color:#94a3b8;margin-bottom:-4px">🔄 История обменов</div>
+      ${d.swaps.map(s=>`
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px">
+          <div style="font-size:13px;font-weight:700;color:#f1f5f9">Аккаунт #${s.acc_number}</div>
+          ${s.binding?`<div style="font-size:11px;color:var(--muted);margin-top:2px">Привязка: ${s.binding}</div>`:''}
+          ${s.dop&&s.dop_amount&&s.dop_amount!='0'?`<div style="font-size:11px;color:#4ade80;margin-top:2px">Доплата: ${Number(s.dop_amount).toLocaleString('ru')} ₽</div>`:''}
+          <div style="font-size:11px;color:#475569;margin-top:2px">${s.created_at?.slice(0,10)||''}</div>
+        </div>`).join('')}`:''}
+
+      ${!d.orders.length&&!d.swaps.length?`<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">Пока нет активности 🙂<br>Купи или предложи обмен!</div>`:''}
+
+      <a href="https://t.me/DvornovNikitos" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;padding:14px;border-radius:12px;font-size:14px;font-weight:800;text-decoration:none;margin-top:4px">
+        💬 Написать продавцу
+      </a>`;
+  }catch{
+    body.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)">❌ Не удалось загрузить профиль</div>`;
+  }
+}
 function openAdmin(){ if(!isAdmin) return; renderHome(); document.getElementById('adminOv').classList.add('open'); }
 
 function renderHome(){
@@ -1319,8 +1401,39 @@ function renderHome(){
       <div class="adm-divider"></div>
       <button class="adm-btn" onclick="renderStats()"><div class="adm-ic ic-t">📊</div><div><div class="adm-name">Статистика</div><div class="adm-desc">Аккаунтов в магазине</div></div></button>
       <button class="adm-btn" onclick="renderBuyAccount()"><div class="adm-ic" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3)">💰</div><div><div class="adm-name">Купить аккаунт</div><div class="adm-desc">Принять оплату от покупателя</div></div></button>
+      <button class="adm-btn" onclick="renderBuyers()"><div class="adm-ic" style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3)">👥</div><div><div class="adm-name">Покупатели</div><div class="adm-desc">Список всех покупателей</div></div></button>
       <button class="adm-btn" onclick="closeOv('adminOv')"><div class="adm-ic ic-g">🚪</div><div><div class="adm-name">Закрыть</div><div class="adm-desc">Вернуться в магазин</div></div></button>
     </div>`;}
+
+async function renderBuyers(){
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderHome()">← Назад</button>
+    <div class="sheet-title">👥 Покупатели</div>
+    <div id="buyersBody" style="text-align:center;padding:24px;color:var(--txt2)">Загрузка...</div>`;
+  try{
+    const r=await fetch('/admin/users',{headers:{'X-Admin-Key':ADMIN_KEY}});
+    const data=await r.json();
+    const users=data.users||[];
+    if(!users.length){
+      document.getElementById('buyersBody').innerHTML='<div style="color:var(--txt2)">Покупателей пока нет</div>';
+      return;
+    }
+    document.getElementById('buyersBody').innerHTML=users.map(u=>`
+      <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:10px;text-align:left">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="font-weight:700;font-size:15px">${u.name||'Без имени'}${u.username?`<span style="color:var(--txt2);font-size:13px;font-weight:400"> @${u.username}</span>`:''}</div>
+          <div style="font-size:12px;color:var(--txt2)">ID: ${u.user_id}</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span style="background:rgba(34,197,94,.12);color:#22c55e;border-radius:8px;padding:3px 9px;font-size:12px">✅ Куплено: ${u.orders_completed}</span>
+          <span style="background:rgba(59,130,246,.12);color:#3b82f6;border-radius:8px;padding:3px 9px;font-size:12px">📦 Заказов: ${u.orders_total}</span>
+          <span style="background:rgba(168,85,247,.12);color:#a855f7;border-radius:8px;padding:3px 9px;font-size:12px">🔄 Обменов: ${u.swaps_total}</span>
+        </div>
+      </div>`).join('');
+  }catch(e){
+    document.getElementById('buyersBody').innerHTML='<div style="color:#ef4444">Ошибка загрузки</div>';
+  }
+}
 
 // ━━━ ДОБАВИТЬ ━━━
 let addBinding='';
