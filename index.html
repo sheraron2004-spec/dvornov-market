@@ -713,10 +713,11 @@ const ADMIN_TG_ID = 568518218;
 const ADMIN_KEY = 'cRfz-viMcAWBsE3OLERmzlzbYUXyo3xgOK4pTaMO3JE';
 let ACCOUNTS=[], LIST=[], isAdmin=false, selPhoto=null, extraFiles=[];
 
+let TG_USER={id:0,first_name:'',last_name:''};
 if(window.Telegram?.WebApp){
   Telegram.WebApp.ready(); Telegram.WebApp.expand();
   const u=Telegram.WebApp.initDataUnsafe?.user;
-  if(u&&u.id===ADMIN_TG_ID) isAdmin=true;
+  if(u){ TG_USER=u; if(u.id===ADMIN_TG_ID) isAdmin=true; }
 }
 if(isAdmin){ const ab=document.getElementById('adminBtn'); if(ab) ab.classList.add('show'); }
 
