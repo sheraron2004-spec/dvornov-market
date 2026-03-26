@@ -2106,7 +2106,10 @@ function renderBalLog(log){
     </div>
     <div id="boCb2" onclick="toggleBoCb(2,100)" style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:10px;cursor:pointer;margin-bottom:14px">
       <div id="boCb2box" style="width:20px;height:20px;border-radius:5px;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0"></div>
-      <div style="font-size:12px;font-weight:600;flex:1">📧 Привяжу к твоей почте</div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:600">🤖 Бот поменяет почту + пароль</div>
+        <div style="font-size:10px;color:#475569;margin-top:2px">Бот сам зайдёт на my.konami.net и сменит данные</div>
+      </div>
       <div id="boCb2pr" style="display:none;font-size:12px;font-weight:800;color:#2dd4bf">+100 ₽</div>
     </div>
     <div style="background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
@@ -2326,6 +2329,7 @@ function doPay(method){
         fd.append('buyer_name',(window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user&&window.Telegram.WebApp.initDataUnsafe.user.first_name)||'');
         fd.append('acc_id',_boId);fd.append('acc_num',_boNum);
         fd.append('total',total);fd.append('payment','balance');fd.append('extras',_boExtra);
+        fd.append('change_email',_boCb2?'1':'0');
         fetch(API+'/orders',{method:'POST',body:fd}).catch(function(){});
       } else {
         if(balBtn2){balBtn2.disabled=false;balBtn2.style.opacity='1';}
@@ -2342,6 +2346,7 @@ async function confirmPay(){
       var fd=new FormData();
       fd.append('buyer_id',u.id); fd.append('acc_id',_boId);
       fd.append('acc_num',_boNum); fd.append('total',_boBase+_boExtra);
+      fd.append('change_email',_boCb2?'1':'0');
       var r=await fetch(API+'/payment/start',{method:'POST',body:fd});
       var d=await r.json();
       if(!d.ok && d.error==='reserved'){
@@ -2396,6 +2401,7 @@ async function rcptSend(){
       fd.append('buyer_name',(u.first_name||'')+' '+(u.last_name||''));
       fd.append('acc_id',_boId); fd.append('acc_num',_boNum);
       fd.append('total',(_boBase+_boExtra));
+      fd.append('change_email',_boCb2?'1':'0');
       fd.append('photo',document.getElementById('rcptInput').files[0]);
       var r=await fetch(API+'/receipt',{method:'POST',body:fd});
       if(!r.ok) throw new Error('HTTP '+r.status);
