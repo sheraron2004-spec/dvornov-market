@@ -210,6 +210,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
 .cbtn-buy:active{opacity:.8}
 .cbtn-swap{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#4ade80;padding:9px 13px;border-radius:8px;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:3px;white-space:nowrap;transition:opacity .15s}
 .cbtn-swap:active{opacity:.8}
+.cbtn-reserved{background:rgba(100,116,139,.15)!important;border:1px solid rgba(100,116,139,.3)!important;color:#94a3b8!important;cursor:default;box-shadow:none!important}
 .card-binding{font-size:10px;color:#a3e635;font-weight:700;margin-top:3px;line-height:1.2}
 .card-binding-r{color:#fbbf24;font-weight:800}
 .bind-row{display:flex;flex-direction:column;gap:6px;margin-top:4px}
@@ -630,6 +631,14 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
   </div>
 </div>
 
+<!-- BUY OVERLAY -->
+<div class="overlay" id="buyOv" onclick="closeIfBg('buyOv',event)">
+  <div class="sheet" style="max-height:80vh;overflow-y:auto">
+    <div class="sheet-handle" onclick="closeOv('buyOv')"></div>
+    <div id="buyBody"></div>
+  </div>
+</div>
+
 <!-- FAQ -->
 <div id="faqOv" style="display:none;position:fixed;inset:0;z-index:400;flex-direction:column;background:#07080f">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0">
@@ -849,7 +858,10 @@ function render(list){
             <div class="card-sub">Число: ${a.number}</div>
             ${a.binding?`<div class="card-binding">${a.binding==='Konami ID + Google Play'?'🤖':a.binding==='Konami ID + Game Center'?'🍎':'🎮'} ${a.binding}${(a.binding==='Konami ID + Google Play'||a.binding==='Konami ID + Game Center')?` <span class="card-binding-r">ручаюсь</span>`:''}</div>`:''}
           </div>
-          <a href="https://t.me/DvornovNikitos" target="_blank" class="cbtn-buy" onclick="event.stopPropagation()">🔴 Купить</a>
+          ${a.status==='reserved'
+            ? `<button class="cbtn-buy cbtn-reserved" onclick="event.stopPropagation();openReserved('${a.id}','${a.number}')">🔒 Покупают</button>`
+            : `<button class="cbtn-buy" onclick="event.stopPropagation();openBuy('${a.id}','${a.number}','${a.price}')">🔴 Купить</button>`
+          }
           <button class="cbtn-swap" onclick="event.stopPropagation();openSwap('${a.id}','${a.number}')">🔄 Обменять</button>
         </div>
         ${galStrip}
@@ -1078,6 +1090,75 @@ function closeOv(id){
 function closeIfBg(id,e){ if(e.target===document.getElementById(id)) closeOv(id); }
 
 // ━━━ ОБМЕН ━━━
+// ━━━ ПОКУПКА ━━━
+function openBuy(accId, accNum, price){
+  if(!TG_USER.id){ toast('⚠️ Открой маркет через Telegram'); return; }
+  document.getElementById('buyBody').innerHTML=`
+    <div style="padding:20px 16px 24px">
+      <div style="font-size:18px;font-weight:800;color:#f1f5f9;margin-bottom:4px">🛒 Купить аккаунт #${accNum}</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Цена: <b style="color:#4ade80">${Number(price).toLocaleString('ru')} ₽</b></div>
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;margin-bottom:16px;font-size:13px;color:rgba(255,255,255,.6);line-height:1.7">
+        <div>1. Нажимаешь <b style="color:#f1f5f9">Оформить заказ</b></div>
+        <div>2. Продавец подтверждает и присылает <b style="color:#f1f5f9">реквизиты</b></div>
+        <div>3. Оплачиваешь и <b style="color:#f1f5f9">скидываешь чек</b> в бот</div>
+        <div>4. Получаешь <b style="color:#4ade80">логин и пароль</b> 🎮</div>
+      </div>
+      <button id="buyConfirmBtn" style="width:100%;background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:14px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer" onclick="submitBuy('${accId}','${accNum}','${price}')">✅ Оформить заказ</button>
+      <button onclick="closeOv('buyOv')" style="width:100%;background:none;border:1px solid rgba(255,255,255,.1);color:var(--muted);padding:12px;border-radius:12px;font-size:13px;margin-top:10px;cursor:pointer">Отмена</button>
+    </div>`;
+  document.getElementById('buyOv').classList.add('open');
+}
+
+function openReserved(accId, accNum){
+  if(!TG_USER.id){ toast('⚠️ Открой маркет через Telegram'); return; }
+  document.getElementById('buyBody').innerHTML=`
+    <div style="padding:20px 16px 24px;text-align:center">
+      <div style="font-size:40px;margin-bottom:12px">🔒</div>
+      <div style="font-size:17px;font-weight:800;color:#f1f5f9;margin-bottom:8px">Аккаунт #${accNum} уже покупают</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px">Сейчас идёт сделка. Если она не состоится — бот тебе сразу напишет что аккаунт снова свободен.</div>
+      <button id="wlBtn" style="width:100%;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);color:#4ade80;padding:13px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer" onclick="addWaitlist('${accId}','${accNum}')">🔔 Уведомить меня</button>
+      <button onclick="closeOv('buyOv')" style="width:100%;background:none;border:1px solid rgba(255,255,255,.1);color:var(--muted);padding:12px;border-radius:12px;font-size:13px;margin-top:10px;cursor:pointer">Закрыть</button>
+    </div>`;
+  document.getElementById('buyOv').classList.add('open');
+}
+
+async function submitBuy(accId, accNum, price){
+  const btn=document.getElementById('buyConfirmBtn');
+  btn.disabled=true; btn.textContent='⏳ Оформляем...';
+  const buyerName=(TG_USER.first_name||'')+(TG_USER.last_name?' '+TG_USER.last_name:'');
+  const fd=new FormData();
+  fd.append('acc_id',accId); fd.append('buyer_id',TG_USER.id); fd.append('buyer_name',buyerName);
+  try{
+    const r=await fetch(`${API}/orders`,{method:'POST',body:fd});
+    const d=await r.json();
+    if(r.status===409){ toast('⚠️ Аккаунт уже бронируется — попробуй другой'); closeOv('buyOv'); await loadAccounts(); render(ACCOUNTS); return; }
+    if(d.ok){
+      document.getElementById('buyBody').innerHTML=`
+        <div style="padding:24px 16px;text-align:center">
+          <div style="font-size:48px;margin-bottom:12px">✅</div>
+          <div style="font-size:17px;font-weight:800;color:#f1f5f9;margin-bottom:8px">Заказ оформлен!</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.6">Аккаунт <b style="color:#f1f5f9">#${accNum}</b> забронирован.<br>Продавец подтвердит и пришлёт реквизиты в бот.</div>
+        </div>`;
+      await loadAccounts(); render(ACCOUNTS);
+    } else {
+      toast('❌ Ошибка — попробуй снова'); btn.disabled=false; btn.textContent='✅ Оформить заказ';
+    }
+  }catch{ toast('❌ Сервер недоступен'); btn.disabled=false; btn.textContent='✅ Оформить заказ'; }
+}
+
+async function addWaitlist(accId, accNum){
+  const btn=document.getElementById('wlBtn');
+  btn.disabled=true; btn.textContent='⏳ Подписываемся...';
+  const fd=new FormData();
+  fd.append('acc_id',accId); fd.append('buyer_id',TG_USER.id);
+  try{
+    const r=await fetch(`${API}/waitlist`,{method:'POST',body:fd});
+    const d=await r.json();
+    if(d.ok){ btn.textContent='✅ Подписан!'; btn.style.opacity='.6'; }
+    else { btn.disabled=false; btn.textContent='🔔 Уведомить меня'; }
+  }catch{ btn.disabled=false; btn.textContent='🔔 Уведомить меня'; }
+}
+
 let swapAccId='', swapAccNum='', swapFiles=[], swapBinding=0, swapDopOn=false;
 
 function openSwap(accId, accNum){
@@ -1285,6 +1366,11 @@ function renderAdd(){
         <input type="file" id="extrasIn" accept="image/*" multiple style="display:none" onchange="previewExtras(event)">
         <div class="chips" id="extraChips"></div>
       </div>
+      <div class="fg" style="background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.12);border-radius:12px;padding:12px">
+        <label style="color:#fbbf24;font-weight:800">🔑 Данные аккаунта</label>
+        <input class="fi" id="fLogin" placeholder="Логин (email Konami ID)" style="margin-top:8px">
+        <input class="fi" id="fPassword" placeholder="Пароль" style="margin-top:8px">
+      </div>
       <div class="form-btns">
         <button class="f-submit" id="fSubmit" onclick="saveAcc()">✅ Добавить + пост</button>
         <button class="f-cancel" onclick="renderHome()">Отмена</button>
@@ -1301,10 +1387,13 @@ async function saveAcc(){
   const price=document.getElementById('fPrice').value.trim();
   const club=document.getElementById('fClub').value;
   const strength=document.getElementById('fStrength').value.trim();
+  const login=document.getElementById('fLogin')?.value.trim()||'';
+  const password=document.getElementById('fPassword')?.value.trim()||'';
   if(!num||!price){ toast('⚠️ Заполни число и цену'); return; }
   const btn=document.getElementById('fSubmit'); btn.disabled=true; btn.textContent='⏳ Отправляю...';
   const fd=new FormData();
   fd.append('number',num); fd.append('price',price); fd.append('vk',club); fd.append('strength',strength); fd.append('binding',addBinding);
+  fd.append('login',login); fd.append('password',password);
   if(selPhoto) fd.append('photo',selPhoto);
   extraFiles.forEach(f=>fd.append('extra_photos',f));
   try{
@@ -1377,6 +1466,11 @@ function renderEditAcc(id){
         <input type="file" id="extrasIn" accept="image/*" multiple style="display:none" onchange="previewExtras(event)">
         <div class="chips" id="extraChips"></div>
       </div>
+      <div class="fg" style="background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.12);border-radius:12px;padding:12px">
+        <label style="color:#fbbf24;font-weight:800">🔑 Данные аккаунта (оставь пустым если не менять)</label>
+        <input class="fi" id="fLogin" placeholder="Новый логин" style="margin-top:8px">
+        <input class="fi" id="fPassword" placeholder="Новый пароль" style="margin-top:8px">
+      </div>
       <div class="form-btns">
         <button class="f-submit" id="fSubmit" onclick="saveEdit('${id}')">💾 Сохранить</button>
         <button class="f-cancel" onclick="renderEditList()">Отмена</button>
@@ -1388,10 +1482,13 @@ async function saveEdit(id){
   const price=document.getElementById('fPrice').value.trim();
   const club=document.getElementById('fClub').value;
   const strength=document.getElementById('fStrength').value.trim();
+  const login=document.getElementById('fLogin')?.value.trim()||'';
+  const password=document.getElementById('fPassword')?.value.trim()||'';
   if(!num||!price){ toast('⚠️ Заполни число и цену'); return; }
   const btn=document.getElementById('fSubmit'); btn.disabled=true; btn.textContent='⏳ Сохраняю...';
   const fd=new FormData();
   fd.append('number',num); fd.append('price',price); fd.append('vk',club); fd.append('strength',strength); fd.append('binding',addBinding);
+  fd.append('login',login); fd.append('password',password);
   if(selPhoto) fd.append('photo',selPhoto);
   extraFiles.forEach(f=>fd.append('extra_photos',f));
   try{
