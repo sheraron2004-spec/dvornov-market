@@ -1674,18 +1674,6 @@ function renderHistory(history){
   });
   el.innerHTML=out;
 }
-function subscribeNotify(){
-  var btn=document.getElementById('notifyBtn');
-  var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
-  if(btn){btn.disabled=true;btn.textContent='⏳ Подписываемся...';}
-  var fd=new FormData();
-  fd.append('buyer_id',u?u.id:0);fd.append('buyer_name',u?(u.first_name||''):'');
-  fd.append('acc_id',window._boId||'');fd.append('acc_num',window._boNum||'');
-  fetch(API+'/notify/subscribe',{method:'POST',body:fd})
-    .then(function(r){return r.json();})
-    .then(function(d){if(btn){btn.textContent='✅ Подписан!';btn.style.background='rgba(45,212,191,.15)';btn.style.color='#2dd4bf';}})
-    .catch(function(){if(btn){btn.disabled=false;btn.textContent='❌ Ошибка';btn.style.opacity='1';}});
-}
 </script>
 
 
@@ -1863,23 +1851,6 @@ function subscribeNotify(){
   </div>
 </div>
 
-<!-- ЗАНЯТО -->
-<div id="busyOv" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);align-items:flex-end;justify-content:center">
-  <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px;text-align:center">
-    <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 18px"></div>
-    <div style="font-size:36px;margin-bottom:12px">⏳</div>
-    <div style="font-size:17px;font-weight:800;margin-bottom:8px">Аккаунт занят</div>
-    <div style="font-size:13px;color:#64748b;margin-bottom:18px">Другой покупатель оформляет покупку</div>
-    <div style="display:flex;align-items:center;justify-content:center;padding:14px;background:#0d1117;border:1px solid rgba(239,68,68,.2);border-radius:12px;margin-bottom:18px">
-      <div style="font-size:9px;color:rgba(239,68,68,.5);font-weight:700;letter-spacing:1px;margin-right:10px">ОСВОБОДИТСЯ ЧЕРЕЗ</div>
-      <div id="busyTimer" style="font-size:22px;font-weight:900;color:#f87171;letter-spacing:2px">05:00</div>
-    </div>
-    <div style="font-size:12px;color:#475569;margin-bottom:18px">Если покупатель не оплатит — аккаунт снова станет доступен</div>
-    <button onclick="subscribeNotify()" id="notifyBtn" style="width:100%;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;padding:13px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:9px">🔔 Уведоми меня когда освободится</button>
-    <button onclick="document.getElementById('busyOv').style.display='none'" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:12px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Закрыть</button>
-  </div>
-</div>
-
 <!-- ПОДТВЕРЖДЕНИЕ ПЕРЕД ОПЛАТОЙ -->
 <div id="prePayOv" style="display:none;position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.88);align-items:flex-end;justify-content:center">
   <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px">
@@ -2042,7 +2013,7 @@ function subscribeNotify(){
 // ── ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ──
 var _boId='', _boNum='', _boBase=0, _boExtra=0, _boCb1=false, _boCb2=false;
 var _swPhT=0, _swDopT=false;
-var _payTimerInt=null, _waitTimerInt=null, _busyTimerInt=null;
+var _payTimerInt=null, _waitTimerInt=null;
 
 // ── ПОКУПКА ──
 function doBuy(btn){
@@ -2102,22 +2073,19 @@ function _showBuyOvInner(){
   // Сначала проверяем резервацию аккаунта
   fetch(API+'/reserve/status/'+_boId).then(function(r){return r.json();}).then(function(res){
     if(res.status==='reserved'){
-      // Аккаунт занят — проверяем может это сам пользователь
       if(u){
         fetch(API+'/payment/status/'+u.id).then(function(r){return r.json();}).then(function(d){
           if(d.active && d.acc_id===_boId){
             handleOwnStatus(d);
           } else {
-            // Другой человек — показываем занято
-            showBusyScreen(res.remaining);
+            toast('⏳ Аккаунт сейчас занят другим покупателем. Попробуй через несколько минут.');
           }
-        }).catch(function(){ showBusyScreen(res.remaining); });
+        }).catch(function(){ toast('⏳ Аккаунт сейчас занят. Попробуй позже.'); });
       } else {
-        showBusyScreen(res.remaining);
+        toast('⏳ Аккаунт сейчас занят другим покупателем. Попробуй через несколько минут.');
       }
       return;
     }
-    // Аккаунт свободен — проверяем статус самого пользователя
     if(u){
       fetch(API+'/payment/status/'+u.id).then(function(r){return r.json();}).then(function(d){
         if(d.active && d.acc_id===_boId){
@@ -2132,72 +2100,16 @@ function _showBuyOvInner(){
   }).catch(function(){ document.getElementById('buyOv').style.display='flex'; });
 }
 
-function showBuyOv2(){
-  _boExtra=0; _boCb1=false; _boCb2=false;
-  ['1','2'].forEach(function(n){
-    var r=document.getElementById('boCb'+n); var b=document.getElementById('boCb'+n+'box'); var p=document.getElementById('boCb'+n+'pr');
-    if(r){r.style.background='#0d1117';r.style.borderColor='rgba(255,255,255,.06)';}
-    if(b)b.textContent=''; if(p)p.style.display='none';
-  });
-  document.getElementById('boNum').textContent='#'+_boNum;
-  document.getElementById('boPrice').textContent=_boBase.toLocaleString('ru');
-  document.getElementById('boNumD').textContent='#'+_boNum;
-  var t=_boBase.toLocaleString('ru')+' ₽';
-  document.getElementById('boTotal').textContent=t;
-  document.getElementById('boTotalFinal').textContent=t;
-  // Добавляем кнопку "Я отказываюсь"
-  var cancelBtn = document.getElementById('boCancelBid');
-  if(!cancelBtn){
-    var btn = document.createElement('button');
-    btn.id = 'boCancelBid';
-    btn.textContent = '❌ Я отказываюсь от покупки';
-    btn.style.cssText = 'width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#475569;padding:11px;border-radius:11px;font-family:Inter,sans-serif;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px';
-    btn.onclick = cancelBid;
-    document.getElementById('buyOv').appendChild(btn);
-  }
-  document.getElementById('buyOv').style.display='flex';
-}
-
-async function cancelBid(){
-  var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
-  document.getElementById('buyOv').style.display='none';
-  if(u){
-    try{
-      var fd=new FormData();
-      fd.append('buyer_id',u.id); fd.append('acc_id',_boId);
-      await fetch(API+'/payment/cancel',{method:'POST',body:fd});
-    }catch(e){}
-  }
-  toast('❌ Ты отказался от покупки. Аккаунт снова доступен всем.');
-}
-
 function handleOwnStatus(d){
   if(d.status==='receipt_sent'){
     document.getElementById('rcptForm').style.display='none';
     document.getElementById('rcptDone').style.display='block';
     document.getElementById('receiptOv').style.display='flex';
     startWaitTimer(d.remaining);
-  } else if(d.status==='bid_placed'){
-    _boBase = Number(d.total) || _boBase;
-    showBuyOv2();
   } else {
     _boBase = Number(d.total) || _boBase;
     showPayCard(d.remaining);
   }
-}
-
-function showBusyScreen(remaining){
-  clearInterval(_busyTimerInt);
-  document.getElementById('busyTimer').textContent='0'+Math.floor(remaining/60)+':'+(remaining%60<10?'0':'')+remaining%60;
-  var btn=document.getElementById('notifyBtn');
-  if(btn){btn.textContent='🔔 Уведоми меня когда освободится';btn.disabled=false;btn.style.opacity='1';}
-  document.getElementById('busyOv').style.display='flex';
-  var s=remaining, el=document.getElementById('busyTimer');
-  _busyTimerInt=setInterval(function(){
-    s--; if(s<0){clearInterval(_busyTimerInt);return;}
-    var m=Math.floor(s/60),sc=s%60;
-    if(el)el.textContent='0'+m+':'+(sc<10?'0':'')+sc;
-  },1000);
 }
 
 function toggleBoCb(n,price){
@@ -2262,9 +2174,7 @@ async function confirmPay(){
       var r=await fetch(API+'/payment/start',{method:'POST',body:fd});
       var d=await r.json();
       if(!d.ok && d.error==='reserved'){
-        // Аккаунт уже заняли — показываем занято
-        var res=await (await fetch(API+'/reserve/status/'+_boId)).json();
-        showBusyScreen(res.remaining||300);
+        toast('⏳ Аккаунт уже занят другим покупателем. Попробуй позже.');
         return;
       }
     }catch(e){}
