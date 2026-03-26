@@ -1602,11 +1602,16 @@ if(a){a.style.background='';a.style.borderColor='';a.style.color='';}
       if(API&&u.id){fetch(API+'/profile/'+u.id).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){
         var ba=document.getElementById('pBalAmount');if(ba)ba.textContent=((d.balance!=null?d.balance:0)).toLocaleString('ru')+' ₽';
         window._userBalance=d.balance!=null?d.balance:0;
+        var bs=document.getElementById('pBalSpent');if(bs)bs.textContent='Потрачено с баланса: '+(d.balance_spent||0).toLocaleString('ru')+' ₽';
         var c=document.querySelectorAll('.p-count');
         if(c[0])c[0].textContent=d.purchases;if(c[1])c[1].textContent=d.swaps;
         var blk=document.getElementById('pBlockBanner');if(blk)blk.style.display=d.blocked?'flex':'none';
         var fc=document.getElementById('pFailCount');if(fc)fc.textContent=d.fail_count+'/5';
+        // Баннер "на проверке"
+        var pt=document.getElementById('pPendingTopup');
+        if(pt){if(d.pending_topup){pt.style.display='flex';var pa=document.getElementById('pPendingAmt');if(pa)pa.textContent='Пополнение на '+d.pending_topup.amount.toLocaleString('ru')+' ₽ ожидает подтверждения';}else{pt.style.display='none';}}
         if(window.renderHistory)renderHistory(d.history);
+        renderBalLog(d.balance_log||[]);
       }).catch(function(){});}
     }
   } else {
@@ -1619,9 +1624,22 @@ function openProfile(){showPage('profile');}
 
 // ── ПОПОЛНЕНИЕ БАЛАНСА ──
 var _topupAmount=500;
+function copyCard(){
+  navigator.clipboard&&navigator.clipboard.writeText('2200700945144961').then(function(){
+    var b=document.getElementById('copyCardBtn');if(b){b.textContent='✅ Скопировано';setTimeout(function(){b.textContent='📋 Копировать';},2000);}
+  }).catch(function(){toast('Скопируй вручную: 2200 7009 4514 4961');});
+}
+function copyComment(){
+  var c=document.getElementById('topupCommentId');
+  var txt=c?c.textContent:'';
+  navigator.clipboard&&navigator.clipboard.writeText(txt).then(function(){toast('✅ Комментарий скопирован');}).catch(function(){toast('Скопируй вручную: '+txt);});
+}
 function openTopup(){
   var o=document.getElementById('topupOv');
   if(!o)return;
+  var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+  var cid=document.getElementById('topupCommentId');
+  if(cid&&u)cid.textContent='ID'+u.id;
   document.getElementById('topupForm').style.display='block';
   document.getElementById('topupReceiptForm').style.display='none';
   document.getElementById('topupDone').style.display='none';
@@ -1636,7 +1654,7 @@ function selTopup(el,amt){
 }
 function openTopupReceipt(){
   var amt=_topupAmount||parseInt(document.getElementById('topupAmt')&&document.getElementById('topupAmt').value)||0;
-  if(amt<100){if(window.toast)toast('⚠️ Минимум 100 ₽');return;}
+  if(amt<500){if(window.toast)toast('⚠️ Минимум 500 ₽');return;}
   _topupAmount=amt;
   document.getElementById('topupForm').style.display='none';
   document.getElementById('topupReceiptForm').style.display='block';
@@ -1689,6 +1707,25 @@ function renderHistory(history){
   });
   el.innerHTML=out;
 }
+function renderBalLog(log){
+  var el=document.getElementById('pBalLog');
+  if(!el)return;
+  if(!log||!log.length){el.innerHTML='<div style="font-size:12px;color:#334155;text-align:center;padding:12px">Транзакций пока нет</div>';return;}
+  var out='';
+  log.forEach(function(t){
+    var isTopup=t.type==='topup';
+    var icon=isTopup?'💜':'💸';
+    var color=isTopup?'#a855f7':'#f87171';
+    var sign=isTopup?'+':'-';
+    var date=new Date(t.created_at*1000).toLocaleDateString('ru',{day:'2-digit',month:'2-digit'});
+    out+='<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04)">';
+    out+='<div style="display:flex;align-items:center;gap:9px"><div style="font-size:15px">'+icon+'</div>';
+    out+='<div><div style="font-size:12px;font-weight:700">'+t.description+'</div>';
+    out+='<div style="font-size:10px;color:#475569">'+date+'</div></div></div>';
+    out+='<div style="font-size:13px;font-weight:800;color:'+color+'">'+sign+Number(t.amount).toLocaleString('ru')+' ₽</div></div>';
+  });
+  el.innerHTML=out;
+}
 </script>
 
 
@@ -1708,12 +1745,22 @@ function renderHistory(history){
         <div onclick="selTopup(this,0)" style="padding:11px 6px;background:#0d1117;border:1px solid rgba(255,255,255,.07);border-radius:9px;text-align:center;cursor:pointer"><div style="font-size:14px;font-weight:800">Другое</div></div>
       </div>
       <div id="topupCustom" style="display:none;margin-bottom:12px"><input id="topupAmt" type="number" placeholder="Сумма (₽)" style="width:100%;background:#0d1117;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:11px 13px;color:#f1f5f9;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;outline:none"></div>
-      <div style="background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:13px;margin-bottom:14px">
+      <div style="background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:13px;margin-bottom:10px">
         <div style="font-size:9px;color:#475569;font-weight:700;letter-spacing:2px;margin-bottom:6px">ПЕРЕВЕДИ НА КАРТУ</div>
-        <div style="font-size:17px;font-weight:900;letter-spacing:3px;color:#f1f5f9;margin-bottom:2px">2200 7009 4514 4961</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
+          <div style="font-size:17px;font-weight:900;letter-spacing:3px;color:#f1f5f9">2200 7009 4514 4961</div>
+          <button onclick="copyCard()" id="copyCardBtn" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);color:#c084fc;padding:5px 10px;border-radius:7px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;margin-left:8px">📋 Копировать</button>
+        </div>
         <div style="font-size:11px;color:#475569">Никита Д. · Сбербанк · <strong id="topupSumLabel" style="color:#f1f5f9">500 ₽</strong></div>
       </div>
-      <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15);border-radius:9px;padding:10px 12px;margin-bottom:14px;font-size:11px;color:rgba(239,68,68,.7);line-height:1.5">🚫 <strong>Вывод невозможен.</strong> Деньги только для покупок. Возврат не предусмотрен.</div>
+      <div id="topupCommentBlock" style="background:#0d1117;border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:11px 13px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:9px;color:#475569;font-weight:700;letter-spacing:2px;margin-bottom:3px">КОММЕНТАРИЙ К ПЕРЕВОДУ</div>
+          <div id="topupCommentId" style="font-size:14px;font-weight:800;color:#f1f5f9;letter-spacing:1px">—</div>
+        </div>
+        <button onclick="copyComment()" style="background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.2);color:#2dd4bf;padding:5px 10px;border-radius:7px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0">📋 Копировать</button>
+      </div>
+      <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15);border-radius:9px;padding:10px 12px;margin-bottom:14px;font-size:11px;color:rgba(239,68,68,.7);line-height:1.5">🚫 <strong>Вывод невозможен.</strong> Деньги только для покупок. Минимум 500 ₽. Возврат не предусмотрен.</div>
       <button onclick="openTopupReceipt()" style="width:100%;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;padding:13px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:9px">📸 Я перевёл — отправить скрин</button>
       <button onclick="document.getElementById('topupOv').style.display='none'" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:11px;border-radius:11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Отмена</button>
     </div>
@@ -1826,13 +1873,26 @@ function renderHistory(history){
   </div>
 
   <!-- Баланс -->
-  <div style="margin:14px 16px 0;background:linear-gradient(135deg,#0f0a1e,#1a0f35);border:1px solid rgba(168,85,247,.25);border-radius:14px;padding:18px;position:relative">
-    <div style="position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:radial-gradient(circle,rgba(168,85,247,.2),transparent 70%)"></div>
+  <div style="margin:14px 16px 0;background:linear-gradient(135deg,#0f0a1e,#1a0f35);border:1px solid rgba(168,85,247,.25);border-radius:14px;padding:18px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:radial-gradient(circle,rgba(168,85,247,.2),transparent 70%);pointer-events:none"></div>
     <div style="font-size:9px;font-weight:700;color:rgba(168,85,247,.5);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Баланс аккаунта</div>
-    <div id="pBalAmount" style="font-size:32px;font-weight:900;color:#fff;margin-bottom:3px">0 ₽</div>
-    <div style="font-size:10px;color:rgba(239,68,68,.5);margin-bottom:6px">⚠️ Вывод невозможен — только для покупок</div>
-    <div style="font-size:11px;color:rgba(168,85,247,.4);margin-bottom:14px;line-height:1.5">Пополни баланс как обычную покупку — переведи деньги на карту и скинь чек. После подтверждения деньги появятся здесь и ты сможешь платить одной кнопкой.</div>
+    <div id="pBalAmount" style="font-size:32px;font-weight:900;color:#fff;margin-bottom:2px">0 ₽</div>
+    <div id="pBalSpent" style="font-size:11px;color:rgba(168,85,247,.4);margin-bottom:10px">Потрачено с баланса: 0 ₽</div>
+    <div style="font-size:10px;color:rgba(239,68,68,.5);margin-bottom:12px">⚠️ Вывод невозможен — только для покупок</div>
+    <!-- Баннер "на проверке" -->
+    <div id="pPendingTopup" style="display:none;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:10px 12px;margin-bottom:12px;display:none;align-items:center;gap:10px">
+      <div style="font-size:18px;flex-shrink:0">⏳</div>
+      <div>
+        <div style="font-size:12px;font-weight:800;color:#fbbf24">На проверке</div>
+        <div id="pPendingAmt" style="font-size:11px;color:rgba(251,191,36,.6)">Пополнение ожидает подтверждения</div>
+      </div>
+    </div>
     <button onclick="openTopup()" style="width:100%;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;padding:11px;border-radius:9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer">💜 Пополнить баланс</button>
+  </div>
+  <!-- История баланса -->
+  <div style="margin:12px 16px 0">
+    <div style="font-size:10px;font-weight:700;color:#334155;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">История баланса</div>
+    <div id="pBalLog" style="font-size:12px;color:#334155;text-align:center;padding:12px">Транзакций пока нет</div>
   </div>
 
 
