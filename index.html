@@ -210,6 +210,12 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
 .cbtn-buy:active{opacity:.8}
 .cbtn-swap{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#4ade80;padding:9px 13px;border-radius:8px;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:3px;white-space:nowrap;transition:opacity .15s}
 .cbtn-swap:active{opacity:.8}
+.card-binding{font-size:10px;color:#a3e635;font-weight:700;margin-top:3px;line-height:1.2}
+.bind-row{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.bind-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#e2e8f0;padding:9px 12px;border-radius:10px;font-size:11px;font-weight:600;cursor:pointer;text-align:left;line-height:1.4;transition:all .15s}
+.bind-btn:active{opacity:.7}
+.bind-btn.bind-sel{background:rgba(74,222,128,.15);border-color:rgba(74,222,128,.5);color:#4ade80}
+.bind-ручаюсь{font-size:10px;color:#fbbf24;font-weight:700}
 
 /* ━━━ ОБОРОТ ━━━ */
 .back-body{padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
@@ -835,6 +841,7 @@ function render(list){
           <div class="card-info">
             <div class="card-price">${Number(a.price).toLocaleString('ru')} <span>₽</span></div>
             <div class="card-sub">Число: ${a.number}</div>
+            ${a.binding?`<div class="card-binding">${a.binding==='Konami ID + Google Play'?'🤖':a.binding==='Konami ID + Game Center'?'🍎':'🎮'} ${a.binding}</div>`:''}
           </div>
           <a href="https://t.me/DvornovNikitos" target="_blank" class="cbtn-buy" onclick="event.stopPropagation()">🔴 Купить</a>
           <button class="cbtn-swap" onclick="event.stopPropagation();openSwap('${a.id}','${a.number}')">🔄 Обменять</button>
@@ -1228,8 +1235,15 @@ function renderHome(){
     </div>`;}
 
 // ━━━ ДОБАВИТЬ ━━━
+let addBinding='';
+function setAddBinding(val,el){
+  addBinding=val;
+  document.querySelectorAll('.bind-btn').forEach(b=>b.classList.remove('bind-sel'));
+  el.classList.add('bind-sel');
+}
+
 function renderAdd(){
-  selPhoto=null; extraFiles=[];
+  selPhoto=null; extraFiles=[]; addBinding='';
   document.getElementById('adminBody').innerHTML=`
     <button class="admin-back" onclick="renderHome()">← Назад</button>
     <div class="sheet-title">➕ Добавить аккаунт</div>
@@ -1252,6 +1266,13 @@ function renderAdd(){
           <option value="juve">⬛ Juventus</option>
           <option value="chelsea">🔵 Chelsea</option>
         </select>
+      </div>
+      <div class="fg"><label>Привязка аккаунта</label>
+        <div class="bind-row">
+          <button class="bind-btn" onclick="setAddBinding('Konami ID + Google Play',this)">🤖 Konami ID + Google Play<br><span class="bind-ручаюсь">ручаюсь</span></button>
+          <button class="bind-btn" onclick="setAddBinding('Konami ID + Game Center',this)">🍎 Konami ID + Game Center<br><span class="bind-ручаюсь">ручаюсь</span></button>
+          <button class="bind-btn" onclick="setAddBinding('Только Konami ID',this)">🎮 Только Konami ID</button>
+        </div>
       </div>
       <div class="fg"><label>Доп. фото — фулл скрины</label>
         <label class="photo-label" for="extrasIn">📸 Выбрать фото (можно сразу все)</label>
@@ -1277,7 +1298,7 @@ async function saveAcc(){
   if(!num||!price){ toast('⚠️ Заполни число и цену'); return; }
   const btn=document.getElementById('fSubmit'); btn.disabled=true; btn.textContent='⏳ Отправляю...';
   const fd=new FormData();
-  fd.append('number',num); fd.append('price',price); fd.append('vk',club); fd.append('strength',strength);
+  fd.append('number',num); fd.append('price',price); fd.append('vk',club); fd.append('strength',strength); fd.append('binding',addBinding);
   if(selPhoto) fd.append('photo',selPhoto);
   extraFiles.forEach(f=>fd.append('extra_photos',f));
   try{
@@ -1312,7 +1333,7 @@ function renderEditList(){
 function renderEditAcc(id){
   const a=ACCOUNTS.find(x=>x.id===id);
   if(!a) return;
-  selPhoto=null; extraFiles=[];
+  selPhoto=null; extraFiles=[]; addBinding=a.binding||'';
   document.getElementById('adminBody').innerHTML=`
     <button class="admin-back" onclick="renderEditList()">← Назад</button>
     <div class="sheet-title">✏️ Редактировать #${a.number}</div>
@@ -1334,6 +1355,13 @@ function renderEditAcc(id){
           <option value="juve" ${a.vk==='juve'?'selected':''}>⬛ Juventus</option>
           <option value="chelsea" ${a.vk==='chelsea'?'selected':''}>🔵 Chelsea</option>
         </select>
+      </div>
+      <div class="fg"><label>Привязка аккаунта</label>
+        <div class="bind-row">
+          <button class="bind-btn ${a.binding==='Konami ID + Google Play'?'bind-sel':''}" onclick="setAddBinding('Konami ID + Google Play',this)">🤖 Konami ID + Google Play<br><span class="bind-ручаюсь">ручаюсь</span></button>
+          <button class="bind-btn ${a.binding==='Konami ID + Game Center'?'bind-sel':''}" onclick="setAddBinding('Konami ID + Game Center',this)">🍎 Konami ID + Game Center<br><span class="bind-ручаюсь">ручаюсь</span></button>
+          <button class="bind-btn ${a.binding==='Только Konami ID'?'bind-sel':''}" onclick="setAddBinding('Только Konami ID',this)">🎮 Только Konami ID</button>
+        </div>
       </div>
       <div class="fg"><label>Текущие доп. фото: ${a.albums?.length||0} шт</label>
         ${a.albums?.length?`<div style="display:flex;gap:6px;overflow-x:auto;padding:4px 0;scrollbar-width:none">${a.albums.map(p=>`<img src="${p}" style="width:54px;height:54px;object-fit:cover;border-radius:7px;flex-shrink:0">`).join('')}</div>`:'<div style="font-size:11px;color:var(--muted);padding:4px 0">Нет фото</div>'}
@@ -1357,7 +1385,7 @@ async function saveEdit(id){
   if(!num||!price){ toast('⚠️ Заполни число и цену'); return; }
   const btn=document.getElementById('fSubmit'); btn.disabled=true; btn.textContent='⏳ Сохраняю...';
   const fd=new FormData();
-  fd.append('number',num); fd.append('price',price); fd.append('vk',club); fd.append('strength',strength);
+  fd.append('number',num); fd.append('price',price); fd.append('vk',club); fd.append('strength',strength); fd.append('binding',addBinding);
   if(selPhoto) fd.append('photo',selPhoto);
   extraFiles.forEach(f=>fd.append('extra_photos',f));
   try{
