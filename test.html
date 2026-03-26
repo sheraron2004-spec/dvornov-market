@@ -1735,8 +1735,37 @@ function renderBalLog(log){
   <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px">
     <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 18px"></div>
     <div id="topupForm">
-      <div style="font-size:17px;font-weight:800;margin-bottom:4px">💜 Пополнить баланс</div>
-      <div style="font-size:12px;color:#64748b;margin-bottom:18px">Деньги только для покупок — вывод невозможен</div>
+      <div style="font-size:17px;font-weight:800;margin-bottom:2px">💜 Пополнить баланс</div>
+      <div style="font-size:12px;color:#64748b;margin-bottom:14px">Внутренний счёт для моментальных покупок</div>
+
+      <!-- Преимущества баланса -->
+      <div style="background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(168,85,247,.04));border:1px solid rgba(168,85,247,.2);border-radius:13px;padding:14px;margin-bottom:16px">
+        <div style="font-size:9px;font-weight:700;color:rgba(168,85,247,.5);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Зачем пополнять?</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="width:32px;height:32px;background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.2);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">⚡</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:2px">Моментальная покупка</div>
+              <div style="font-size:11px;color:#475569;line-height:1.4">Не нужно переводить и ждать подтверждения — аккаунт твой за секунду одной кнопкой</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="width:32px;height:32px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🏆</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:2px">Не упустишь редкий аккаунт</div>
+              <div style="font-size:11px;color:#475569;line-height:1.4">Пока другие переводят деньги — ты уже купил. Баланс даёт преимущество при конкуренции</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="width:32px;height:32px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.15);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🔒</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:2px">Без риска слить таймер</div>
+              <div style="font-size:11px;color:#475569;line-height:1.4">Не нужно успевать за 5 минут переводить — оплата балансом проходит мгновенно</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px" id="topupGrid">
         <div onclick="selTopup(this,500)" style="padding:11px 6px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.4);border-radius:9px;text-align:center;cursor:pointer"><div style="font-size:14px;font-weight:800;color:#c084fc">500 ₽</div></div>
         <div onclick="selTopup(this,1000)" style="padding:11px 6px;background:#0d1117;border:1px solid rgba(255,255,255,.07);border-radius:9px;text-align:center;cursor:pointer"><div style="font-size:14px;font-weight:800">1 000 ₽</div></div>
