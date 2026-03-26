@@ -1132,6 +1132,8 @@ function renderAdd(){
         <input type="file" id="extrasIn" accept="image/*" multiple style="display:none" onchange="previewExtras(event)">
         <div class="chips" id="extraChips"></div>
       </div>
+      <div class="fg"><label>🔑 Логин аккаунта</label><input class="fi" id="fLogin" placeholder="Логин для входа" autocomplete="off"></div>
+      <div class="fg"><label>🔒 Пароль аккаунта</label><input class="fi" id="fPassword" placeholder="Пароль для входа" autocomplete="off"></div>
       <div class="form-btns">
         <button class="f-submit" id="fSubmit" onclick="saveAcc()">✅ Добавить + пост</button>
         <button class="f-cancel" onclick="renderHome()">Отмена</button>
@@ -1148,10 +1150,14 @@ async function saveAcc(){
   const price=document.getElementById('fPrice').value.trim();
   const club=document.getElementById('fClub').value;
   const strength=document.getElementById('fStrength').value.trim();
+  const login=document.getElementById('fLogin').value.trim();
+  const password=document.getElementById('fPassword').value.trim();
   if(!num||!price){ toast('⚠️ Заполни число и цену'); return; }
+  if(!login||!password){ toast('⚠️ Заполни логин и пароль аккаунта'); return; }
   const btn=document.getElementById('fSubmit'); btn.disabled=true; btn.textContent='⏳ Отправляю...';
   const fd=new FormData();
   fd.append('number',num); fd.append('price',price); fd.append('vk',club); fd.append('strength',strength);
+  fd.append('login',login); fd.append('password',password);
   if(selPhoto) fd.append('photo',selPhoto);
   extraFiles.forEach(f=>fd.append('extra_photos',f));
   try{
