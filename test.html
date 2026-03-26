@@ -1574,9 +1574,10 @@ if(a){a.style.background='';a.style.borderColor='';a.style.color='';}
       var n=document.getElementById('pName');if(n)n.textContent=(u.first_name||'')+' '+(u.last_name||'');
       var i=document.getElementById('pUid');if(i)i.textContent='ID: '+u.id;
       if(u.photo_url){var em=document.getElementById('pAvEm');if(em)em.style.display='none';var im=document.getElementById('pAvImg');if(im){im.src=u.photo_url;im.style.display='block';}}
-      if(API){fetch(API+'/profile/'+u.id).then(function(r){return r.json();}).then(function(d){
-        var ba=document.getElementById('pBalAmount');if(ba)ba.textContent=(d.balance||0).toLocaleString('ru')+' ₽';
-        window._userBalance=d.balance||0;
+      var _pba=document.getElementById('pBalAmount');if(_pba&&window._userBalance>0)_pba.textContent=window._userBalance.toLocaleString('ru')+' ₽';
+      if(API&&u.id){fetch(API+'/profile/'+u.id).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){
+        var ba=document.getElementById('pBalAmount');if(ba)ba.textContent=((d.balance!=null?d.balance:0)).toLocaleString('ru')+' ₽';
+        window._userBalance=d.balance!=null?d.balance:0;
         var c=document.querySelectorAll('.p-count');
         if(c[0])c[0].textContent=d.purchases;if(c[1])c[1].textContent=d.swaps;
         var blk=document.getElementById('pBlockBanner');if(blk)blk.style.display=d.blocked?'flex':'none';
@@ -2076,6 +2077,11 @@ function _showBuyOvInner(){
   if(balAmt)balAmt.textContent=bal.toLocaleString('ru')+' ₽';
   if(balBtn)balBtn.style.opacity=bal>=_boBase?'1':'.45';
   var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
+  if(u&&u.id&&API){fetch(API+'/balance/'+u.id).then(function(r){return r.json();}).then(function(d2){
+    window._userBalance=d2.balance!=null?d2.balance:0;
+    if(balAmt)balAmt.textContent=window._userBalance.toLocaleString('ru')+' ₽';
+    if(balBtn)balBtn.style.opacity=window._userBalance>=_boBase?'1':'.45';
+  }).catch(function(){});}
 
   // Сначала проверяем резервацию аккаунта
   fetch(API+'/reserve/status/'+_boId).then(function(r){return r.json();}).then(function(res){
