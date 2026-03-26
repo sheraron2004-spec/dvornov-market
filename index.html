@@ -1065,24 +1065,24 @@ function closeOv(id){
 function closeIfBg(id,e){ if(e.target===document.getElementById(id)) closeOv(id); }
 
 // ━━━ ОБМЕН ━━━
-let swapAccId='', swapAccNum='', swapFiles=[];
+let swapAccId='', swapAccNum='', swapFiles=[], swapBinding=0, swapDopOn=false;
 
 function openSwap(accId, accNum){
-  swapAccId=accId; swapAccNum=accNum; swapFiles=[];
+  swapAccId=accId; swapAccNum=accNum; swapFiles=[]; swapBinding=0; swapDopOn=false;
   renderSwapForm();
   document.getElementById('swapOv').classList.add('open');
 }
 
 function openSwapFromProfile(){
-  // Берём аккаунт из текущей открытой галереи
   if(!swapAccId){ toast('⚠️ Сначала открой аккаунт'); return; }
   closeOv('screensOv');
-  swapFiles=[];
+  swapFiles=[]; swapBinding=0; swapDopOn=false;
   renderSwapForm();
   document.getElementById('swapOv').classList.add('open');
 }
 
 function renderSwapForm(){
+  const bindLabels = ['Чистый (только Konami ID)', 'Konami ID + Google Play', 'Konami ID + Game Center'];
   document.getElementById('swapBody').innerHTML=`
     <button class="admin-back" onclick="closeOv('swapOv')">← Назад</button>
     <div class="sheet-title">🔄 Обмен — аккаунт #${swapAccNum}</div>
@@ -1097,35 +1097,59 @@ function renderSwapForm(){
         <label>Описание аккаунта</label>
         <textarea id="swapDesc" rows="3" placeholder="Клуб, рейтинг, особенности..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f1f5f9;padding:10px;font-family:'Inter',sans-serif;font-size:13px;resize:none;box-sizing:border-box"></textarea>
       </div>
-      <div class="fg" style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px">
+      <div class="fg">
+        <label>Привязка аккаунта</label>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${bindLabels.map((l,i)=>`<button id="swapBind${i}" onclick="selectBinding(${i})" style="padding:11px 14px;border-radius:10px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;text-align:left;border:1px solid ${i===0?'rgba(77,139,255,.6)':'rgba(255,255,255,.08)'};background:${i===0?'rgba(77,139,255,.15)':'rgba(255,255,255,.03)'};color:${i===0?'#93c5fd':'#94a3b8'}">${l}</button>`).join('')}
+        </div>
+      </div>
+      <div class="fg" style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px" onclick="toggleSwapDop()">
         <div>
           <div style="font-weight:700;font-size:13px;color:#f1f5f9">Готов дать доплату</div>
           <div style="font-size:11px;color:#475569;margin-top:2px">Если нужна небольшая доплата</div>
         </div>
-        <label style="position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0">
-          <input type="checkbox" id="swapDop" style="opacity:0;width:0;height:0">
-          <span id="swapDopSlider" onclick="toggleSwapDop()" style="position:absolute;cursor:pointer;inset:0;background:#1e293b;border-radius:24px;border:1px solid rgba(255,255,255,.1);transition:.2s">
-            <span id="swapDopThumb" style="position:absolute;height:18px;width:18px;left:3px;bottom:2px;background:#475569;border-radius:50%;transition:.2s"></span>
-          </span>
-        </label>
+        <div style="position:relative;width:44px;height:24px;flex-shrink:0;pointer-events:none">
+          <div id="swapDopSlider" style="position:absolute;inset:0;background:#1e293b;border-radius:24px;border:1px solid rgba(255,255,255,.1);transition:.2s">
+            <div id="swapDopThumb" style="position:absolute;height:18px;width:18px;left:3px;bottom:2px;background:#475569;border-radius:50%;transition:.2s"></div>
+          </div>
+        </div>
+      </div>
+      <div id="swapDopAmountWrap" style="display:none">
+        <div class="fg">
+          <label>Сумма доплаты (₽)</label>
+          <input type="number" id="swapDopAmount" placeholder="Например: 500" min="0" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f1f5f9;padding:10px;font-family:'Inter',sans-serif;font-size:13px;box-sizing:border-box">
+        </div>
       </div>
       <button id="swapSubmitBtn" onclick="submitSwap()" style="width:100%;background:linear-gradient(135deg,#16a34a,#22c55e);border:none;color:#fff;padding:14px;border-radius:12px;font-family:'Inter',sans-serif;font-size:14px;font-weight:800;cursor:pointer;margin-top:4px">🔄 Отправить предложение</button>
     </div>`;
 }
 
+function selectBinding(idx){
+  swapBinding=idx;
+  for(let i=0;i<3;i++){
+    const b=document.getElementById(`swapBind${i}`);
+    if(!b) continue;
+    b.style.border = i===idx ? '1px solid rgba(77,139,255,.6)' : '1px solid rgba(255,255,255,.08)';
+    b.style.background = i===idx ? 'rgba(77,139,255,.15)' : 'rgba(255,255,255,.03)';
+    b.style.color = i===idx ? '#93c5fd' : '#94a3b8';
+  }
+}
+
 function toggleSwapDop(){
-  const cb = document.getElementById('swapDop');
-  cb.checked = !cb.checked;
+  swapDopOn = !swapDopOn;
   const slider = document.getElementById('swapDopSlider');
   const thumb  = document.getElementById('swapDopThumb');
-  if(cb.checked){
+  const wrap   = document.getElementById('swapDopAmountWrap');
+  if(swapDopOn){
     slider.style.background='#16a34a';
     thumb.style.transform='translateX(20px)';
     thumb.style.background='#fff';
+    wrap.style.display='block';
   } else {
     slider.style.background='#1e293b';
     thumb.style.transform='translateX(0)';
     thumb.style.background='#475569';
+    wrap.style.display='none';
   }
 }
 
@@ -1154,17 +1178,20 @@ async function submitSwap(){
   if(!swapFiles.length){ toast('⚠️ Добавь хотя бы 1 фото'); return; }
   const btn = document.getElementById('swapSubmitBtn');
   btn.disabled=true; btn.textContent='⏳ Отправляю...';
-  const dop = document.getElementById('swapDop').checked ? 1 : 0;
   const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
   const buyerId   = user?.id || 0;
   if(!buyerId){ toast('⚠️ Открой маркет через Telegram-бота'); btn.disabled=false; btn.textContent='🔄 Отправить предложение'; return; }
   const buyerName = [user?.first_name, user?.last_name].filter(Boolean).join(' ') || 'Покупатель';
+  const dopAmount = swapDopOn ? (document.getElementById('swapDopAmount')?.value || '0') : '0';
+  const bindNames = ['Чистый (только Konami ID)', 'Konami ID + Google Play', 'Konami ID + Game Center'];
   const fd = new FormData();
-  fd.append('acc_id',     swapAccId);
-  fd.append('buyer_id',   buyerId);
-  fd.append('buyer_name', buyerName);
-  fd.append('swap_desc',  desc);
-  fd.append('swap_dop',   dop);
+  fd.append('acc_id',          swapAccId);
+  fd.append('buyer_id',        buyerId);
+  fd.append('buyer_name',      buyerName);
+  fd.append('swap_desc',       desc);
+  fd.append('swap_dop',        swapDopOn ? 1 : 0);
+  fd.append('swap_dop_amount', dopAmount);
+  fd.append('swap_binding',    bindNames[swapBinding]);
   swapFiles.forEach(f => fd.append('photos', f));
   try{
     const r = await fetch(`${API}/swap`, {method:'POST', body:fd});
