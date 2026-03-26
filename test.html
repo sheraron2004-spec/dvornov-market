@@ -1600,8 +1600,9 @@ if(a){a.style.background='';a.style.borderColor='';a.style.color='';}
       if(u.photo_url){var em=document.getElementById('pAvEm');if(em)em.style.display='none';var im=document.getElementById('pAvImg');if(im){im.src=u.photo_url;im.style.display='block';}}
       var _pba=document.getElementById('pBalAmount');if(_pba&&window._userBalance>0)_pba.textContent=window._userBalance.toLocaleString('ru')+' ₽';
       if(API&&u.id){fetch(API+'/profile/'+u.id).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){
-        var ba=document.getElementById('pBalAmount');if(ba)ba.textContent=((d.balance!=null?d.balance:0)).toLocaleString('ru')+' ₽';
-        window._userBalance=d.balance!=null?d.balance:0;
+        var _newBal=d.balance!=null?d.balance:0;
+        window._userBalance=_newBal>0?_newBal:(window._userBalance||0);
+        var ba=document.getElementById('pBalAmount');if(ba)ba.textContent=window._userBalance.toLocaleString('ru')+' ₽';
         var bs=document.getElementById('pBalSpent');if(bs)bs.textContent='Потрачено с баланса: '+(d.balance_spent||0).toLocaleString('ru')+' ₽';
         var c=document.querySelectorAll('.p-count');
         if(c[0])c[0].textContent=d.purchases;if(c[1])c[1].textContent=d.swaps;
@@ -1873,14 +1874,14 @@ function renderBalLog(log){
   </div>
 
   <!-- Баланс -->
-  <div style="margin:14px 16px 0;background:linear-gradient(135deg,#0f0a1e,#1a0f35);border:1px solid rgba(168,85,247,.25);border-radius:14px;padding:18px;position:relative;overflow:hidden">
-    <div style="position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:radial-gradient(circle,rgba(168,85,247,.2),transparent 70%);pointer-events:none"></div>
+  <div style="margin:14px 16px 0;background:linear-gradient(135deg,#0f0a1e,#1a0f35);border:1px solid rgba(168,85,247,.25);border-radius:14px;padding:18px;position:relative">
+    <div style="position:absolute;top:0;right:0;width:100px;height:100px;background:radial-gradient(circle,rgba(168,85,247,.2),transparent 70%);pointer-events:none;border-radius:14px"></div>
     <div style="font-size:9px;font-weight:700;color:rgba(168,85,247,.5);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Баланс аккаунта</div>
     <div id="pBalAmount" style="font-size:32px;font-weight:900;color:#fff;margin-bottom:2px">0 ₽</div>
     <div id="pBalSpent" style="font-size:11px;color:rgba(168,85,247,.4);margin-bottom:10px">Потрачено с баланса: 0 ₽</div>
     <div style="font-size:10px;color:rgba(239,68,68,.5);margin-bottom:12px">⚠️ Вывод невозможен — только для покупок</div>
     <!-- Баннер "на проверке" -->
-    <div id="pPendingTopup" style="display:none;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:10px 12px;margin-bottom:12px;display:none;align-items:center;gap:10px">
+    <div id="pPendingTopup" style="display:none;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:10px 12px;margin-bottom:12px;align-items:center;gap:10px">
       <div style="font-size:18px;flex-shrink:0">⏳</div>
       <div>
         <div style="font-size:12px;font-weight:800;color:#fbbf24">На проверке</div>
