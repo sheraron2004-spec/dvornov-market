@@ -584,6 +584,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
   <div style="padding:10px 16px;flex-shrink:0">
     <div id="gfThumbs" style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px"></div>
   </div>
+  <div id="gfInfoBlock" style="padding:0 16px 6px;flex-shrink:0"></div>
   <div style="padding:0 16px 28px;display:flex;flex-direction:column;gap:8px;flex-shrink:0">
     <div style="display:flex;gap:8px">
       <button onclick="doBuyGal()" style="flex:1;background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:13px;border-radius:12px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer">🔴 Купить</button>
@@ -775,6 +776,16 @@ async function loadAccounts(){
 }
 
 // ━━━ РЕНДЕР ━━━
+function bindingBadge(b){
+  if(b==='google') return '<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(66,133,244,.15);border:1px solid rgba(66,133,244,.3);color:#4285f4;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700">🔵 KID + Google Play</span>';
+  if(b==='gc')     return '<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:#cbd5e1;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700">⚪ KID + Game Center</span>';
+  return '<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#22c55e;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700">🟢 Чистый</span>';
+}
+function bindingLabel(b){
+  if(b==='google') return '🔵 Konami ID + Google Play';
+  if(b==='gc')     return '⚪ Konami ID + Game Center (ГЦ)';
+  return '🟢 Чистый — только Konami ID';
+}
 function render(list){
   document.getElementById('countBadge').textContent=list.length+' шт';
   const g=document.getElementById('grid');
@@ -838,6 +849,7 @@ function render(list){
           <div class="card-info">
             <div class="card-price">${Number(a.price).toLocaleString('ru')} <span>₽</span></div>
             <div class="card-sub">Число: ${a.number}</div>
+            <div style="margin-top:5px">${bindingBadge(a.binding)}</div>
           </div>
           <button class="cbtn-buy" data-id="${a.id}" data-num="${a.number}" data-price="${a.price}" onclick="event.stopPropagation();doBuy(this)">🔴 Купить</button>
           <button style="background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.2);color:#2dd4bf;padding:9px 10px;border-radius:8px;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap" data-id="${a.id}" data-num="${a.number}" data-price="${a.price}" onclick="event.stopPropagation();doSwap(this)">🔄 Обмен</button>
@@ -913,6 +925,16 @@ function openScreens(i, startIdx){
   document.getElementById('gfL').onclick=()=>gfGo(galCur-1);
   document.getElementById('gfR').onclick=()=>gfGo(galCur+1);
   ov.style.display='flex';
+  // Инфоблок аккаунта
+  const infoBlock = document.getElementById('gfInfoBlock');
+  if(infoBlock && acc){
+    const str = acc.strength ? `<div style="display:flex;align-items:center;gap:6px"><span style="color:#64748b;font-size:11px">⚡ Сила:</span><span style="font-size:12px;font-weight:800;color:#fbbf24">${Number(acc.strength).toLocaleString('ru')}</span></div>` : '';
+    infoBlock.innerHTML = `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 0;border-top:1px solid rgba(255,255,255,.05)">
+      <div style="font-size:12px;font-weight:700;color:#f1f5f9">#${acc.number}</div>
+      ${bindingBadge(acc.binding)}
+      ${str}
+    </div>`;
+  }
   // Свайп
   const wrap=document.getElementById('gfWrap');
   // Свайп обрабатывается в IIFE с проверкой зума — здесь не дублируем
@@ -1132,6 +1154,13 @@ function renderAdd(){
         <input type="file" id="extrasIn" accept="image/*" multiple style="display:none" onchange="previewExtras(event)">
         <div class="chips" id="extraChips"></div>
       </div>
+      <div class="fg"><label>🔗 Привязка аккаунта</label>
+        <select class="fi" id="fBinding">
+          <option value="clean">🟢 Чистый — только Konami ID</option>
+          <option value="google">🔵 Konami ID + Google Play</option>
+          <option value="gc">⚪ Konami ID + Game Center (ГЦ)</option>
+        </select>
+      </div>
       <div class="fg"><label>🔑 Логин аккаунта</label><input class="fi" id="fLogin" placeholder="Логин для входа" autocomplete="off"></div>
       <div class="fg"><label>🔒 Пароль аккаунта</label><input class="fi" id="fPassword" placeholder="Пароль для входа" autocomplete="off"></div>
       <div class="form-btns">
@@ -1152,12 +1181,13 @@ async function saveAcc(){
   const strength=document.getElementById('fStrength').value.trim();
   const login=document.getElementById('fLogin').value.trim();
   const password=document.getElementById('fPassword').value.trim();
+  const binding=document.getElementById('fBinding').value;
   if(!num||!price){ toast('⚠️ Заполни число и цену'); return; }
   if(!login||!password){ toast('⚠️ Заполни логин и пароль аккаунта'); return; }
   const btn=document.getElementById('fSubmit'); btn.disabled=true; btn.textContent='⏳ Отправляю...';
   const fd=new FormData();
   fd.append('number',num); fd.append('price',price); fd.append('vk',club); fd.append('strength',strength);
-  fd.append('login',login); fd.append('password',password);
+  fd.append('login',login); fd.append('password',password); fd.append('binding',binding);
   if(selPhoto) fd.append('photo',selPhoto);
   extraFiles.forEach(f=>fd.append('extra_photos',f));
   try{
@@ -1223,6 +1253,13 @@ function renderEditAcc(id){
         <input type="file" id="extrasIn" accept="image/*" multiple style="display:none" onchange="previewExtras(event)">
         <div class="chips" id="extraChips"></div>
       </div>
+      <div class="fg"><label>🔗 Привязка аккаунта</label>
+        <select class="fi" id="fBinding">
+          <option value="clean" ${(!a.binding||a.binding==='clean')?'selected':''}>🟢 Чистый — только Konami ID</option>
+          <option value="google" ${a.binding==='google'?'selected':''}>🔵 Konami ID + Google Play</option>
+          <option value="gc" ${a.binding==='gc'?'selected':''}>⚪ Konami ID + Game Center (ГЦ)</option>
+        </select>
+      </div>
       <div class="form-btns">
         <button class="f-submit" id="fSubmit" onclick="saveEdit('${id}')">💾 Сохранить</button>
         <button class="f-cancel" onclick="renderEditList()">Отмена</button>
@@ -1234,10 +1271,11 @@ async function saveEdit(id){
   const price=document.getElementById('fPrice').value.trim();
   const club=document.getElementById('fClub').value;
   const strength=document.getElementById('fStrength').value.trim();
+  const binding=document.getElementById('fBinding').value;
   if(!num||!price){ toast('⚠️ Заполни число и цену'); return; }
   const btn=document.getElementById('fSubmit'); btn.disabled=true; btn.textContent='⏳ Сохраняю...';
   const fd=new FormData();
-  fd.append('number',num); fd.append('price',price); fd.append('vk',club); fd.append('strength',strength);
+  fd.append('number',num); fd.append('price',price); fd.append('vk',club); fd.append('strength',strength); fd.append('binding',binding);
   if(selPhoto) fd.append('photo',selPhoto);
   extraFiles.forEach(f=>fd.append('extra_photos',f));
   try{
