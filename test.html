@@ -1060,6 +1060,21 @@ function gfGo(idx){
 }
 
 // ━━━ OVERLAYS ━━━
+var _busyTimerInt=null;
+function showBusyScreen(remaining){
+  var secs=Math.max(0,Math.round(remaining||300));
+  var el=document.getElementById('busyOv');
+  if(!el) return;
+  if(_busyTimerInt){ clearInterval(_busyTimerInt); _busyTimerInt=null; }
+  function upd(){ var m=Math.floor(secs/60),s=secs%60; var td=document.getElementById('busyTimer'); if(td) td.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s; }
+  upd();
+  el.style.display='flex';
+  _busyTimerInt=setInterval(function(){
+    secs--;
+    upd();
+    if(secs<=0){ clearInterval(_busyTimerInt); _busyTimerInt=null; closeOv('busyOv'); }
+  },1000);
+}
 function closeOv(id){
   const el = document.getElementById(id);
   if(!el) return;
@@ -1851,6 +1866,22 @@ function renderHistory(history){
   </div>
 </div>
 
+<!-- ЗАНЯТО -->
+<div id="busyOv" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);align-items:flex-end;justify-content:center">
+  <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px;text-align:center">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:36px;margin-bottom:12px">⏳</div>
+    <div style="font-size:17px;font-weight:800;margin-bottom:8px">Аккаунт занят</div>
+    <div style="font-size:13px;color:#64748b;margin-bottom:18px">Другой покупатель оформляет покупку</div>
+    <div style="display:flex;align-items:center;justify-content:center;padding:14px;background:#0d1117;border:1px solid rgba(239,68,68,.2);border-radius:12px;margin-bottom:18px">
+      <div style="font-size:9px;color:rgba(239,68,68,.5);font-weight:700;letter-spacing:1px;margin-right:10px">ОСВОБОДИТСЯ ЧЕРЕЗ</div>
+      <div id="busyTimer" style="font-size:22px;font-weight:900;color:#f87171;letter-spacing:2px">05:00</div>
+    </div>
+    <div style="font-size:12px;color:#475569;margin-bottom:18px">Если покупатель не оплатит — аккаунт снова станет доступен</div>
+    <button onclick="closeOv('busyOv')" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:12px;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Закрыть</button>
+  </div>
+</div>
+
 <!-- ПОДТВЕРЖДЕНИЕ ПЕРЕД ОПЛАТОЙ -->
 <div id="prePayOv" style="display:none;position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.88);align-items:flex-end;justify-content:center">
   <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px">
@@ -2078,11 +2109,11 @@ function _showBuyOvInner(){
           if(d.active && d.acc_id===_boId){
             handleOwnStatus(d);
           } else {
-            toast('⏳ Аккаунт сейчас занят другим покупателем. Попробуй через несколько минут.');
+            showBusyScreen(res.remaining);
           }
-        }).catch(function(){ toast('⏳ Аккаунт сейчас занят. Попробуй позже.'); });
+        }).catch(function(){ showBusyScreen(res.remaining); });
       } else {
-        toast('⏳ Аккаунт сейчас занят другим покупателем. Попробуй через несколько минут.');
+        showBusyScreen(res.remaining);
       }
       return;
     }
@@ -2174,7 +2205,7 @@ async function confirmPay(){
       var r=await fetch(API+'/payment/start',{method:'POST',body:fd});
       var d=await r.json();
       if(!d.ok && d.error==='reserved'){
-        toast('⏳ Аккаунт уже занят другим покупателем. Попробуй позже.');
+        showBusyScreen(d.remaining||300);
         return;
       }
     }catch(e){}
