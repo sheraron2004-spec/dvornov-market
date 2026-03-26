@@ -618,7 +618,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
 <div id="faqOv" style="display:none;position:fixed;inset:0;z-index:400;flex-direction:column;background:#07080f">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0">
     <div style="font-size:17px;font-weight:800;color:#f1f5f9">❓ FAQ</div>
-    <div onclick="document.getElementById('faqOv').style.display='none'" style="width:34px;height:34px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:#64748b">✕</div>
+    <div onclick="closeOv('faqOv')" style="width:34px;height:34px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:#64748b">✕</div>
   </div>
   <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;padding-bottom:40px">
 
@@ -1062,6 +1062,7 @@ function gfGo(idx){
 // ━━━ OVERLAYS ━━━
 function closeOv(id){
   const el = document.getElementById(id);
+  if(!el) return;
   el.style.display='none';
 }
 function closeIfBg(id,e){ if(e.target===document.getElementById(id)) closeOv(id); }
@@ -1976,7 +1977,7 @@ function subscribeNotify(){
 </div>
 
 <!-- ОБМЕН -->
-<div id="swapOvT" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);align-items:flex-end;justify-content:center">
+<div id="swapOvT" onclick="closeIfBg('swapOvT',event)" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);align-items:flex-end;justify-content:center">
   <div style="background:#111419;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto">
     <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 auto 18px"></div>
     <div style="font-size:17px;font-weight:800;margin-bottom:3px">🔄 Предложить обмен</div>
@@ -2027,7 +2028,7 @@ function subscribeNotify(){
 // ── ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ──
 var _boId='', _boNum='', _boBase=0, _boExtra=0, _boCb1=false, _boCb2=false;
 var _swPhT=0, _swDopT=false;
-var _payTimerInt=null, _waitTimerInt=null;
+var _payTimerInt=null, _waitTimerInt=null, _busyTimerInt=null;
 
 // ── ПОКУПКА ──
 function doBuy(btn){
@@ -2050,6 +2051,7 @@ function doBuyGal(){
   var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
   if(u){
     fetch(API+'/profile/check/'+u.id).then(function(r){return r.json();}).then(function(d){
+      if(!d.verified){document.getElementById('notVerifiedOv').style.display='flex';return;}
       if(d.blocked){document.getElementById('blockedOv').style.display='flex';return;}
       _showBuyOvInner();
     }).catch(function(){_showBuyOvInner();});
@@ -2171,13 +2173,14 @@ function handleOwnStatus(d){
 }
 
 function showBusyScreen(remaining){
+  clearInterval(_busyTimerInt);
   document.getElementById('busyTimer').textContent='0'+Math.floor(remaining/60)+':'+(remaining%60<10?'0':'')+remaining%60;
   var btn=document.getElementById('notifyBtn');
   if(btn){btn.textContent='🔔 Уведоми меня когда освободится';btn.disabled=false;btn.style.opacity='1';}
   document.getElementById('busyOv').style.display='flex';
   var s=remaining, el=document.getElementById('busyTimer');
-  var t=setInterval(function(){
-    s--; if(s<0){clearInterval(t);return;}
+  _busyTimerInt=setInterval(function(){
+    s--; if(s<0){clearInterval(_busyTimerInt);return;}
     var m=Math.floor(s/60),sc=s%60;
     if(el)el.textContent='0'+m+':'+(sc<10?'0':'')+sc;
   },1000);
@@ -2211,9 +2214,13 @@ function doPay(method){
       document.getElementById('insuffNeed').textContent=(total-bal).toLocaleString('ru')+' ₽';
       return;
     }
+    var balBtn2=document.getElementById('balancePayBtn');
+    if(balBtn2){balBtn2.disabled=true;balBtn2.style.opacity='.5';}
     fetch(API+'/balance/spend/'+u2.id+'/'+total,{method:'POST',body:(function(){var fd=new FormData();fd.append('acc_id',_boId);fd.append('acc_num',_boNum);return fd;})()}).then(function(r){return r.json();}).then(function(d){
       if(d.ok){
         window._userBalance=d.new_balance;
+        // Обновляем отображение баланса в профиле
+        var pba=document.getElementById('pBalAmount');if(pba)pba.textContent=window._userBalance.toLocaleString('ru')+' ₽';
         // Показываем экран ожидания
         document.getElementById('balanceDoneOv').style.display='flex';
         // Уведомляем сервер
@@ -2224,9 +2231,10 @@ function doPay(method){
         fd.append('total',total);fd.append('payment','balance');fd.append('extras',_boExtra);
         fetch(API+'/orders',{method:'POST',body:fd}).catch(function(){});
       } else {
+        if(balBtn2){balBtn2.disabled=false;balBtn2.style.opacity='1';}
         toast('❌ '+(d.error||'Ошибка'));
       }
-    }).catch(function(){toast('❌ Ошибка сервера');});
+    }).catch(function(){if(balBtn2){balBtn2.disabled=false;balBtn2.style.opacity='1';}toast('❌ Ошибка сервера');});
   }
 }
 async function confirmPay(){
@@ -2284,9 +2292,8 @@ function rcptPreview(input){
 async function rcptSend(){
   if(!document.getElementById('rcptInput').files||!document.getElementById('rcptInput').files[0]){toast('⚠️ Добавь скрин чека');return;}
   var u=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;
-  document.getElementById('rcptForm').style.display='none';
-  document.getElementById('rcptDone').style.display='block';
-  startWaitTimer(300);
+  var sendBtn=document.querySelector('#rcptForm button');
+  if(sendBtn){sendBtn.disabled=true;sendBtn.textContent='⏳ Отправляем...';}
   if(u){
     try{
       var fd=new FormData();
@@ -2295,9 +2302,17 @@ async function rcptSend(){
       fd.append('acc_id',_boId); fd.append('acc_num',_boNum);
       fd.append('total',(_boBase+_boExtra));
       fd.append('photo',document.getElementById('rcptInput').files[0]);
-      await fetch(API+'/receipt',{method:'POST',body:fd});
-    }catch(e){console.log('receipt error:',e);}
+      var r=await fetch(API+'/receipt',{method:'POST',body:fd});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+    }catch(e){
+      if(sendBtn){sendBtn.disabled=false;sendBtn.textContent='✅ Отправить скрин';}
+      toast('❌ Ошибка отправки, попробуй ещё раз');
+      return;
+    }
   }
+  document.getElementById('rcptForm').style.display='none';
+  document.getElementById('rcptDone').style.display='block';
+  startWaitTimer(300);
 }
 function startWaitTimer(secs){
   clearInterval(_waitTimerInt);
