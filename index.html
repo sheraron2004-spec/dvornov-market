@@ -1158,6 +1158,7 @@ async function submitSwap(){
   const dop = document.getElementById('swapDop').checked ? 1 : 0;
   const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
   const buyerId   = user?.id || 0;
+  if(!buyerId){ toast('⚠️ Открой маркет через Telegram-бота'); btn.disabled=false; btn.textContent='🔄 Отправить предложение'; return; }
   const buyerName = [user?.first_name, user?.last_name].filter(Boolean).join(' ') || 'Покупатель';
   const fd = new FormData();
   fd.append('acc_id',     swapAccId);
