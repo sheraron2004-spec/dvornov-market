@@ -678,6 +678,7 @@ async function initAPI(){
   }
 }
 const ADMIN_TG_ID = 568518218;
+const ADMIN_KEY = 'cRfz-viMcAWBsE3OLERmzlzbYUXyo3xgOK4pTaMO3JE';
 let ACCOUNTS=[], LIST=[], isAdmin=false, selPhoto=null, extraFiles=[];
 
 if(window.Telegram?.WebApp){
@@ -916,7 +917,7 @@ async function quickSavePrice(accId, idx){
   try{
     const fd = new FormData();
     fd.append('new_price', newPrice);
-    const r = await fetch(`${API}/accounts/${accId}/price`, {method:'PATCH', body:fd});
+    const r = await fetch(`${API}/accounts/${accId}/price`, {method:'PATCH', body:fd, headers:{'X-Admin-Key':ADMIN_KEY}});
     const data = await r.json();
     if(data.ok){
       // Обновляем цену в массиве и карточке
@@ -1007,7 +1008,7 @@ async function galDelPhoto(e, idx){
   try{
     const fd = new FormData();
     fd.append('remove_photo', photoUrl);
-    await fetch(`${API}/accounts/${acc.id}/photo`, {method:'PATCH', body:fd});
+    await fetch(`${API}/accounts/${acc.id}/photo`, {method:'PATCH', body:fd, headers:{'X-Admin-Key':ADMIN_KEY}});
   }catch(err){ console.warn('Del photo err:', err); }
 
   // Удаляем локально
@@ -1122,7 +1123,7 @@ async function saveAcc(){
   if(selPhoto) fd.append('photo',selPhoto);
   extraFiles.forEach(f=>fd.append('extra_photos',f));
   try{
-    const r=await fetch(`${API}/accounts`,{method:'POST',body:fd});
+    const r=await fetch(`${API}/accounts`,{method:'POST',body:fd,headers:{'X-Admin-Key':ADMIN_KEY}});
     const d=await r.json();
     if(d.ok){
       if(d.tg_failed){
@@ -1202,7 +1203,7 @@ async function saveEdit(id){
   if(selPhoto) fd.append('photo',selPhoto);
   extraFiles.forEach(f=>fd.append('extra_photos',f));
   try{
-    const r=await fetch(`${API}/accounts/${id}`,{method:'PATCH',body:fd});
+    const r=await fetch(`${API}/accounts/${id}`,{method:'PATCH',body:fd,headers:{'X-Admin-Key':ADMIN_KEY}});
     const d=await r.json();
     if(d.ok){ toast('✅ Сохранено!'); await loadAccounts(); renderEditList(); }
     else{ toast('❌ Ошибка сервера'); btn.disabled=false; btn.textContent='💾 Сохранить'; }
@@ -1223,7 +1224,7 @@ async function delAcc(id, btn){
   const orig = btn.innerHTML;
   btn.innerHTML = '⏳ Удаление...';
   btn.disabled = true;
-  try{ const r=await fetch(`${API}/accounts/${id}`,{method:'DELETE'}); const d=await r.json(); if(d.ok){ toast('🗑 Удалено'); await loadAccounts(); renderDel(); } }
+  try{ const r=await fetch(`${API}/accounts/${id}`,{method:'DELETE',headers:{'X-Admin-Key':ADMIN_KEY}}); const d=await r.json(); if(d.ok){ toast('🗑 Удалено'); await loadAccounts(); renderDel(); } }
   catch{ toast('❌ Ошибка'); btn.innerHTML = orig; btn.disabled = false; }
 }
 
@@ -1463,7 +1464,7 @@ async function launchBuyAnn(){
     fd.append('price_max', max);
     fd.append('description', desc);
     fd.append('color', window._buyColor||'purple');
-    const r = await fetch(`${API}/buy-announcement`, {method:'POST', body:fd});
+    const r = await fetch(`${API}/buy-announcement`, {method:'POST', body:fd, headers:{'X-Admin-Key':ADMIN_KEY}});
     const data = await r.json();
     if(data.ok){
       toast(`✅ Разослано ${data.sent} подписчикам`);
@@ -1511,7 +1512,7 @@ async function deleteBuyAnn(id){
   const btn = document.querySelector(`[onclick="deleteBuyAnn('${id}')"]`);
   if(btn){ btn.textContent='⏳ Удаляем...'; btn.disabled=true; }
   try{
-    const r = await fetch(`${API}/buy-announcement/${id}`, {method:'DELETE'});
+    const r = await fetch(`${API}/buy-announcement/${id}`, {method:'DELETE', headers:{'X-Admin-Key':ADMIN_KEY}});
     const data = await r.json();
     if(data.ok){ toast('🗑 Объявление удалено'); loadBuyAnns(); }
     else { toast('❌ Ошибка'); if(btn){btn.textContent='🗑 Удалить';btn.disabled=false;} }
