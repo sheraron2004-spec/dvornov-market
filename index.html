@@ -438,6 +438,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
         <div class="logo-sub">eFootball Market</div>
         <div class="logo-div-line2"></div>
       </div>
+      <div id="soldCounter" style="font-size:10px;color:#64748b;margin-top:2px;letter-spacing:.3px"></div>
     </div>
     <div class="h-btns">
       <button class="h-btn btn-admin" id="adminBtn" onclick="openAdmin()" style="display:none">⚙️</button>
@@ -790,6 +791,16 @@ function getClubClass(v){
 }
 
 // ━━━ ЗАГРУЗКА ━━━
+async function loadStats(){
+  try{
+    const r=await fetch(`${API}/stats`);
+    const d=await r.json();
+    const el=document.getElementById('soldCounter');
+    if(el && d.sold) el.textContent=`⚽ продано ${d.sold} аккаунтов`;
+    return d.next_number||null;
+  }catch{ return null; }
+}
+
 async function loadAccounts(){
   try{
     const controller = new AbortController();
@@ -1455,7 +1466,7 @@ function renderAdd(){
         <input type="file" id="photoIn" accept="image/*" style="display:none" onchange="previewPh(event)">
         <img class="photo-preview" id="phPreview">
       </div>
-      <div class="fg"><label>Число аккаунта</label><input class="fi" id="fNum" placeholder="Например: 007"></div>
+      <div class="fg"><label>Число аккаунта</label><input class="fi" id="fNum" placeholder="Загрузка..."></div>
       <div class="fg"><label>Сила аккаунта</label><input class="fi" id="fStrength" placeholder="Например: 3162" type="number"></div>
       <div class="fg"><label>Цена ₽</label><input class="fi" type="number" id="fPrice" placeholder="Например: 5000"></div>
       <div class="fg"><label>Клуб (цвет карточки)</label>
@@ -1490,7 +1501,10 @@ function renderAdd(){
         <button class="f-submit" id="fSubmit" onclick="saveAcc()">✅ Добавить + пост</button>
         <button class="f-cancel" onclick="renderHome()">Отмена</button>
       </div>
-    </div>`;}
+    </div>`;
+  // Автозаполнение следующего числа
+  loadStats().then(next=>{ const el=document.getElementById('fNum'); if(el && next) el.value=next; });
+}
 
 function previewPh(e){ const f=e.target.files[0]; if(!f) return; selPhoto=f; const img=document.getElementById('phPreview'); img.src=URL.createObjectURL(f); img.style.display='block'; }
 function previewExtras(e){ extraFiles=Array.from(e.target.files); renderChips(); }
@@ -1938,9 +1952,9 @@ async function deleteBuyAnn(id){
 })();
 
 if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded', async()=>{ await initAPI(); loadAccounts(); });
+  document.addEventListener('DOMContentLoaded', async()=>{ await initAPI(); loadAccounts(); loadStats(); });
 } else {
-  initAPI().then(()=>loadAccounts());
+  initAPI().then(()=>{ loadAccounts(); loadStats(); });
 }
 </script>
 </body>
