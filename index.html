@@ -917,7 +917,7 @@ function render(list){
       <div class="flip-front">
         <div class="club-stripe"></div>
         <div class="card-img">
-          ${a.photo?`<img src="${a.photo}" alt="" loading="lazy">`:`<div class="card-placeholder">⚽</div>`}
+          ${a.photo?`<img src="${a.photo}" alt="" loading="lazy" onload="this.classList.add('loaded')">`:`<div class="card-placeholder">⚽</div>`}
           <div class="card-num">#${a.number}</div>
           ${badge}
         </div>
