@@ -801,16 +801,46 @@ async function loadStats(){
   }catch{ return null; }
 }
 
+const CACHE_KEY='dvornov_accounts_v1';
+const CACHE_TTL=60*1000; // 60 секунд
+
+function cacheLoad(){
+  try{
+    const raw=localStorage.getItem(CACHE_KEY);
+    if(!raw) return null;
+    const {ts, data}=JSON.parse(raw);
+    if(Date.now()-ts > CACHE_TTL) return null;
+    return data;
+  }catch{ return null; }
+}
+
+function cacheSave(data){
+  try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ts:Date.now(), data})); }catch{}
+}
+
 async function loadAccounts(){
+  // Сразу показываем кеш если есть
+  const cached = cacheLoad();
+  if(cached){
+    ACCOUNTS=cached; LIST=[...ACCOUNTS]; render(LIST);
+    if(window._fillBnTicker) _fillBnTicker(ACCOUNTS);
+  }
+
+  // В фоне грузим свежее
   try{
     const controller = new AbortController();
     const timeout = setTimeout(()=>controller.abort(), 8000);
     const r=await fetch(`${API}/accounts`, {signal: controller.signal});
     clearTimeout(timeout);
-    ACCOUNTS=await r.json(); LIST=[...ACCOUNTS]; render(LIST); if(window._fillBnTicker) _fillBnTicker(ACCOUNTS);
+    const fresh=await r.json();
+    cacheSave(fresh);
+    ACCOUNTS=fresh; LIST=[...ACCOUNTS]; render(LIST);
+    if(window._fillBnTicker) _fillBnTicker(ACCOUNTS);
   }catch(e){
-    document.getElementById('grid').innerHTML=`<div class="state-box"><div class="state-icon">⚠️</div><div class="state-text">Сервер недоступен.<br>Проверь tunnel.</div></div>`;
-    document.getElementById('countBadge').textContent='—';
+    if(!cached){
+      document.getElementById('grid').innerHTML=`<div class="state-box"><div class="state-icon">⚠️</div><div class="state-text">Сервер недоступен.<br>Проверь tunnel.</div></div>`;
+      document.getElementById('countBadge').textContent='—';
+    }
   }
 }
 
