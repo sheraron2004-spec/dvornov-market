@@ -1544,6 +1544,7 @@ function rmExtra(i){ extraFiles.splice(i,1); renderChips(); }
 function renderChips(){ document.getElementById('extraChips').innerHTML=extraFiles.map((f,i)=>`<div class="chip"><span>📸 ${f.name}</span><button class="chip-x" onclick="rmExtra(${i})">✕</button></div>`).join(''); }
 
 async function saveAcc(){
+  localStorage.removeItem(CACHE_KEY);
   const num=document.getElementById('fNum').value.trim();
   const price=document.getElementById('fPrice').value.trim();
   const club=document.getElementById('fClub').value;
