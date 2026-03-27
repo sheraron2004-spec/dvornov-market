@@ -1151,6 +1151,11 @@ function gfGo(idx){
 }
 
 // ━━━ OVERLAYS ━━━
+function openOv(id){
+  const el=document.getElementById(id);
+  el.style.display='flex';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('open')));
+}
 function closeOv(id){
   const el = document.getElementById(id);
   if(el.classList.contains('overlay')){
@@ -1180,7 +1185,7 @@ function openBuy(accId, accNum, price){
       <button id="buyConfirmBtn" style="width:100%;background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:14px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer" onclick="submitBuy('${accId}','${accNum}','${price}')">✅ Оформить заказ</button>
       <button onclick="closeOv('buyOv')" style="width:100%;background:none;border:1px solid rgba(255,255,255,.1);color:var(--muted);padding:12px;border-radius:12px;font-size:13px;margin-top:10px;cursor:pointer">Отмена</button>
     </div>`;
-  document.getElementById('buyOv').classList.add('open');
+  openOv('buyOv');
 }
 
 function openReserved(accId, accNum){
@@ -1193,7 +1198,7 @@ function openReserved(accId, accNum){
       <button id="wlBtn" style="width:100%;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);color:#4ade80;padding:13px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer" onclick="addWaitlist('${accId}','${accNum}')">🔔 Уведомить меня</button>
       <button onclick="closeOv('buyOv')" style="width:100%;background:none;border:1px solid rgba(255,255,255,.1);color:var(--muted);padding:12px;border-radius:12px;font-size:13px;margin-top:10px;cursor:pointer">Закрыть</button>
     </div>`;
-  document.getElementById('buyOv').classList.add('open');
+  openOv('buyOv');
 }
 
 async function submitBuy(accId, accNum, price){
@@ -1238,7 +1243,7 @@ let swapAccId='', swapAccNum='', swapFiles=[], swapBinding=0, swapDopOn=false;
 function openSwap(accId, accNum){
   swapAccId=accId; swapAccNum=accNum; swapFiles=[]; swapBinding=0; swapDopOn=false;
   renderSwapForm();
-  document.getElementById('swapOv').classList.add('open');
+  openOv('swapOv');
 }
 
 function openSwapFromProfile(){
@@ -1246,7 +1251,7 @@ function openSwapFromProfile(){
   closeOv('screensOv');
   swapFiles=[]; swapBinding=0; swapDopOn=false;
   renderSwapForm();
-  document.getElementById('swapOv').classList.add('open');
+  openOv('swapOv');
 }
 
 function renderSwapForm(){
@@ -1379,7 +1384,7 @@ async function submitSwap(){
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
 
 // ━━━ ADMIN ━━━
-function openFaq(){ const el=document.getElementById('faqOv'); el.style.display='flex'; requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('open'))); }
+function openFaq(){ openOv('faqOv'); }
 
 // ━━━ ПРОФИЛЬ ━━━
 async function openProfile(){
@@ -1387,10 +1392,10 @@ async function openProfile(){
   const body=document.getElementById('profileBody');
   if(!TG_USER.id){
     body.innerHTML=`<div style="text-align:center;padding:40px 16px;color:var(--muted)">Открой маркет через Telegram-бота чтобы видеть профиль</div>`;
-    ov.style.display='flex'; requestAnimationFrame(()=>requestAnimationFrame(()=>ov.classList.add('open'))); return;
+    openOv('profileOv'); return;
   }
   body.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)">⏳ Загружаем...</div>`;
-  ov.style.display='flex'; requestAnimationFrame(()=>requestAnimationFrame(()=>ov.classList.add('open')));
+  openOv('profileOv');
   try{
     const r=await fetch(`${API}/profile/${TG_USER.id}`);
     const d=await r.json();
@@ -1470,7 +1475,7 @@ async function openProfile(){
     body.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)">❌ Не удалось загрузить профиль</div>`;
   }
 }
-function openAdmin(){ if(!isAdmin) return; renderHome(); document.getElementById('adminOv').classList.add('open'); }
+function openAdmin(){ if(!isAdmin) return; renderHome(); openOv('adminOv'); }
 
 function renderHome(){
   document.getElementById('adminBody').innerHTML=`
