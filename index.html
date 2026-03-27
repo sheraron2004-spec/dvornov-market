@@ -1378,6 +1378,7 @@ async function openProfile(){
           <div>
             <div style="font-size:13px;font-weight:700;color:#f1f5f9">Аккаунт #${o.acc_number}</div>
             <div style="font-size:11px;color:var(--muted);margin-top:2px">${o.created_at?.slice(0,10)||''} · ${Number(o.price).toLocaleString('ru')} ₽</div>
+            ${o.vk_topic_url&&o.status==='completed'?`<a href="${o.vk_topic_url}" target="_blank" style="font-size:11px;color:#4a90d9;margin-top:4px;display:inline-block;text-decoration:none">📸 Фото состава ВК →</a>`:''}
           </div>
           <div style="font-size:11px;font-weight:700;padding:4px 8px;border-radius:8px;background:rgba(255,255,255,.05)">${statusLabel[o.status]||o.status}</div>
         </div>`).join('')}`:''}
@@ -1389,6 +1390,7 @@ async function openProfile(){
           <div style="font-size:13px;font-weight:700;color:#f1f5f9">Аккаунт #${s.acc_number}</div>
           ${s.binding?`<div style="font-size:11px;color:var(--muted);margin-top:2px">Привязка: ${s.binding}</div>`:''}
           ${s.dop&&s.dop_amount&&s.dop_amount!='0'?`<div style="font-size:11px;color:#4ade80;margin-top:2px">Доплата: ${Number(s.dop_amount).toLocaleString('ru')} ₽</div>`:''}
+          ${s.vk_topic_url?`<a href="${s.vk_topic_url}" target="_blank" style="font-size:11px;color:#4a90d9;margin-top:4px;display:inline-block;text-decoration:none">📸 Фото состава ВК →</a>`:''}
           <div style="font-size:11px;color:#475569;margin-top:2px">${s.created_at?.slice(0,10)||''}</div>
         </div>`).join('')}`:''}
 
