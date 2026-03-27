@@ -1378,7 +1378,8 @@ async function openProfile(){
     body.innerHTML=`
       <div style="position:relative;border-radius:16px;overflow:hidden;min-height:110px;display:flex;align-items:flex-end">
         ${d.bg_photo?`
-        <div style="position:absolute;inset:0;background:url('${d.bg_photo}') center/cover no-repeat;filter:blur(18px) brightness(0.35);transform:scale(1.1)"></div>
+        <div style="position:absolute;inset:0;background:url('${d.bg_photo}') center/cover no-repeat"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.15),rgba(0,0,0,.6))"></div>
         `:`<div style="position:absolute;inset:0;background:linear-gradient(135deg,#1d4ed8,#7c3aed);opacity:.3"></div>`}
         <div style="position:relative;z-index:1;padding:16px;display:flex;align-items:center;gap:14px;width:100%">
           <img src="${API}/profile/${TG_USER.id}/photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,.3)">
