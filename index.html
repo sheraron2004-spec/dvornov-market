@@ -1387,6 +1387,10 @@ async function openProfile(){
           <div>
             <div style="font-size:16px;font-weight:800;color:#fff">${name||'Покупатель'}</div>
             ${username?`<div style="font-size:12px;color:rgba(255,255,255,.65);margin-top:2px">${username}</div>`:''}
+            <div style="display:flex;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap">
+              ${(()=>{const n=d.stats.orders_completed;return n>=5?'<span style="background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px">👑 VIP</span>':n>=3?'<span style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px">⭐ Постоянный</span>':n>=1?'<span style="background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px">🆕 Новичок</span>':''})()}
+              ${d.first_seen?`<span style="font-size:10px;color:rgba(255,255,255,.5)">с ${d.first_seen.replace('-','.')}</span>`:''}
+            </div>
           </div>
         </div>
       </div>
