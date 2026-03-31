@@ -1717,7 +1717,19 @@ function renderEditAcc(id){
         <button class="f-submit" id="fSubmit" onclick="saveEdit('${id}')">💾 Сохранить</button>
         <button class="f-cancel" onclick="renderEditList()">Отмена</button>
       </div>
+      <button id="vkPublishBtn" onclick="vkPublish('${id}')" style="width:100%;margin-top:8px;padding:14px;background:linear-gradient(135deg,#1565c0,#1976d2);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer">📢 Опубликовать в ВК</button>
     </div>`;}
+
+async function vkPublish(id){
+  const btn=document.getElementById('vkPublishBtn');
+  btn.disabled=true; btn.textContent='⏳ Публикую...';
+  try{
+    const r=await fetch(`${API}/accounts/${id}/vk-publish`,{method:'POST',headers:{'X-Admin-Key':ADMIN_KEY}});
+    const d=await r.json();
+    if(d.ok){ toast('✅ Опубликовано в ВК!'); btn.textContent='✅ Опубликовано'; }
+    else{ toast('❌ Ошибка ВК'); btn.disabled=false; btn.textContent='📢 Опубликовать в ВК'; }
+  }catch{ toast('❌ Сервер недоступен'); btn.disabled=false; btn.textContent='📢 Опубликовать в ВК'; }
+}
 
 async function saveEdit(id){
   const num=document.getElementById('fNum').value.trim();
