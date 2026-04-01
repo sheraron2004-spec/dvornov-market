@@ -183,6 +183,18 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
 .club-chelsea .flip-front{background:linear-gradient(160deg,#030a18,#050f22);border-color:rgba(3,70,148,.5);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(3,70,148,.15),inset 0 1px 0 rgba(255,255,255,.04)}
 .club-chelsea .club-stripe{background:linear-gradient(90deg,#012055,#034694,#0054b8,#034694,#012055)}
 .club-chelsea .card-price{color:#60a5fa;text-shadow:0 0 14px rgba(96,165,250,.35)}
+.club-liverpool .flip-front{background:linear-gradient(160deg,#140306,#1c0508);border-color:rgba(200,16,46,.45);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(200,16,46,.15),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-liverpool .club-stripe{background:linear-gradient(90deg,#6b0010,#c8102e,#ff2d4f,#c8102e,#6b0010)}
+.club-liverpool .card-price{color:#ff6680;text-shadow:0 0 14px rgba(255,80,100,.4)}
+.club-bayern .flip-front{background:linear-gradient(160deg,#120208,#18030a);border-color:rgba(220,0,50,.4);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(220,0,50,.12),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-bayern .club-stripe{background:linear-gradient(90deg,#7a0018,#dc0032,#ff1a4a,#dc0032,#7a0018)}
+.club-bayern .card-price{color:#ff5577;text-shadow:0 0 14px rgba(255,60,80,.4)}
+.club-inter .flip-front{background:linear-gradient(160deg,#020510,#030816);border-color:rgba(0,0,130,.5);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(0,30,180,.15),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-inter .club-stripe{background:linear-gradient(90deg,#000080,#1a1aff,#0000c8,#111,#0000c8,#1a1aff,#000080)}
+.club-inter .card-price{color:#7b9fff;text-shadow:0 0 14px rgba(100,140,255,.4)}
+.club-mancity .flip-front{background:linear-gradient(160deg,#020e18,#031422);border-color:rgba(108,171,221,.45);box-shadow:0 4px 24px rgba(0,0,0,.7),0 0 24px rgba(108,171,221,.15),inset 0 1px 0 rgba(255,255,255,.04)}
+.club-mancity .club-stripe{background:linear-gradient(90deg,#2a6a9a,#6cabdd,#98d0f0,#6cabdd,#2a6a9a)}
+.club-mancity .card-price{color:#98d0f0;text-shadow:0 0 14px rgba(150,210,240,.4)}
 
 /* ━━━ ФОТО КАРТОЧКИ ━━━ */
 .card-img{width:100%;aspect-ratio:20/9;background:#060810;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
@@ -373,6 +385,10 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
 .club-manu .card-wrap{background:linear-gradient(160deg,#120404,#1a0505);border-color:rgba(218,41,28,.4)}
 .club-juve .card-wrap{background:linear-gradient(160deg,#0c0c0c,#111);border-color:rgba(255,255,255,.12)}
 .club-chelsea .card-wrap{background:linear-gradient(160deg,#030a18,#050f22);border-color:rgba(3,70,148,.5)}
+.club-liverpool .card-wrap{background:linear-gradient(160deg,#140306,#1c0508);border-color:rgba(200,16,46,.45)}
+.club-bayern .card-wrap{background:linear-gradient(160deg,#120208,#18030a);border-color:rgba(220,0,50,.4)}
+.club-inter .card-wrap{background:linear-gradient(160deg,#020510,#030816);border-color:rgba(0,0,130,.5)}
+.club-mancity .card-wrap{background:linear-gradient(160deg,#020e18,#031422);border-color:rgba(108,171,221,.45)}
 
 /* ━━━ БЫСТРАЯ ЦЕНА ━━━ */
 .qp-wrap{border-top:1px solid rgba(255,255,255,.04);padding:8px 12px 10px;display:flex;flex-direction:column;gap:6px}
@@ -813,6 +829,10 @@ function getClubClass(v){
   if(v==='manu') return 'club-manu';
   if(v==='juve') return 'club-juve';
   if(v==='chelsea') return 'club-chelsea';
+  if(v==='liverpool') return 'club-liverpool';
+  if(v==='bayern') return 'club-bayern';
+  if(v==='inter') return 'club-inter';
+  if(v==='mancity') return 'club-mancity';
   return '';
 }
 
@@ -1590,6 +1610,10 @@ function renderAdd(){
           <option value="manu">🔴 Man United</option>
           <option value="juve">⬛ Juventus</option>
           <option value="chelsea">🔵 Chelsea</option>
+          <option value="liverpool">🔴 Liverpool</option>
+          <option value="bayern">🔴 Bayern Munich</option>
+          <option value="inter">🔵 Inter Milan</option>
+          <option value="mancity">🩵 Man City</option>
         </select>
       </div>
       <div class="fg"><label>Привязка аккаунта</label>
@@ -1691,6 +1715,10 @@ function renderEditAcc(id){
           <option value="manu" ${a.vk==='manu'?'selected':''}>🔴 Man United</option>
           <option value="juve" ${a.vk==='juve'?'selected':''}>⬛ Juventus</option>
           <option value="chelsea" ${a.vk==='chelsea'?'selected':''}>🔵 Chelsea</option>
+          <option value="liverpool" ${a.vk==='liverpool'?'selected':''}>🔴 Liverpool</option>
+          <option value="bayern" ${a.vk==='bayern'?'selected':''}>🔴 Bayern Munich</option>
+          <option value="inter" ${a.vk==='inter'?'selected':''}>🔵 Inter Milan</option>
+          <option value="mancity" ${a.vk==='mancity'?'selected':''}>🩵 Man City</option>
         </select>
       </div>
       <div class="fg"><label>Привязка аккаунта</label>
