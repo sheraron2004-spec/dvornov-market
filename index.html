@@ -629,12 +629,23 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
   </div>
 </div>
 
+<!-- FAQ BANNER -->
+<div onclick="openFaq()" style="margin:0 12px 20px;border-radius:20px;overflow:hidden;background:radial-gradient(ellipse at 0% 100%,#001018,#000d14,#000508);border:1px solid rgba(56,189,248,.2);position:relative;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:18px 20px;-webkit-tap-highlight-color:transparent;active:opacity:.85">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 100% 50%,rgba(56,189,248,.08),transparent);pointer-events:none"></div>
+  <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(56,189,248,.4),transparent)"></div>
+  <div style="position:relative;z-index:2">
+    <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.3);border-radius:6px;padding:3px 10px;font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#bae6fd;margin-bottom:8px">❓ Вопросы и ответы</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;color:#fff;line-height:1">Частые <span style="background:linear-gradient(135deg,#e0f2fe,#38bdf8,#0369a1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Вопросы</span></div>
+    <div style="font-size:11px;font-weight:600;color:rgba(186,230,253,.45);margin-top:4px">Нажми чтобы открыть FAQ</div>
+  </div>
+  <div style="position:relative;z-index:2;font-size:52px;filter:drop-shadow(0 0 18px rgba(56,189,248,.7));animation:bnFloat 3s ease-in-out infinite">💬</div>
+</div>
+
 </div></div>
 
 <div class="bottom-nav" id="navOuter">
   <div id="navInner" style="position:absolute;top:0;left:0;bottom:0;display:flex;align-items:center;gap:7px;padding:8px 10px 14px;transform:translateX(0);transition:transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);will-change:transform;width:100%;box-sizing:border-box" id="navInner">
     <a href="https://t.me/Dvornov_Otziv" target="_blank" class="nav-btn nav-sell">⭐ Отзывы</a>
-    <button class="nav-btn nav-sell" onclick="openFaq()">❓ FAQ</button>
     <button class="nav-btn nav-sell" onclick="openProfile()">👤 Профиль</button>
     <a href="https://t.me/DvornovNikitos" target="_blank" class="nav-btn nav-contact">✉️ Написать</a>
   </div>
@@ -711,7 +722,10 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
 <div id="profileOv" class="overlay overlay-full" style="flex-direction:column;background:#07080f">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0">
     <div style="font-size:17px;font-weight:800;color:#f1f5f9">👤 Профиль</div>
-    <div onclick="closeOv('profileOv')" style="width:34px;height:34px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:#64748b">✕</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div onclick="closeOv('profileOv');document.getElementById('grid').scrollIntoView({behavior:'smooth'})" style="display:flex;align-items:center;gap:5px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.3);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;color:#c084fc;cursor:pointer">⚽ Аккаунты</div>
+      <div onclick="closeOv('profileOv')" style="width:34px;height:34px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:#64748b">✕</div>
+    </div>
   </div>
   <div id="profileBody" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;padding-bottom:40px"></div>
 </div>
