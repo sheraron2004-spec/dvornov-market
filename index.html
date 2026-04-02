@@ -1745,21 +1745,8 @@ function renderEditAcc(id){
         <button class="f-submit" id="fSubmit" onclick="saveEdit('${id}')">💾 Сохранить</button>
         <button class="f-cancel" onclick="renderEditList()">Отмена</button>
       </div>
-      <button id="vkAdBtn" onclick="vkAdPost('${id}')" style="width:100%;margin-top:8px;padding:14px;background:linear-gradient(135deg,#1565c0,#1976d2);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer">📢 Реклама в ВК группы</button>
     </div>`;}
 
-async function vkAdPost(id){
-  const btn=document.getElementById('vkAdBtn');
-  btn.disabled=true; btn.textContent='⏳ Публикую...';
-  try{
-    const r=await fetch(`${API}/accounts/${id}/vk-adpost`,{method:'POST',headers:{'X-Admin-Key':ADMIN_KEY}});
-    const d=await r.json();
-    const ok=Object.values(d.results||{}).filter(v=>v!=='error').length;
-    const err=Object.values(d.results||{}).filter(v=>v==='error').length;
-    toast(`✅ Опубликовано: ${ok} групп${err?`, ❌ ошибок: ${err}`:''}`);
-    btn.textContent=`✅ Опубликовано в ${ok} группах`;
-  }catch{ toast('❌ Сервер недоступен'); btn.disabled=false; btn.textContent='📢 Реклама в ВК группы'; }
-}
 
 async function saveEdit(id){
   const num=document.getElementById('fNum').value.trim();
@@ -2114,3 +2101,4 @@ if(document.readyState==='loading'){
 </script>
 </body>
 </html>
+
