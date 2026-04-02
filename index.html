@@ -66,72 +66,64 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
 .bn1 .banner-title span{background:linear-gradient(135deg,#f3e8ff,#c084fc,#9333ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .bn1 .banner-sub{color:rgba(233,213,255,.35)}
 .bn1 .banner-emoji{filter:drop-shadow(0 0 22px rgba(168,85,247,.9))}
-/* БН2 ОГОНЬ */
-.bn2{background:radial-gradient(ellipse at 50% 120%,#1a0400,#0d0300,#050100)}
-.bn2::before{content:'';position:absolute;bottom:0;left:0;right:0;height:50px;background:linear-gradient(to top,rgba(239,68,68,.25),transparent);animation:fireFlicker 1.8s ease-in-out infinite alternate;pointer-events:none}
-.bn2::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 80% 50%,rgba(251,146,30,.1),transparent);pointer-events:none}
-.bn2-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(239,68,68,.25);pointer-events:none;z-index:4}
-.bn2-sparks{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-@keyframes fireFlicker{0%{opacity:.7;transform:scaleX(.98)}100%{opacity:1;transform:scaleX(1.02)}}
-.sp{position:absolute;border-radius:50%;background:radial-gradient(circle,#fff8e1,#fb923c);animation:spUp var(--d) ease-out infinite var(--dl);opacity:0}
-@keyframes spUp{0%{transform:translate(0,0);opacity:.9}100%{transform:translate(var(--tx),-80px) scale(.1);opacity:0}}
-.bn2 .banner-tag{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
-.bn2 .banner-title span{background:linear-gradient(135deg,#fed7aa,#f97316,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.bn2 .banner-sub{color:rgba(252,165,165,.35)}
-.bn2 .banner-emoji{filter:drop-shadow(0 0 22px rgba(239,68,68,.8));animation:flameDance 1.8s ease-in-out infinite alternate}
-@keyframes flameDance{0%{transform:rotate(-5deg) scale(1)}100%{transform:rotate(5deg) scale(1.1)}}
-/* БН3 КОСМОС */
-.bn3{background:radial-gradient(ellipse at 20% 50%,#020818,#030b1a,#010408)}
-.bn3::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 85% 30%,rgba(139,92,246,.1),transparent);pointer-events:none}
-.bn3-stars{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-.bstar{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d) ease-in-out infinite var(--dl)}
-@keyframes twinkle{0%,100%{opacity:.05;transform:scale(1)}50%{opacity:.8;transform:scale(1.5)}}
-.bn3-scan{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,.4),transparent);animation:scanDown 5s linear infinite;pointer-events:none}
-@keyframes scanDown{0%{top:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}}
-.bn3-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(139,92,246,.2);pointer-events:none;z-index:4}
-.bn3-orbit{position:absolute;width:80px;height:80px;border-radius:50%;border:1px dashed rgba(139,92,246,.2);animation:orbitSpin 6s linear infinite}
-.bn3-orbit::after{content:'';position:absolute;width:7px;height:7px;background:#7c3aed;border-radius:50%;top:-3.5px;left:50%;margin-left:-3.5px;box-shadow:0 0 10px #7c3aed}
-@keyframes orbitSpin{to{transform:rotate(360deg)}}
-.bn3 .banner-tag{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);color:#c4b5fd}
-.bn3 .banner-title span{background:linear-gradient(135deg,#e9d5ff,#a855f7,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.bn3 .banner-sub{color:rgba(196,181,253,.35)}
-.bn3 .banner-emoji{filter:drop-shadow(0 0 22px rgba(139,92,246,.9))}
-/* БН4 НЕОН */
+/* БН2 ОБМЕН - СИНИЙ */
+.bn2{background:radial-gradient(ellipse at 10% 80%,#00101f,#000d18,#000508)}
+.bn2::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 85% 40%,rgba(56,189,248,.1),transparent);pointer-events:none}
+.bn2::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(56,189,248,.5),transparent);pointer-events:none}
+.bn2-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(56,189,248,.2);pointer-events:none;z-index:4}
+.bn2-streak{position:absolute;top:0;bottom:0;width:40%;background:linear-gradient(90deg,transparent,rgba(56,189,248,.05),transparent);animation:bnStreak 4s ease-in-out infinite;pointer-events:none}
+.bn2 .banner-tag{background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.3);color:#bae6fd}
+.bn2 .banner-title span{background:linear-gradient(135deg,#e0f2fe,#38bdf8,#0369a1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bn2 .banner-sub{color:rgba(186,230,253,.35)}
+.bn2 .banner-emoji{filter:drop-shadow(0 0 22px rgba(56,189,248,.9));animation:spinSlow 4s linear infinite}
+@keyframes spinSlow{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+/* БН3 ПОДДЕРЖКА - ЯНТАРНЫЙ */
+.bn3{background:radial-gradient(ellipse at 20% 80%,#120a00,#0d0700,#060300)}
+.bn3::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 80% 40%,rgba(251,191,36,.08),transparent);pointer-events:none}
+.bn3::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,.5),transparent);pointer-events:none}
+.bn3-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(251,191,36,.2);pointer-events:none;z-index:4}
+.bn3-streak{position:absolute;top:0;bottom:0;width:40%;background:linear-gradient(90deg,transparent,rgba(251,191,36,.05),transparent);animation:bnStreak 5s ease-in-out infinite .5s;pointer-events:none}
+.bn3-ping{position:absolute;width:60px;height:60px;border-radius:50%;background:rgba(251,191,36,.04);animation:pls3 2.5s ease-out infinite}
+.bn3-ping2{animation-delay:.9s}
+@keyframes pls3{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.9);opacity:0}}
+.bn3 .banner-tag{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);color:#fde68a}
+.bn3 .banner-title span{background:linear-gradient(135deg,#fef9c3,#fbbf24,#b45309);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bn3 .banner-sub{color:rgba(253,230,138,.35)}
+.bn3 .banner-emoji{filter:drop-shadow(0 0 22px rgba(251,191,36,.9))}
+/* БН4 БЕЗОПАСНО - ЗЕЛЁНЫЙ */
 .bn4{background:radial-gradient(ellipse at 0% 100%,#011004,#020d06,#010703)}
 .bn4::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 70% 60%,rgba(34,197,94,.07),transparent);pointer-events:none}
 .bn4::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(34,197,94,.4),transparent);pointer-events:none}
 .bn4-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(34,197,94,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(34,197,94,.025) 1px,transparent 1px);background-size:30px 30px;pointer-events:none}
 .bn4-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(34,197,94,.2);pointer-events:none;z-index:4}
-.bn4-pulse{position:absolute;width:70px;height:70px;border-radius:50%;background:rgba(34,197,94,.05);animation:pls 2s ease-out infinite}
+.bn4-pulse{position:absolute;width:70px;height:70px;border-radius:50%;background:rgba(34,197,94,.05);animation:pls4 2s ease-out infinite}
 .bn4-pulse2{animation-delay:.7s}
-@keyframes pls{0%{transform:scale(.7);opacity:1}100%{transform:scale(1.8);opacity:0}}
+@keyframes pls4{0%{transform:scale(.7);opacity:1}100%{transform:scale(1.8);opacity:0}}
 .bn4 .banner-tag{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:#86efac}
 .bn4 .banner-title span{background:linear-gradient(135deg,#bbf7d0,#4ade80,#15803d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .bn4 .banner-sub{color:rgba(134,239,172,.35)}
 .bn4 .banner-emoji{filter:drop-shadow(0 0 22px rgba(34,197,94,.9))}
-/* БН5 БЕГУЩАЯ СТРОКА */
-.bn5{background:radial-gradient(ellipse at 50% 0%,#010a18,#020812,#010508);flex-direction:column;align-items:flex-start;justify-content:space-between;padding-bottom:0}
-.bn5::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(45,212,191,.08),transparent 60%);pointer-events:none}
-.bn5-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(45,212,191,.18);pointer-events:none;z-index:4}
-.bn5-top{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;width:100%;padding-bottom:14px}
-.bn5-ticker-wrap{position:relative;z-index:3;width:calc(100% + 40px);margin-left:-20px;border-top:1px solid rgba(45,212,191,.08);background:rgba(45,212,191,.03);overflow:hidden;padding:7px 0}
-.bn5-ticker{display:flex;width:max-content;animation:tickRun 14s linear infinite}
-@keyframes tickRun{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.bn5-tick-item{display:flex;align-items:center;gap:6px;padding:0 16px;font-size:10px;font-weight:700;color:rgba(94,234,212,.45);white-space:nowrap}
-.bn5-tick-item strong{color:#2dd4bf}
-.bn5 .banner-tag{background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.2);color:#5eead4}
-.bn5 .banner-title span{background:linear-gradient(135deg,#ccfbf1,#2dd4bf,#0f766e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-/* БН6 ХАЙП */
-.bn6{background:radial-gradient(ellipse at 100% 0%,#180008,#0d0004,#060002)}
-.bn6::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 20% 60%,rgba(236,72,153,.08),transparent);pointer-events:none}
-.bn6::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(236,72,153,.5),transparent);pointer-events:none}
-.bn6-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(236,72,153,.2);pointer-events:none;z-index:4}
-.bn6-streak{position:absolute;top:0;bottom:0;width:30%;background:linear-gradient(90deg,transparent,rgba(236,72,153,.06),transparent);animation:bnStreak 4s ease-in-out infinite 1s;pointer-events:none}
-.bn6 .banner-tag{background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.3);color:#fbcfe8}
-.bn6 .banner-title span{background:linear-gradient(135deg,#fce7f3,#f472b6,#be185d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.bn6 .banner-sub{color:rgba(251,207,232,.35)}
-.bn6 .banner-emoji{filter:drop-shadow(0 0 22px rgba(236,72,153,.9));animation:heartBeat 1.2s ease-in-out infinite}
-@keyframes heartBeat{0%,100%{transform:scale(1)}14%{transform:scale(1.15)}28%{transform:scale(1)}42%{transform:scale(1.1)}70%{transform:scale(1)}}
+/* БН5 МНОГО АККОВ - ИНДИГО */
+.bn5{background:radial-gradient(ellipse at 15% 85%,#06001a,#08001f,#030010)}
+.bn5::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 80% 40%,rgba(99,102,241,.1),transparent);pointer-events:none}
+.bn5::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.5),transparent);pointer-events:none}
+.bn5-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(99,102,241,.2);pointer-events:none;z-index:4}
+.bn5-streak{position:absolute;top:0;bottom:0;width:40%;background:linear-gradient(90deg,transparent,rgba(99,102,241,.05),transparent);animation:bnStreak 4.5s ease-in-out infinite .3s;pointer-events:none}
+.bn5 .banner-tag{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);color:#c7d2fe}
+.bn5 .banner-title span{background:linear-gradient(135deg,#e0e7ff,#818cf8,#4338ca);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bn5 .banner-sub{color:rgba(199,210,254,.35)}
+.bn5 .banner-emoji{filter:drop-shadow(0 0 22px rgba(99,102,241,.9))}
+/* БН6 МГНОВЕННО - ЗОЛОТОЙ */
+.bn6{background:radial-gradient(ellipse at 50% 120%,#120900,#0a0600,#040200)}
+.bn6::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 80% 40%,rgba(234,179,8,.1),transparent);pointer-events:none}
+.bn6::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(234,179,8,.6),transparent);pointer-events:none}
+.bn6-border{position:absolute;inset:0;border-radius:20px;border:1px solid rgba(234,179,8,.22);pointer-events:none;z-index:4}
+.bn6-streak{position:absolute;top:0;bottom:0;width:35%;background:linear-gradient(90deg,transparent,rgba(234,179,8,.06),transparent);animation:bnStreak 3.5s ease-in-out infinite .8s;pointer-events:none}
+.bn6 .banner-tag{background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.28);color:#fef08a}
+.bn6 .banner-title span{background:linear-gradient(135deg,#fefce8,#facc15,#a16207);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bn6 .banner-sub{color:rgba(254,240,138,.35)}
+.bn6 .banner-emoji{filter:drop-shadow(0 0 22px rgba(234,179,8,.9));animation:boltZap 1.6s ease-in-out infinite}
+@keyframes boltZap{0%,100%{transform:scale(1) rotate(-3deg)}50%{transform:scale(1.12) rotate(3deg)}}
 /* Dots */
 .banner-dots{display:flex;justify-content:center;gap:5px;margin-top:8px}
 .bn-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.12);transition:all .35s;cursor:pointer}
@@ -499,68 +491,65 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
     </div>
     <div class="banner bn2">
       <div class="bn2-border"></div>
-      <div class="bn2-sparks" id="bnSparks"></div>
+      <div class="bn2-streak"></div>
       <div class="banner-left">
-        <div class="banner-tag">🔥 Горячие акки</div>
-        <div class="banner-title">Успей<br><span>Купить</span></div>
-        <div class="banner-sub">Лимитированные · По огню</div>
+        <div class="banner-tag">🔄 Обмен</div>
+        <div class="banner-title">Меняй<br><span>Акки</span></div>
+        <div class="banner-sub">Без доплат · Честно</div>
       </div>
-      <div class="banner-right"><div class="banner-emoji">🔥</div></div>
+      <div class="banner-right"><div class="banner-emoji">🔄</div></div>
     </div>
     <div class="banner bn3">
       <div class="bn3-border"></div>
-      <div class="bn3-stars" id="bnStars"></div>
-      <div class="bn3-scan"></div>
-      <div class="banner-left">
-        <div class="banner-tag">⚡ Быстрая сделка</div>
-        <div class="banner-title">Лучшие<br><span>Акки</span></div>
-        <div class="banner-sub">Топовые игроки · Рейтинг</div>
-      </div>
-      <div class="banner-right">
+      <div class="bn3-streak"></div>
+      <div class="banner-right" style="order:-1;margin-left:0;margin-right:10px">
         <div style="position:relative;width:70px;height:70px;display:flex;align-items:center;justify-content:center">
-          <div class="bn3-orbit"></div>
-          <div class="banner-emoji" style="font-size:52px;margin:0">🏆</div>
+          <div class="bn3-ping"></div>
+          <div class="bn3-ping bn3-ping2"></div>
+          <div class="banner-emoji" style="font-size:52px;margin:0">🎧</div>
         </div>
+      </div>
+      <div class="banner-left">
+        <div class="banner-tag">💬 Поддержка</div>
+        <div class="banner-title">Всегда<br><span>Онлайн</span></div>
+        <div class="banner-sub">Ответим быстро · 24/7</div>
       </div>
     </div>
     <div class="banner bn4">
       <div class="bn4-border"></div>
       <div class="bn4-grid"></div>
       <div class="banner-left">
-        <div class="banner-tag">✅ Гарантия</div>
-        <div class="banner-title">Честно<br><span>Надёжно</span></div>
-        <div class="banner-sub">Отзывы · Быстрый ответ</div>
+        <div class="banner-tag">🔐 Безопасно</div>
+        <div class="banner-title">Твои<br><span>Данные</span></div>
+        <div class="banner-sub">Приватно · Надёжно</div>
       </div>
       <div class="banner-right">
         <div style="position:relative;width:70px;height:70px;display:flex;align-items:center;justify-content:center">
           <div class="bn4-pulse"></div>
           <div class="bn4-pulse bn4-pulse2"></div>
-          <div class="banner-emoji" style="font-size:52px;margin:0">🛡️</div>
+          <div class="banner-emoji" style="font-size:52px;margin:0">🔒</div>
         </div>
       </div>
     </div>
     <div class="banner bn5">
       <div class="bn5-border"></div>
-      <div class="bn5-top">
-        <div>
-          <div class="banner-tag" style="background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.2);color:#5eead4;margin-bottom:10px">⚡ Новый завоз</div>
-          <div class="banner-title" style="font-size:36px">Свежие<br><span style="background:linear-gradient(135deg,#ccfbf1,#2dd4bf,#0f766e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Акки</span></div>
-        </div>
-        <div class="banner-emoji" style="filter:drop-shadow(0 0 22px rgba(45,212,191,.8));font-size:52px;animation:bnFloat 3s ease-in-out infinite">⚽</div>
+      <div class="bn5-streak"></div>
+      <div class="banner-left">
+        <div class="banner-tag">📦 Большой выбор</div>
+        <div class="banner-title">Много<br><span>Акков</span></div>
+        <div class="banner-sub">Любой бюджет · Всегда</div>
       </div>
-      <div class="bn5-ticker-wrap">
-        <div class="bn5-ticker" id="bnTicker"></div>
-      </div>
+      <div class="banner-right"><div class="banner-emoji">🗂️</div></div>
     </div>
     <div class="banner bn6">
       <div class="bn6-border"></div>
       <div class="bn6-streak"></div>
       <div class="banner-left">
-        <div class="banner-tag">🎯 Топ продажи</div>
-        <div class="banner-title">Только<br><span>Хиты</span></div>
-        <div class="banner-sub">Самые популярные акки</div>
+        <div class="banner-tag">⚡ Мгновенно</div>
+        <div class="banner-title">Сразу<br><span>В Руках</span></div>
+        <div class="banner-sub">Передача за минуты</div>
       </div>
-      <div class="banner-right"><div class="banner-emoji">❤️‍🔥</div></div>
+      <div class="banner-right"><div class="banner-emoji">📲</div></div>
     </div>
   </div>
   <div class="banner-dots" id="bnDots"></div>
@@ -790,22 +779,9 @@ if(isAdmin){ const ab=document.getElementById('adminBtn'); if(ab) ab.classList.a
   }
   window.bnGoTo = go;
 
-  // Искры баннер 2
-  const bnSparks=document.getElementById('bnSparks');
-  if(bnSparks){for(let i=0;i<12;i++){const s=document.createElement('div');s.className='sp';const sz=2+Math.random()*3;s.style.cssText=`width:${sz}px;height:${sz}px;left:${10+Math.random()*80}%;bottom:${Math.random()*35}%;--d:${.9+Math.random()*1.3}s;--dl:-${Math.random()*2}s;--tx:${(Math.random()*20-10)}px`;bnSparks.appendChild(s);}}
   // Звёзды баннер 1 (фиолетовые)
   const bnStars1=document.getElementById('bnStars1');
   if(bnStars1){for(let i=0;i<18;i++){const s=document.createElement('div');s.className='bstar1';const sz=Math.random()*1.8+.4;s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*3}s;--dl:-${Math.random()*3}s`;bnStars1.appendChild(s);}}
-  // Звёзды баннер 3
-  const bnStars=document.getElementById('bnStars');
-  if(bnStars){for(let i=0;i<28;i++){const s=document.createElement('div');s.className='bstar';const sz=Math.random()*1.8+.4;s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--dl:-${Math.random()*4}s`;bnStars.appendChild(s);}}
-  // Бегущая строка баннер 5 — заполняем после загрузки аккаунтов
-  window._fillBnTicker = function(accs){
-    const bnTicker=document.getElementById('bnTicker');
-    if(!bnTicker) return;
-    const items=accs.length?accs.slice(0,8).map(a=>`<span class="bn5-tick-item">⚽ <strong>#${a.number||'—'}</strong> · <strong>${Number(a.price).toLocaleString('ru')}₽</strong><span style="opacity:.2;margin:0 6px">·</span></span>`).join(''):`<span class="bn5-tick-item">⚽ <strong>Dvornov Market</strong> · Лучшие акки eFootball<span style="opacity:.2;margin:0 6px">·</span></span>`.repeat(5);
-    bnTicker.innerHTML=items+items;
-  };
 
   // Авто-слайд каждые 4 сек
   let timer = setInterval(()=>go(cur+1), 4000);
@@ -869,7 +845,6 @@ async function loadAccounts(){
   const cached = cacheLoad();
   if(cached){
     ACCOUNTS=cached; LIST=[...ACCOUNTS]; render(LIST);
-    if(window._fillBnTicker) _fillBnTicker(ACCOUNTS);
   }
 
   // В фоне грузим свежее
@@ -881,7 +856,6 @@ async function loadAccounts(){
     const fresh=await r.json();
     cacheSave(fresh);
     ACCOUNTS=fresh; LIST=[...ACCOUNTS]; render(LIST);
-    if(window._fillBnTicker) _fillBnTicker(ACCOUNTS);
   }catch(e){
     if(!cached){
       document.getElementById('grid').innerHTML=`<div class="state-box"><div class="state-icon">⚠️</div><div class="state-text">Сервер недоступен.<br>Проверь tunnel.</div></div>`;
