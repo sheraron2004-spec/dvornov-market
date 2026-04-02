@@ -728,11 +728,8 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
 </div>
 
 <!-- BUY OVERLAY -->
-<div class="overlay" id="buyOv" onclick="closeIfBg('buyOv',event)">
-  <div class="sheet" style="max-height:80vh;overflow-y:auto">
-    <div class="sheet-handle" onclick="closeOv('buyOv')"></div>
-    <div id="buyBody"></div>
-  </div>
+<div class="overlay overlay-full" id="buyOv" style="flex-direction:column;background:#07080f">
+  <div id="buyBody" style="flex:1;overflow-y:auto"></div>
 </div>
 
 <!-- FAQ -->
@@ -1239,17 +1236,65 @@ function closeIfBg(id,e){ if(e.target===document.getElementById(id)) closeOv(id)
 function openBuy(accId, accNum, price){
   if(!TG_USER.id){ toast('⚠️ Открой маркет через Telegram'); return; }
   document.getElementById('buyBody').innerHTML=`
-    <div style="padding:20px 16px 24px">
-      <div style="font-size:18px;font-weight:800;color:#f1f5f9;margin-bottom:4px">🛒 Купить аккаунт #${accNum}</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Цена: <b style="color:#4ade80">${Number(price).toLocaleString('ru')} ₽</b></div>
-      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;margin-bottom:16px;font-size:13px;color:rgba(255,255,255,.6);line-height:1.7">
-        <div>1. Нажимаешь <b style="color:#f1f5f9">Оформить заказ</b></div>
-        <div>2. Продавец подтверждает и присылает <b style="color:#f1f5f9">реквизиты</b></div>
-        <div>3. Оплачиваешь и <b style="color:#f1f5f9">скидываешь чек</b> в бот</div>
-        <div>4. Получаешь <b style="color:#4ade80">логин и пароль</b> 🎮</div>
+
+    <!-- HERO -->
+    <div style="position:relative;overflow:hidden;min-height:230px;display:flex;flex-direction:column;justify-content:flex-end;padding:20px">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,#1a0000,#0d0000,#050000)"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(239,68,68,.18),transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(239,68,68,.7),transparent)"></div>
+      <div style="position:absolute;right:-10px;top:10px;font-size:130px;opacity:.06;pointer-events:none;line-height:1;transform:rotate(15deg)">🛒</div>
+      <div onclick="closeOv('buyOv')" style="position:absolute;top:16px;left:16px;width:36px;height:36px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;color:#94a3b8;z-index:10">←</div>
+      <div style="position:relative;z-index:2">
+        <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);border-radius:20px;padding:4px 12px;font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#fca5a5;margin-bottom:10px">🛒 Покупка аккаунта</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:1.5px;color:#fff;line-height:.95;margin-bottom:10px">Аккаунт<br><span style="background:linear-gradient(135deg,#fee2e2,#f87171,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">#${accNum}</span></div>
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.25);border-radius:12px;padding:8px 14px">
+          <span style="font-size:18px">💰</span>
+          <span style="font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;color:#4ade80">${Number(price).toLocaleString('ru')} ₽</span>
+        </div>
       </div>
-      <button id="buyConfirmBtn" style="width:100%;background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:14px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer" onclick="submitBuy('${accId}','${accNum}','${price}')">✅ Оформить заказ</button>
-      <button onclick="closeOv('buyOv')" style="width:100%;background:none;border:1px solid rgba(255,255,255,.1);color:var(--muted);padding:12px;border-radius:12px;font-size:13px;margin-top:10px;cursor:pointer">Отмена</button>
+    </div>
+
+    <!-- ШАГИ -->
+    <div style="padding:20px 16px 0;display:flex;gap:0;position:relative">
+      <div style="position:absolute;top:31px;left:38px;right:38px;height:1px;background:linear-gradient(90deg,rgba(239,68,68,.4),rgba(239,68,68,.15),rgba(239,68,68,.4));z-index:0"></div>
+      ${[['📋','Заказ'],['💳','Оплата'],['🎮','Данные']].map(([ic,lb])=>`
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;z-index:1">
+        <div style="width:38px;height:38px;border-radius:50%;background:radial-gradient(135deg,rgba(239,68,68,.2),rgba(239,68,68,.06));border:1px solid rgba(239,68,68,.35);display:flex;align-items:center;justify-content:center;font-size:16px">${ic}</div>
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4)">${lb}</div>
+      </div>`).join('')}
+    </div>
+
+    <!-- ДЕТАЛИ -->
+    <div style="padding:20px 16px 32px;display:flex;flex-direction:column;gap:14px">
+
+      <!-- КАК РАБОТАЕТ -->
+      <div style="border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);overflow:hidden">
+        <div style="padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:8px">
+          <div style="width:28px;height:28px;border-radius:8px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);display:flex;align-items:center;justify-content:center;font-size:13px">⚡</div>
+          <div style="font-size:13px;font-weight:700;color:#f1f5f9">Как проходит покупка</div>
+        </div>
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+          ${[['📋','Оформляешь заказ','Нажимаешь кнопку ниже — аккаунт бронируется на 10 минут'],['💳','Получаешь реквизиты','Бот сразу пришлёт карту для оплаты'],['📸','Отправляешь чек','Скидываешь фото/файл оплаты в бота'],['🎮','Получаешь данные','Продавец проверяет и выдаёт логин и пароль']].map(([ic,title,desc])=>`
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">${ic}</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#f1f5f9">${title}</div>
+              <div style="font-size:11px;color:#475569;margin-top:2px">${desc}</div>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- ГАРАНТИИ -->
+      <div style="border-radius:16px;background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.15);padding:14px 16px;display:flex;flex-direction:column;gap:7px">
+        <div style="font-size:10px;font-weight:800;color:#4ade80;letter-spacing:.8px;text-transform:uppercase;margin-bottom:2px">🛡️ Гарантии</div>
+        ${['Деньги переводишь только после бронирования','Данные выдаются только после подтверждения оплаты','Поддержка на связи если что-то пошло не так'].map(g=>`
+        <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:rgba(255,255,255,.6)"><span style="color:#4ade80;font-size:14px">✓</span>${g}</div>`).join('')}
+      </div>
+
+      <!-- КНОПКИ -->
+      <button id="buyConfirmBtn" onclick="submitBuy('${accId}','${accNum}','${price}')" style="width:100%;background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:16px;border-radius:16px;font-family:'Inter',sans-serif;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 6px 24px rgba(239,68,68,.4);letter-spacing:.3px">✅ Оформить заказ</button>
+      <button onclick="closeOv('buyOv')" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:14px;border-radius:16px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer">Отмена</button>
     </div>`;
   openOv('buyOv');
 }
@@ -1257,12 +1302,20 @@ function openBuy(accId, accNum, price){
 function openReserved(accId, accNum){
   if(!TG_USER.id){ toast('⚠️ Открой маркет через Telegram'); return; }
   document.getElementById('buyBody').innerHTML=`
-    <div style="padding:20px 16px 24px;text-align:center">
-      <div style="font-size:40px;margin-bottom:12px">🔒</div>
-      <div style="font-size:17px;font-weight:800;color:#f1f5f9;margin-bottom:8px">Аккаунт #${accNum} уже покупают</div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px">Сейчас идёт сделка. Если она не состоится — бот тебе сразу напишет что аккаунт снова свободен.</div>
-      <button id="wlBtn" style="width:100%;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);color:#4ade80;padding:13px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer" onclick="addWaitlist('${accId}','${accNum}')">🔔 Уведомить меня</button>
-      <button onclick="closeOv('buyOv')" style="width:100%;background:none;border:1px solid rgba(255,255,255,.1);color:var(--muted);padding:12px;border-radius:12px;font-size:13px;margin-top:10px;cursor:pointer">Закрыть</button>
+    <div onclick="closeOv('buyOv')" style="position:absolute;top:16px;left:16px;width:36px;height:36px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;color:#94a3b8;z-index:10">←</div>
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;padding:24px 24px 40px;text-align:center;gap:16px">
+      <div style="width:90px;height:90px;border-radius:50%;background:radial-gradient(135deg,rgba(251,191,36,.15),rgba(251,191,36,.04));border:1px solid rgba(251,191,36,.3);display:flex;align-items:center;justify-content:center;font-size:40px">🔒</div>
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;color:#fff;margin-bottom:6px">Уже покупают</div>
+        <div style="font-size:14px;font-weight:700;color:#fbbf24">Аккаунт #${accNum} забронирован</div>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px 16px;font-size:13px;color:rgba(255,255,255,.5);line-height:1.6;max-width:300px">
+        Сейчас идёт сделка. Если она не состоится — бот тебе сразу напишет что аккаунт снова свободен 🔔
+      </div>
+      <div style="width:100%;display:flex;flex-direction:column;gap:10px;max-width:340px">
+        <button id="wlBtn" onclick="addWaitlist('${accId}','${accNum}')" style="width:100%;background:linear-gradient(135deg,#14532d,#16a34a);border:none;color:#fff;padding:15px;border-radius:16px;font-family:'Inter',sans-serif;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 18px rgba(22,163,74,.35)">🔔 Уведомить меня</button>
+        <button onclick="closeOv('buyOv')" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#64748b;padding:14px;border-radius:16px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer">Закрыть</button>
+      </div>
     </div>`;
   openOv('buyOv');
 }
@@ -1279,10 +1332,18 @@ async function submitBuy(accId, accNum, price){
     if(r.status===409){ toast('⚠️ Аккаунт уже бронируется — попробуй другой'); closeOv('buyOv'); await loadAccounts(); render(ACCOUNTS); return; }
     if(d.ok){
       document.getElementById('buyBody').innerHTML=`
-        <div style="padding:24px 16px;text-align:center">
-          <div style="font-size:48px;margin-bottom:12px">✅</div>
-          <div style="font-size:17px;font-weight:800;color:#f1f5f9;margin-bottom:8px">Заказ оформлен!</div>
-          <div style="font-size:13px;color:var(--muted);line-height:1.6">Реквизиты для оплаты уже отправлены тебе в бот 👇<br><br>Оплати и пришли фото чека — продавец подтвердит.</div>
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;padding:24px;text-align:center;gap:18px">
+          <div style="width:90px;height:90px;border-radius:50%;background:radial-gradient(135deg,rgba(74,222,128,.2),rgba(74,222,128,.05));border:1px solid rgba(74,222,128,.4);display:flex;align-items:center;justify-content:center;font-size:42px;animation:pls4 1.5s ease-out">✅</div>
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1px;color:#fff;margin-bottom:6px">Заказ оформлен!</div>
+            <div style="font-size:14px;font-weight:600;color:rgba(74,222,128,.8)">Аккаунт #${accNum} забронирован за тобой</div>
+          </div>
+          <div style="background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.15);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px;text-align:left">
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:rgba(255,255,255,.7)"><span style="font-size:18px">💳</span>Реквизиты для оплаты уже в боте</div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:rgba(255,255,255,.7)"><span style="font-size:18px">📸</span>Оплати и пришли фото чека</div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:rgba(255,255,255,.7)"><span style="font-size:18px">⏰</span>На оплату 10 минут</div>
+          </div>
+          <button onclick="closeOv('buyOv')" style="width:100%;max-width:320px;background:linear-gradient(135deg,#991b1b,#ef4444);border:none;color:#fff;padding:15px;border-radius:16px;font-family:'Inter',sans-serif;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 18px rgba(239,68,68,.35)">Перейти в бот →</button>
         </div>`;
       await loadAccounts(); render(ACCOUNTS);
     } else {
