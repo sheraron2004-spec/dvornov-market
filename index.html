@@ -1296,8 +1296,9 @@ function renderSwapForm(){
         <div id="swapPhotosPrev" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div>
       </div>
       <div class="fg">
-        <label>Описание аккаунта</label>
-        <textarea id="swapDesc" rows="3" placeholder="Клуб, рейтинг, особенности..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f1f5f9;padding:10px;font-family:'Inter',sans-serif;font-size:13px;resize:none;box-sizing:border-box"></textarea>
+        <label>Описание аккаунта <span style="color:#ef4444">*</span></label>
+        <textarea id="swapDesc" rows="3" placeholder="Клуб, рейтинг, особенности..." oninput="swapDescClear()" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#f1f5f9;padding:10px;font-family:'Inter',sans-serif;font-size:13px;resize:none;box-sizing:border-box;transition:border .2s"></textarea>
+        <div id="swapDescErr" style="display:none;color:#ef4444;font-size:11px;font-weight:600;margin-top:4px">⚠️ Обязательное поле</div>
       </div>
       <div class="fg">
         <label>Привязка аккаунта</label>
@@ -1374,9 +1375,27 @@ function removeSwapPhoto(idx){
   onSwapPhotos(document.getElementById('swapPhotosIn'));
 }
 
+function swapDescClear(){
+  const el=document.getElementById('swapDesc');
+  const err=document.getElementById('swapDescErr');
+  if(!el||!err) return;
+  if(el.value.trim()){
+    el.style.border='1px solid rgba(255,255,255,.1)';
+    err.style.display='none';
+  }
+}
+
 async function submitSwap(){
   const desc = document.getElementById('swapDesc').value.trim();
-  if(!desc){ toast('⚠️ Напиши описание аккаунта'); return; }
+  if(!desc){
+    const el=document.getElementById('swapDesc');
+    const err=document.getElementById('swapDescErr');
+    el.style.border='1px solid #ef4444';
+    err.style.display='block';
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.focus();
+    return;
+  }
   if(!swapFiles.length){ toast('⚠️ Добавь хотя бы 1 фото'); return; }
   const btn = document.getElementById('swapSubmitBtn');
   btn.disabled=true; btn.textContent='⏳ Отправляю...';
