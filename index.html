@@ -724,7 +724,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
       <div onclick="closeOv('profileOv')" style="width:34px;height:34px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:#64748b">✕</div>
     </div>
   </div>
-  <div id="profileBody" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;padding-bottom:40px"></div>
+  <div id="profileBody" style="flex:1;overflow-y:auto"></div>
 </div>
 
 <!-- BUY OVERLAY -->
@@ -1630,127 +1630,111 @@ async function openProfile(){
     const badgeGrad=n>=5?'linear-gradient(135deg,#f59e0b,#ef4444)':n>=3?'linear-gradient(135deg,#6366f1,#8b5cf6)':'linear-gradient(135deg,#0ea5e9,#2563eb)';
     const bought=d.orders.filter(o=>o.status==='completed');
     body.innerHTML=`
+    <div style="background:#07080f;min-height:100%;padding-bottom:40px">
 
-      <!-- HERO -->
-      <div style="position:relative;overflow:hidden;padding:0 0 24px">
-        <!-- Фон -->
-        ${d.bg_photo
-          ? `<div style="position:absolute;inset:0;background:url('${d.bg_photo}') center/cover no-repeat"></div><div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(7,8,15,.3) 0%,rgba(7,8,15,.85) 60%,#07080f 100%)"></div>`
-          : `<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(124,58,237,.25),transparent 70%),#07080f"></div><div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(168,85,247,.5),transparent)"></div>`
-        }
-        <!-- Контент -->
-        <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding-top:40px;gap:12px">
-          <!-- Аватар -->
-          <div style="position:relative">
-            <div style="width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,#4c1d95,#7c3aed);padding:2px">
-              <div style="width:100%;height:100%;border-radius:50%;overflow:hidden;background:#07080f">
-                <img src="${API}/profile/${TG_USER.id}/photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="width:100%;height:100%;object-fit:cover">
-                <div style="width:100%;height:100%;display:none;align-items:center;justify-content:center;font-size:32px;background:linear-gradient(135deg,#1d4ed8,#7c3aed)">👤</div>
-              </div>
+      <!-- ШАПКА -->
+      <div style="padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:17px;font-weight:800;color:#f1f5f9">Профиль</div>
+        <a href="https://t.me/DvornovNikitos" target="_blank" style="display:flex;align-items:center;gap:6px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;color:#60a5fa;text-decoration:none">💬 Написать</a>
+      </div>
+
+      <!-- КАРТОЧКА ПОЛЬЗОВАТЕЛЯ -->
+      <div style="margin:16px 16px 0;border-radius:22px;background:#111318;overflow:hidden">
+        <!-- Обложка -->
+        <div style="height:90px;position:relative;overflow:hidden">
+          ${d.bg_photo
+            ? `<img src="${d.bg_photo}" style="width:100%;height:100%;object-fit:cover">`
+            : `<div style="height:100%;background:linear-gradient(135deg,#1e1040 0%,#0f0730 40%,#180a40 100%)"></div>`
+          }
+          <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,#111318 100%)"></div>
+        </div>
+        <!-- Аватар + имя -->
+        <div style="padding:0 18px 18px;margin-top:-36px;position:relative">
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:12px">
+            <div style="width:72px;height:72px;border-radius:50%;border:3px solid #111318;overflow:hidden;background:linear-gradient(135deg,#1d4ed8,#7c3aed);flex-shrink:0">
+              <img src="${API}/profile/${TG_USER.id}/photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="width:100%;height:100%;object-fit:cover">
+              <div style="width:100%;height:100%;display:none;align-items:center;justify-content:center;font-size:28px">👤</div>
             </div>
-            ${badge?`<div style="position:absolute;bottom:-4px;right:-4px;background:${badgeGrad};border:2px solid #07080f;border-radius:20px;padding:2px 8px;font-size:10px;font-weight:800;color:#fff;white-space:nowrap">${badge}</div>`:''}
+            ${badge?`<div style="background:${badgeGrad};border-radius:20px;padding:5px 12px;font-size:11px;font-weight:800;color:#fff">${badge}</div>`:''}
           </div>
-          <!-- Имя -->
-          <div style="text-align:center">
-            <div style="font-size:20px;font-weight:800;color:#fff">${name||'Покупатель'}</div>
-            ${username?`<div style="font-size:13px;color:rgba(255,255,255,.4);margin-top:2px">${username}</div>`:''}
-            ${d.first_seen?`<div style="font-size:11px;color:rgba(255,255,255,.25);margin-top:4px">в магазине с ${d.first_seen.replace(/-/g,'.')}</div>`:''}
-          </div>
+          <div style="font-size:18px;font-weight:800;color:#f1f5f9">${name||'Покупатель'}</div>
+          ${username?`<div style="font-size:13px;color:#475569;margin-top:2px">${username}</div>`:''}
+          ${d.first_seen?`<div style="font-size:11px;color:#334155;margin-top:4px">в магазине с ${d.first_seen.replace(/-/g,'.')}</div>`:''}
         </div>
       </div>
 
       <!-- СТАТИСТИКА -->
-      <div style="padding:0 16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
-        <div style="background:radial-gradient(135deg,rgba(74,222,128,.08),rgba(74,222,128,.02));border:1px solid rgba(74,222,128,.18);border-radius:16px;padding:14px 8px;text-align:center">
-          <div style="font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:#4ade80;line-height:1">${d.stats.orders_completed}</div>
-          <div style="font-size:10px;font-weight:700;color:rgba(74,222,128,.5);margin-top:4px;text-transform:uppercase;letter-spacing:.5px">куплено</div>
-        </div>
-        <div style="background:radial-gradient(135deg,rgba(251,191,36,.08),rgba(251,191,36,.02));border:1px solid rgba(251,191,36,.18);border-radius:16px;padding:14px 8px;text-align:center">
-          <div style="font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:#fbbf24;line-height:1">${d.stats.orders_total}</div>
-          <div style="font-size:10px;font-weight:700;color:rgba(251,191,36,.5);margin-top:4px;text-transform:uppercase;letter-spacing:.5px">заказов</div>
-        </div>
-        <div style="background:radial-gradient(135deg,rgba(139,92,246,.08),rgba(139,92,246,.02));border:1px solid rgba(139,92,246,.18);border-radius:16px;padding:14px 8px;text-align:center">
-          <div style="font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:#a78bfa;line-height:1">${d.stats.swaps_total}</div>
-          <div style="font-size:10px;font-weight:700;color:rgba(139,92,246,.5);margin-top:4px;text-transform:uppercase;letter-spacing:.5px">обменов</div>
-        </div>
+      <div style="margin:12px 16px 0;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        ${[['#4ade80','rgba(74,222,128,.08)','rgba(74,222,128,.15)',d.stats.orders_completed,'Куплено'],
+           ['#fbbf24','rgba(251,191,36,.08)','rgba(251,191,36,.15)',d.stats.orders_total,'Заказов'],
+           ['#a78bfa','rgba(139,92,246,.08)','rgba(139,92,246,.15)',d.stats.swaps_total,'Обменов']
+          ].map(([clr,bg,brd,val,lbl])=>`
+        <div style="background:${bg};border:1px solid ${brd};border-radius:18px;padding:16px 8px;text-align:center">
+          <div style="font-family:'Oswald',sans-serif;font-size:30px;font-weight:700;color:${clr};line-height:1">${val}</div>
+          <div style="font-size:10px;font-weight:700;color:${clr};opacity:.5;margin-top:5px;letter-spacing:.3px">${lbl}</div>
+        </div>`).join('')}
       </div>
 
-      <div style="padding:0 16px;display:flex;flex-direction:column;gap:14px;padding-bottom:32px">
-
-        <!-- МОИ АККАУНТЫ -->
-        ${bought.length?`
-        <div style="border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);overflow:hidden">
-          <div style="padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:8px">
-            <div style="width:28px;height:28px;border-radius:8px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.25);display:flex;align-items:center;justify-content:center;font-size:13px">🏆</div>
-            <div style="font-size:13px;font-weight:800;color:#f1f5f9">Мои аккаунты</div>
-            <div style="margin-left:auto;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.2);border-radius:20px;padding:2px 8px;font-size:11px;font-weight:700;color:#fbbf24">${bought.length}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:1px">
-            ${bought.map(o=>{
-              const imgSrc=o.thumb_file_id?`${API}/tg-photo/${encodeURIComponent(o.thumb_file_id)}`:o.photo||'';
-              return`<div style="display:flex;gap:12px;align-items:center;padding:12px 16px;background:rgba(255,255,255,.01)">
-                <div style="width:52px;height:52px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.06);flex-shrink:0">
-                  ${imgSrc?`<img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s" onload="this.style.opacity=1" loading="lazy">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px">⚽</div>'}
-                </div>
-                <div style="flex:1;min-width:0">
-                  <div style="font-size:13px;font-weight:800;color:#f1f5f9">Аккаунт #${o.acc_number}</div>
-                  <div style="font-size:11px;color:#475569;margin-top:2px">${Number(o.price).toLocaleString('ru')} ₽ · ${o.created_at?.slice(0,10)||''}</div>
-                </div>
-                <div style="font-size:18px">✅</div>
-              </div>`;}).join('<div style="height:1px;background:rgba(255,255,255,.04);margin:0 16px"></div>')}
-          </div>
-        </div>`:''}
-
-        <!-- ИСТОРИЯ ЗАКАЗОВ -->
-        ${d.orders.length?`
-        <div style="border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);overflow:hidden">
-          <div style="padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:8px">
-            <div style="width:28px;height:28px;border-radius:8px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);display:flex;align-items:center;justify-content:center;font-size:13px">📦</div>
-            <div style="font-size:13px;font-weight:800;color:#f1f5f9">История заказов</div>
-          </div>
-          <div style="display:flex;flex-direction:column">
-            ${d.orders.map((o,i)=>`
-            <div style="padding:12px 16px;${i>0?'border-top:1px solid rgba(255,255,255,.04)':''}display:flex;justify-content:space-between;align-items:center;gap:10px">
-              <div>
-                <div style="font-size:13px;font-weight:700;color:#f1f5f9">Аккаунт #${o.acc_number}</div>
-                <div style="font-size:11px;color:#475569;margin-top:2px">${o.created_at?.slice(0,10)||''} · ${Number(o.price).toLocaleString('ru')} ₽</div>
+      <!-- МОИ АККАУНТЫ -->
+      ${bought.length?`
+      <div style="margin:20px 16px 0">
+        <div style="font-size:13px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">🏆 Мои аккаунты</div>
+        <div style="border-radius:18px;background:#111318;overflow:hidden">
+          ${bought.map((o,i)=>{
+            const imgSrc=o.thumb_file_id?`${API}/tg-photo/${encodeURIComponent(o.thumb_file_id)}`:o.photo||'';
+            return`<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;${i>0?'border-top:1px solid rgba(255,255,255,.05)':''}">
+              <div style="width:48px;height:48px;border-radius:12px;overflow:hidden;background:rgba(255,255,255,.06);flex-shrink:0">
+                ${imgSrc?`<img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s" onload="this.style.opacity=1" loading="lazy">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px">⚽</div>'}
               </div>
-              <div style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);white-space:nowrap;flex-shrink:0">${statusLabel[o.status]||o.status}</div>
-            </div>`).join('')}
-          </div>
-        </div>`:''}
+              <div style="flex:1">
+                <div style="font-size:14px;font-weight:700;color:#f1f5f9">Аккаунт #${o.acc_number}</div>
+                <div style="font-size:12px;color:#475569;margin-top:2px">${Number(o.price).toLocaleString('ru')} ₽ · ${o.created_at?.slice(0,10)||''}</div>
+              </div>
+              <div style="width:28px;height:28px;border-radius:50%;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.25);display:flex;align-items:center;justify-content:center;font-size:14px">✅</div>
+            </div>`;}).join('')}
+        </div>
+      </div>`:''}
 
-        <!-- ИСТОРИЯ ОБМЕНОВ -->
-        ${d.swaps.length?`
-        <div style="border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);overflow:hidden">
-          <div style="padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:8px">
-            <div style="width:28px;height:28px;border-radius:8px;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.25);display:flex;align-items:center;justify-content:center;font-size:13px">🔄</div>
-            <div style="font-size:13px;font-weight:800;color:#f1f5f9">История обменов</div>
-          </div>
-          <div style="display:flex;flex-direction:column">
-            ${d.swaps.map((s,i)=>`
-            <div style="padding:12px 16px;${i>0?'border-top:1px solid rgba(255,255,255,.04)':''}">
-              <div style="font-size:13px;font-weight:700;color:#f1f5f9">Аккаунт #${s.acc_number}</div>
-              ${s.binding?`<div style="font-size:11px;color:#475569;margin-top:2px">Привязка: ${s.binding}</div>`:''}
-              ${s.dop&&s.dop_amount&&s.dop_amount!='0'?`<div style="font-size:11px;color:#4ade80;margin-top:2px;font-weight:600">+ Доплата ${Number(s.dop_amount).toLocaleString('ru')} ₽</div>`:''}
-              <div style="font-size:11px;color:#334155;margin-top:2px">${s.created_at?.slice(0,10)||''}</div>
-            </div>`).join('')}
-          </div>
-        </div>`:''}
+      <!-- ИСТОРИЯ ЗАКАЗОВ -->
+      ${d.orders.length?`
+      <div style="margin:20px 16px 0">
+        <div style="font-size:13px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">📦 История заказов</div>
+        <div style="border-radius:18px;background:#111318;overflow:hidden">
+          ${d.orders.map((o,i)=>`
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;${i>0?'border-top:1px solid rgba(255,255,255,.05)':''}">
+            <div>
+              <div style="font-size:14px;font-weight:700;color:#f1f5f9">Аккаунт #${o.acc_number}</div>
+              <div style="font-size:12px;color:#475569;margin-top:2px">${o.created_at?.slice(0,10)||''} · ${Number(o.price).toLocaleString('ru')} ₽</div>
+            </div>
+            <div style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.06);color:#94a3b8;white-space:nowrap;flex-shrink:0">${statusLabel[o.status]||o.status}</div>
+          </div>`).join('')}
+        </div>
+      </div>`:''}
 
-        <!-- ПУСТО -->
-        ${!d.orders.length&&!d.swaps.length?`
-        <div style="text-align:center;padding:32px 16px;display:flex;flex-direction:column;align-items:center;gap:10px">
-          <div style="font-size:48px;opacity:.4">⚽</div>
-          <div style="font-size:14px;font-weight:700;color:#334155">Пока нет активности</div>
-          <div style="font-size:12px;color:#1e293b">Купи первый аккаунт или предложи обмен!</div>
-        </div>`:''}
+      <!-- ИСТОРИЯ ОБМЕНОВ -->
+      ${d.swaps.length?`
+      <div style="margin:20px 16px 0">
+        <div style="font-size:13px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">🔄 История обменов</div>
+        <div style="border-radius:18px;background:#111318;overflow:hidden">
+          ${d.swaps.map((s,i)=>`
+          <div style="padding:14px 16px;${i>0?'border-top:1px solid rgba(255,255,255,.05)':''}">
+            <div style="font-size:14px;font-weight:700;color:#f1f5f9">Аккаунт #${s.acc_number}</div>
+            ${s.binding?`<div style="font-size:12px;color:#475569;margin-top:2px">${s.binding}</div>`:''}
+            ${s.dop&&s.dop_amount&&s.dop_amount!='0'?`<div style="font-size:12px;color:#4ade80;margin-top:2px;font-weight:600">Доплата: ${Number(s.dop_amount).toLocaleString('ru')} ₽</div>`:''}
+            <div style="font-size:11px;color:#334155;margin-top:3px">${s.created_at?.slice(0,10)||''}</div>
+          </div>`).join('')}
+        </div>
+      </div>`:''}
 
-        <!-- КНОПКА -->
-        <a href="https://t.me/DvornovNikitos" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;padding:15px;border-radius:16px;font-size:14px;font-weight:800;text-decoration:none;box-shadow:0 4px 18px rgba(59,130,246,.3)">
-          💬 Написать продавцу
-        </a>
-      </div>`;
+      <!-- ПУСТО -->
+      ${!d.orders.length&&!d.swaps.length?`
+      <div style="margin:40px 16px 0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px">
+        <div style="font-size:56px;opacity:.2">⚽</div>
+        <div style="font-size:15px;font-weight:700;color:#334155">Пока нет активности</div>
+        <div style="font-size:13px;color:#1e293b">Купи первый аккаунт или предложи обмен</div>
+      </div>`:''}
+
+    </div>`;
   }catch{
     body.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)">❌ Не удалось загрузить профиль</div>`;
   }
