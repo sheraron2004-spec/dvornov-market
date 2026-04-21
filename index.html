@@ -813,7 +813,7 @@ async function initAPI(){
 }
 const ADMIN_TG_ID = 568518218;
 const ADMIN_KEY = 'cRfz-viMcAWBsE3OLERmzlzbYUXyo3xgOK4pTaMO3JE';
-let ACCOUNTS=[], LIST=[], isAdmin=false, selPhoto=null, extraFiles=[];
+let ACCOUNTS=[], LIST=[], isAdmin=false, isCoAdmin=false, selPhoto=null, extraFiles=[], draftPhoto=null, draftExtras=[];
 
 let TG_USER={id:0,first_name:'',last_name:''};
 if(window.Telegram?.WebApp){
@@ -822,6 +822,19 @@ if(window.Telegram?.WebApp){
   if(u){ TG_USER=u; if(u.id===ADMIN_TG_ID) isAdmin=true; }
 }
 if(isAdmin){ const ab=document.getElementById('adminBtn'); if(ab) ab.classList.add('show'); }
+
+async function checkRole(){
+  if(!TG_USER.id || isAdmin) return;
+  try{
+    const r=await fetch(`${API}/market/role?tg_id=${TG_USER.id}`);
+    const d=await r.json();
+    if(d.role==='coadmin'){
+      isCoAdmin=true;
+      const btn=document.getElementById('navAdminBtn');
+      if(btn){ btn.style.display='flex'; btn.onclick=openCoAdmin; }
+    }
+  }catch(e){ console.log('checkRole error:',e); }
+}
 
 // ━━━ БАННЕРЫ СВАЙП ━━━
 (function(){
@@ -1738,6 +1751,7 @@ async function openProfile(){
   }
 }
 function openAdmin(){ if(!isAdmin) return; renderHome(); openOv('adminOv'); }
+function openCoAdmin(){ renderReserve(); openOv('adminOv'); }
 
 function openGalleryPhoto(fileId){
   const existing=document.getElementById('galleryPhotoOv');
@@ -1761,8 +1775,107 @@ function renderHome(){
       <button class="adm-btn" onclick="renderStats()"><div class="adm-ic ic-t">📊</div><div><div class="adm-name">Статистика</div><div class="adm-desc">Аккаунтов в магазине</div></div></button>
       <button class="adm-btn" onclick="renderBuyAccount()"><div class="adm-ic" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3)">💰</div><div><div class="adm-name">Купить аккаунт</div><div class="adm-desc">Принять оплату от покупателя</div></div></button>
       <button class="adm-btn" onclick="renderBuyers()"><div class="adm-ic" style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3)">👥</div><div><div class="adm-name">Покупатели</div><div class="adm-desc">Список всех покупателей</div></div></button>
+      <button class="adm-btn" onclick="renderDrafts()"><div class="adm-ic" style="background:rgba(45,212,191,.15);border:1px solid rgba(45,212,191,.3)">📋</div><div><div class="adm-name">Черновики</div><div class="adm-desc">Зарезервированные аккаунты</div></div></button>
       <button class="adm-btn" onclick="closeOv('adminOv')"><div class="adm-ic ic-g">🚪</div><div><div class="adm-name">Закрыть</div><div class="adm-desc">Вернуться в магазин</div></div></button>
     </div>`;}
+
+async function renderDrafts(){
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderHome()">← Назад</button>
+    <div class="sheet-title">📋 Черновики</div>
+    <div id="draftsBody" style="text-align:center;padding:24px;color:var(--muted)">Загрузка...</div>`;
+  try{
+    const r=await fetch(`${API}/accounts/drafts`,{headers:{'X-Admin-Key':ADMIN_KEY}});
+    const drafts=await r.json();
+    if(!drafts.length){ document.getElementById('draftsBody').innerHTML='<div style="color:var(--muted)">Черновиков нет</div>'; return; }
+    document.getElementById('draftsBody').innerHTML=drafts.map(d=>`
+      <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:10px;text-align:left">
+        ${d.photo?`<img src="${d.photo}" style="width:100%;border-radius:10px;margin-bottom:10px;max-height:180px;object-fit:cover" loading="lazy">`:''}
+        <div style="font-weight:700;font-size:15px;margin-bottom:4px">#${d.number}</div>
+        ${d.vk?`<div style="font-size:12px;color:var(--muted2);margin-bottom:10px">${d.vk}</div>`:''}
+        ${d.albums&&d.albums.length?`<div style="font-size:11px;color:var(--muted);margin-bottom:10px">📸 ${d.albums.length} доп. фото</div>`:''}
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input id="dp_${d.id}" class="form-input" placeholder="Цена (₽)" style="flex:1;min-width:100px" type="number">
+          <button onclick="publishDraft('${d.id}')" style="background:linear-gradient(135deg,#16a34a,#22c55e);border:none;color:#fff;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">✅ Опубликовать</button>
+          <button onclick="deleteDraft('${d.id}')" style="background:rgba(244,63,94,.15);border:1px solid rgba(244,63,94,.3);color:var(--red);padding:9px 12px;border-radius:10px;font-size:13px;cursor:pointer">🗑</button>
+        </div>
+      </div>`).join('');
+  }catch(e){ document.getElementById('draftsBody').innerHTML='<div style="color:var(--red)">Ошибка загрузки</div>'; }
+}
+
+async function publishDraft(id){
+  const price=document.getElementById('dp_'+id)?.value.trim();
+  if(!price){ toast('⚠️ Введи цену'); return; }
+  const fd=new FormData(); fd.append('price',price);
+  try{
+    const r=await fetch(`${API}/accounts/${id}/publish`,{method:'POST',body:fd,headers:{'X-Admin-Key':ADMIN_KEY}});
+    const d=await r.json();
+    if(d.ok){ toast('✅ Опубликован!'); await loadAccounts(); renderDrafts(); }
+    else{ toast('❌ '+(d.detail||'Ошибка')); }
+  }catch{ toast('❌ Сервер недоступен'); }
+}
+
+async function deleteDraft(id){
+  if(!confirm('Удалить черновик?')) return;
+  try{
+    const r=await fetch(`${API}/accounts/${id}`,{method:'DELETE',headers:{'X-Admin-Key':ADMIN_KEY}});
+    const d=await r.json();
+    if(d.ok){ toast('🗑 Удалён'); renderDrafts(); }
+    else{ toast('❌ Ошибка'); }
+  }catch{ toast('❌ Сервер недоступен'); }
+}
+
+function renderReserve(){
+  draftPhoto=null; draftExtras=[];
+  document.getElementById('adminBody').innerHTML=`
+    <div class="sheet-title">📥 Зарезервировать аккаунт</div>
+    <div class="form">
+      <div class="form-group">
+        <label class="form-label">Число аккаунта</label>
+        <input id="dNum" class="form-input" type="number" placeholder="Например: 42">
+      </div>
+      <div class="form-group">
+        <label class="form-label">ВК клуб</label>
+        <input id="dVk" class="form-input" placeholder="https://vk.com/club...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Главное фото</label>
+        <label class="ph-pick" for="dPhFile" id="dPhLbl">📸 Выбрать фото</label>
+        <input id="dPhFile" type="file" accept="image/*" style="display:none" onchange="prevDraftPh(this)">
+        <img id="dPhPreview" style="display:none;width:100%;border-radius:12px;margin-top:8px;max-height:200px;object-fit:cover">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Доп. фото (до 20)</label>
+        <label class="ph-pick" for="dExFile">📸 Доп. фото</label>
+        <input id="dExFile" type="file" accept="image/*" multiple style="display:none" onchange="prevDraftExtras(this)">
+        <div id="dExChips"></div>
+      </div>
+      <div class="form-btns">
+        <button class="f-submit" id="dSubmit" onclick="saveDraft()">📥 Зарезервировать</button>
+        <button class="f-cancel" onclick="closeOv('adminOv')">Отмена</button>
+      </div>
+    </div>`;
+}
+function prevDraftPh(input){ const f=input.files[0]; if(!f) return; draftPhoto=f; const lbl=document.getElementById('dPhLbl'); if(lbl) lbl.textContent='✅ '+f.name; const img=document.getElementById('dPhPreview'); img.src=URL.createObjectURL(f); img.style.display='block'; }
+function prevDraftExtras(input){ draftExtras=Array.from(input.files); renderDraftChips(); }
+function renderDraftChips(){ document.getElementById('dExChips').innerHTML=draftExtras.map(f=>`<div class="chip"><span>📸 ${f.name}</span></div>`).join(''); }
+async function saveDraft(){
+  const num=document.getElementById('dNum').value.trim();
+  if(!num){ toast('⚠️ Укажи число аккаунта'); return; }
+  const btn=document.getElementById('dSubmit'); btn.disabled=true; btn.textContent='⏳ Сохраняю...';
+  const fd=new FormData();
+  fd.append('tg_id',TG_USER.id);
+  fd.append('number',num);
+  fd.append('vk',document.getElementById('dVk').value.trim());
+  if(draftPhoto) fd.append('photo',draftPhoto);
+  draftExtras.forEach(f=>fd.append('extra_photos',f));
+  try{
+    const r=await fetch(`${API}/accounts/draft`,{method:'POST',body:fd});
+    const d=await r.json();
+    if(d.ok){ toast('✅ Зарезервировано!'); closeOv('adminOv'); }
+    else{ toast('❌ '+(d.detail||'Ошибка')); btn.disabled=false; btn.textContent='📥 Зарезервировать'; }
+  }catch{ toast('❌ Сервер недоступен'); btn.disabled=false; btn.textContent='📥 Зарезервировать'; }
+}
 
 async function renderBuyers(){
   document.getElementById('adminBody').innerHTML=`
@@ -2309,9 +2422,9 @@ async function deleteBuyAnn(id){
 })();
 
 if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded', async()=>{ await initAPI(); loadAccounts(); loadStats(); });
+  document.addEventListener('DOMContentLoaded', async()=>{ await initAPI(); loadAccounts(); loadStats(); checkRole(); });
 } else {
-  initAPI().then(()=>{ loadAccounts(); loadStats(); });
+  initAPI().then(()=>{ loadAccounts(); loadStats(); checkRole(); });
 }
 </script>
 </body>
