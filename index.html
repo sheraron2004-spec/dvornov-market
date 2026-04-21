@@ -1806,27 +1806,112 @@ function renderDraftDetail(id){
   const d=_draftsCache.find(x=>x.id===id);
   if(!d) return;
   const allPhotos=[d.photo,...(d.albums||[])].filter(Boolean);
-  const photosHtml=allPhotos.length?`
-    <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px">
-      ${allPhotos.map(p=>`<img src="${p}" style="height:160px;min-width:120px;border-radius:10px;object-fit:cover;flex-shrink:0" loading="lazy">`).join('')}
-    </div>`:'';
+  const mainPhoto=allPhotos[0]||'';
+  const extraPhotos=allPhotos.slice(1);
   document.getElementById('adminBody').innerHTML=`
     <button class="admin-back" onclick="renderDrafts()">← Назад</button>
     <div class="sheet-title">📋 Черновик</div>
-    ${photosHtml}
-    <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:10px">
-      ${d.strength?`<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:12px">Сила</span><div style="font-weight:700">💪 ${d.strength}</div></div>`:''}
-      ${d.vk?`<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:12px">Клуб</span><div style="font-weight:700">${d.vk}</div></div>`:''}
-      ${d.binding?`<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:12px">Привязка</span><div style="font-weight:700">${d.binding}</div></div>`:''}
-      ${d.login?`<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:12px">Логин</span><div style="font-weight:700;word-break:break-all">${d.login}</div></div>`:''}
-      ${d.password?`<div><span style="color:var(--muted);font-size:12px">Пароль</span><div style="font-weight:700">${d.password}</div></div>`:''}
+    ${mainPhoto?`<img src="${mainPhoto}" style="width:100%;border-radius:14px;margin-bottom:10px;max-height:260px;object-fit:cover" loading="lazy">`:''}
+    ${extraPhotos.length?`
+    <div style="margin-bottom:12px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:700;letter-spacing:.5px">СКРИНЫ (${extraPhotos.length})</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+        ${extraPhotos.map(p=>`<img src="${p}" style="width:100%;aspect-ratio:1;border-radius:8px;object-fit:cover" loading="lazy">`).join('')}
+      </div>
+    </div>`:''}
+    <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;flex-direction:column;gap:10px">
+      ${d.strength?`<div><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:2px">СИЛА</div><div style="font-weight:700;font-size:15px">💪 ${d.strength}</div></div>`:''}
+      ${d.binding?`<div><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:2px">ПРИВЯЗКА</div><div style="font-weight:600">${d.binding}</div></div>`:''}
+      ${d.vk?`<div><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:2px">КЛУБ</div><div style="font-weight:600">${d.vk}</div></div>`:''}
+    </div>
+    <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:11px;color:#fbbf24;font-weight:800;letter-spacing:.5px">🔑 ДАННЫЕ</div>
+      ${d.login?`<div><div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:2px">ЛОГИН</div><div style="font-weight:600;word-break:break-all">${d.login}</div></div>`:'<div style="color:var(--muted);font-size:13px">Логин не указан</div>'}
+      ${d.password?`<div><div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:2px">ПАРОЛЬ</div><div style="font-weight:600">${d.password}</div></div>`:'<div style="color:var(--muted);font-size:13px">Пароль не указан</div>'}
     </div>
     <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:10px">
-      <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px">Цена ₽</label>
-      <input class="fi" id="dpPrice" type="number" placeholder="Например: 5000" style="margin-bottom:10px">
-      <button onclick="publishDraft('${d.id}')" style="width:100%;background:linear-gradient(135deg,#16a34a,#22c55e);border:none;color:#fff;padding:13px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:8px">✅ Опубликовать</button>
-      <button onclick="deleteDraft('${d.id}')" style="width:100%;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3);color:var(--red);padding:11px;border-radius:12px;font-size:13px;cursor:pointer">🗑 Удалить черновик</button>
+      <div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:8px">ЦЕНА ДЛЯ ПУБЛИКАЦИИ</div>
+      <input class="fi" id="dpPrice" type="number" placeholder="Например: 5000" style="margin-bottom:12px">
+      <button onclick="publishDraft('${d.id}')" style="width:100%;background:linear-gradient(135deg,#16a34a,#22c55e);border:none;color:#fff;padding:14px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:8px">✅ Опубликовать</button>
+      <button onclick="renderDraftEdit('${d.id}')" style="width:100%;background:rgba(77,139,255,.1);border:1px solid rgba(77,139,255,.25);color:var(--blue);padding:12px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px">✏️ Редактировать</button>
+      <button onclick="deleteDraft('${d.id}')" style="width:100%;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);color:var(--red);padding:12px;border-radius:12px;font-size:13px;cursor:pointer">🗑 Удалить черновик</button>
     </div>`;
+}
+
+function renderDraftEdit(id){
+  const d=_draftsCache.find(x=>x.id===id);
+  if(!d) return;
+  selPhoto=null; extraFiles=[]; addBinding=d.binding||'';
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderDraftDetail('${id}')">← Назад</button>
+    <div class="sheet-title">✏️ Редактировать черновик</div>
+    <div class="form">
+      <div class="fg"><label>Главное фото</label>
+        ${d.photo?`<img src="${d.photo}" style="width:100%;border-radius:10px;margin-bottom:8px;max-height:180px;object-fit:cover">`:''}
+        <label class="photo-label" for="photoIn">📷 Заменить главное фото</label>
+        <input type="file" id="photoIn" accept="image/*" style="display:none" onchange="previewPh(event)">
+        <img class="photo-preview" id="phPreview">
+      </div>
+      <div class="fg"><label>Сила аккаунта</label><input class="fi" id="fStrength" value="${d.strength||''}" placeholder="Например: 3162" type="number"></div>
+      <div class="fg"><label>Клуб (цвет карточки)</label>
+        <select class="fi" id="fClub">
+          <option value="" ${!d.vk?'selected':''}>— Без клуба</option>
+          <option value="psg" ${d.vk==='psg'?'selected':''}>🔵 PSG</option>
+          <option value="real" ${d.vk==='real'?'selected':''}>⚪ Real Madrid</option>
+          <option value="barca" ${d.vk==='barca'?'selected':''}>🔴 Barcelona</option>
+          <option value="manu" ${d.vk==='manu'?'selected':''}>🔴 Man United</option>
+          <option value="juve" ${d.vk==='juve'?'selected':''}>⬛ Juventus</option>
+          <option value="chelsea" ${d.vk==='chelsea'?'selected':''}>🔵 Chelsea</option>
+          <option value="liverpool" ${d.vk==='liverpool'?'selected':''}>🔴 Liverpool</option>
+          <option value="bayern" ${d.vk==='bayern'?'selected':''}>🔴 Bayern Munich</option>
+          <option value="inter" ${d.vk==='inter'?'selected':''}>🔵 Inter Milan</option>
+          <option value="mancity" ${d.vk==='mancity'?'selected':''}>🩵 Man City</option>
+        </select>
+      </div>
+      <div class="fg"><label>Привязка аккаунта</label>
+        <div class="bind-row">
+          <button class="bind-btn${addBinding==='Konami ID + Google Play'?' bind-sel':''}" onclick="setAddBinding('Konami ID + Google Play',this)">🤖 Konami ID + Google Play<br><span class="bind-ручаюсь">ручаюсь</span></button>
+          <button class="bind-btn${addBinding==='Konami ID + Game Center'?' bind-sel':''}" onclick="setAddBinding('Konami ID + Game Center',this)">🍎 Konami ID + Game Center<br><span class="bind-ручаюсь">ручаюсь</span></button>
+          <button class="bind-btn${addBinding==='Только Konami ID'?' bind-sel':''}" onclick="setAddBinding('Только Konami ID',this)">🎮 Только Konami ID</button>
+        </div>
+      </div>
+      <div class="fg"><label>Доп. фото — добавить ещё (${(d.albums||[]).length} уже есть)</label>
+        <label class="photo-label" for="extrasIn">📸 Добавить фото</label>
+        <input type="file" id="extrasIn" accept="image/*" multiple style="display:none" onchange="previewExtras(event)">
+        <div class="chips" id="extraChips"></div>
+      </div>
+      <div class="fg" style="background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.12);border-radius:12px;padding:12px">
+        <label style="color:#fbbf24;font-weight:800">🔑 Данные аккаунта</label>
+        <input class="fi" id="fLogin" placeholder="Логин (email Konami ID)" value="${d.login||''}" style="margin-top:8px">
+        <input class="fi" id="fPassword" placeholder="Пароль" value="${d.password||''}" style="margin-top:8px">
+      </div>
+      <div class="form-btns">
+        <button class="f-submit" id="deSubmit" onclick="saveDraftEdit('${id}')">💾 Сохранить</button>
+        <button class="f-cancel" onclick="renderDraftDetail('${id}')">Отмена</button>
+      </div>
+    </div>`;
+}
+
+async function saveDraftEdit(id){
+  const btn=document.getElementById('deSubmit'); btn.disabled=true; btn.textContent='⏳ Сохраняю...';
+  const fd=new FormData();
+  fd.append('vk', document.getElementById('fClub').value);
+  fd.append('strength', document.getElementById('fStrength').value.trim());
+  fd.append('binding', addBinding);
+  fd.append('login', document.getElementById('fLogin')?.value.trim()||'');
+  fd.append('password', document.getElementById('fPassword')?.value.trim()||'');
+  if(selPhoto) fd.append('photo', selPhoto);
+  extraFiles.forEach(f=>fd.append('extra_photos',f));
+  try{
+    const r=await fetch(`${API}/accounts/${id}/draft-update`,{method:'PATCH',body:fd,headers:{'X-Admin-Key':ADMIN_KEY}});
+    const d=await r.json();
+    if(d.ok){
+      toast('✅ Сохранено!');
+      const resp=await fetch(`${API}/accounts/drafts`,{headers:{'X-Admin-Key':ADMIN_KEY}});
+      _draftsCache=await resp.json();
+      renderDraftDetail(id);
+    } else { toast('❌ Ошибка'); btn.disabled=false; btn.textContent='💾 Сохранить'; }
+  }catch{ toast('❌ Сервер недоступен'); btn.disabled=false; btn.textContent='💾 Сохранить'; }
 }
 
 async function publishDraft(id){
