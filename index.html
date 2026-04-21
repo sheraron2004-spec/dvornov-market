@@ -1753,6 +1753,32 @@ async function openProfile(){
 function openAdmin(){ if(!isAdmin) return; renderHome(); openOv('adminOv'); }
 function openCoAdmin(){ renderReserve(); openOv('adminOv'); }
 
+let _lbPhotos=[], _lbIdx=0;
+function openPhotoLightbox(photos, idx){
+  _lbPhotos=photos; _lbIdx=idx;
+  let ov=document.getElementById('photoLightboxOv');
+  if(!ov){
+    ov=document.createElement('div');
+    ov.id='photoLightboxOv';
+    ov.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:pan-y';
+    ov.innerHTML=`
+      <button onclick="document.getElementById('photoLightboxOv').style.display='none'" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.1);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+      <button onclick="lbPrev()" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:22px;cursor:pointer">‹</button>
+      <button onclick="lbNext()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:22px;cursor:pointer">›</button>
+      <img id="lbImg" style="max-width:calc(100% - 80px);max-height:85vh;border-radius:8px;object-fit:contain">
+      <div id="lbCounter" style="position:absolute;bottom:20px;color:rgba(255,255,255,.5);font-size:13px"></div>`;
+    document.body.appendChild(ov);
+  }
+  ov.style.display='flex';
+  lbShow();
+}
+function lbShow(){
+  document.getElementById('lbImg').src=_lbPhotos[_lbIdx];
+  document.getElementById('lbCounter').textContent=`${_lbIdx+1} / ${_lbPhotos.length}`;
+}
+function lbPrev(){ _lbIdx=(_lbIdx-1+_lbPhotos.length)%_lbPhotos.length; lbShow(); }
+function lbNext(){ _lbIdx=(_lbIdx+1)%_lbPhotos.length; lbShow(); }
+
 function openGalleryPhoto(fileId){
   const existing=document.getElementById('galleryPhotoOv');
   if(existing) existing.remove();
@@ -1811,12 +1837,12 @@ function renderDraftDetail(id){
   document.getElementById('adminBody').innerHTML=`
     <button class="admin-back" onclick="renderDrafts()">← Назад</button>
     <div class="sheet-title">📋 Черновик</div>
-    ${mainPhoto?`<img src="${mainPhoto}" style="width:100%;border-radius:14px;margin-bottom:10px;max-height:260px;object-fit:cover" loading="lazy">`:''}
+    ${mainPhoto?`<img src="${mainPhoto}" onclick="openPhotoLightbox(${JSON.stringify(allPhotos)},0)" style="width:100%;border-radius:14px;margin-bottom:10px;max-height:260px;object-fit:cover;cursor:pointer" loading="lazy">`:''}
     ${extraPhotos.length?`
     <div style="margin-bottom:12px">
       <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:700;letter-spacing:.5px">СКРИНЫ (${extraPhotos.length})</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
-        ${extraPhotos.map(p=>`<img src="${p}" style="width:100%;aspect-ratio:1;border-radius:8px;object-fit:cover" loading="lazy">`).join('')}
+        ${extraPhotos.map((p,i)=>`<img src="${p}" onclick="openPhotoLightbox(${JSON.stringify(allPhotos)},${i+1})" style="width:100%;aspect-ratio:1;border-radius:8px;object-fit:cover;cursor:pointer" loading="lazy">`).join('')}
       </div>
     </div>`:''}
     <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;flex-direction:column;gap:10px">
