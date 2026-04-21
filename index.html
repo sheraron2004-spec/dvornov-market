@@ -1779,6 +1779,7 @@ function renderHome(){
       <button class="adm-btn" onclick="closeOv('adminOv')"><div class="adm-ic ic-g">🚪</div><div><div class="adm-name">Закрыть</div><div class="adm-desc">Вернуться в магазин</div></div></button>
     </div>`;}
 
+let _draftsCache=[];
 async function renderDrafts(){
   document.getElementById('adminBody').innerHTML=`
     <button class="admin-back" onclick="renderHome()">← Назад</button>
@@ -1786,27 +1787,55 @@ async function renderDrafts(){
     <div id="draftsBody" style="text-align:center;padding:24px;color:var(--muted)">Загрузка...</div>`;
   try{
     const r=await fetch(`${API}/accounts/drafts`,{headers:{'X-Admin-Key':ADMIN_KEY}});
-    const drafts=await r.json();
-    if(!drafts.length){ document.getElementById('draftsBody').innerHTML='<div style="color:var(--muted)">Черновиков нет</div>'; return; }
-    document.getElementById('draftsBody').innerHTML=drafts.map(d=>`
-      <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:10px;text-align:left">
-        ${d.photo?`<img src="${d.photo}" style="width:100%;border-radius:10px;margin-bottom:10px;max-height:180px;object-fit:cover" loading="lazy">`:''}
-        <div style="font-weight:700;font-size:15px;margin-bottom:4px">#${d.number}</div>
-        ${d.vk?`<div style="font-size:12px;color:var(--muted2);margin-bottom:10px">${d.vk}</div>`:''}
-        ${d.albums&&d.albums.length?`<div style="font-size:11px;color:var(--muted);margin-bottom:10px">📸 ${d.albums.length} доп. фото</div>`:''}
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <input id="dp_${d.id}" class="form-input" placeholder="Цена (₽)" style="flex:1;min-width:100px" type="number">
-          <button onclick="publishDraft('${d.id}')" style="background:linear-gradient(135deg,#16a34a,#22c55e);border:none;color:#fff;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">✅ Опубликовать</button>
-          <button onclick="deleteDraft('${d.id}')" style="background:rgba(244,63,94,.15);border:1px solid rgba(244,63,94,.3);color:var(--red);padding:9px 12px;border-radius:10px;font-size:13px;cursor:pointer">🗑</button>
+    _draftsCache=await r.json();
+    if(!_draftsCache.length){ document.getElementById('draftsBody').innerHTML='<div style="color:var(--muted)">Черновиков нет</div>'; return; }
+    document.getElementById('draftsBody').innerHTML=_draftsCache.map(d=>`
+      <div onclick="renderDraftDetail('${d.id}')" style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:10px;text-align:left;cursor:pointer;display:flex;gap:12px;align-items:center">
+        ${d.photo?`<img src="${d.photo}" style="width:64px;height:64px;border-radius:10px;object-fit:cover;flex-shrink:0" loading="lazy">`:'<div style="width:64px;height:64px;border-radius:10px;background:var(--card2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px">📦</div>'}
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:15px">${d.strength?`💪 ${d.strength}`:'—'}</div>
+          <div style="font-size:12px;color:var(--muted2);margin-top:3px">${d.binding||'Привязка не указана'}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">📸 ${(d.albums||[]).length} доп. фото</div>
         </div>
+        <div style="color:var(--muted);font-size:18px">›</div>
       </div>`).join('');
   }catch(e){ document.getElementById('draftsBody').innerHTML='<div style="color:var(--red)">Ошибка загрузки</div>'; }
 }
 
+function renderDraftDetail(id){
+  const d=_draftsCache.find(x=>x.id===id);
+  if(!d) return;
+  const allPhotos=[d.photo,...(d.albums||[])].filter(Boolean);
+  const photosHtml=allPhotos.length?`
+    <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px">
+      ${allPhotos.map(p=>`<img src="${p}" style="height:160px;min-width:120px;border-radius:10px;object-fit:cover;flex-shrink:0" loading="lazy">`).join('')}
+    </div>`:'';
+  document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="renderDrafts()">← Назад</button>
+    <div class="sheet-title">📋 Черновик</div>
+    ${photosHtml}
+    <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:10px">
+      ${d.strength?`<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:12px">Сила</span><div style="font-weight:700">💪 ${d.strength}</div></div>`:''}
+      ${d.vk?`<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:12px">Клуб</span><div style="font-weight:700">${d.vk}</div></div>`:''}
+      ${d.binding?`<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:12px">Привязка</span><div style="font-weight:700">${d.binding}</div></div>`:''}
+      ${d.login?`<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:12px">Логин</span><div style="font-weight:700;word-break:break-all">${d.login}</div></div>`:''}
+      ${d.password?`<div><span style="color:var(--muted);font-size:12px">Пароль</span><div style="font-weight:700">${d.password}</div></div>`:''}
+    </div>
+    <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:10px">
+      <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px">Цена ₽</label>
+      <input class="fi" id="dpPrice" type="number" placeholder="Например: 5000" style="margin-bottom:10px">
+      <button onclick="publishDraft('${d.id}')" style="width:100%;background:linear-gradient(135deg,#16a34a,#22c55e);border:none;color:#fff;padding:13px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:8px">✅ Опубликовать</button>
+      <button onclick="deleteDraft('${d.id}')" style="width:100%;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3);color:var(--red);padding:11px;border-radius:12px;font-size:13px;cursor:pointer">🗑 Удалить черновик</button>
+    </div>`;
+}
+
 async function publishDraft(id){
-  const price=document.getElementById('dp_'+id)?.value.trim();
+  const price=document.getElementById('dpPrice')?.value.trim();
   if(!price){ toast('⚠️ Введи цену'); return; }
-  const fd=new FormData(); fd.append('price',price);
+  const nextNum=await loadStats();
+  const fd=new FormData();
+  fd.append('price',price);
+  if(nextNum) fd.append('number', String(nextNum));
   try{
     const r=await fetch(`${API}/accounts/${id}/publish`,{method:'POST',body:fd,headers:{'X-Admin-Key':ADMIN_KEY}});
     const d=await r.json();
@@ -1836,7 +1865,6 @@ function renderReserve(){
         <input type="file" id="photoIn" accept="image/*" style="display:none" onchange="previewPh(event)">
         <img class="photo-preview" id="phPreview">
       </div>
-      <div class="fg"><label>Число аккаунта</label><input class="fi" id="fNum" placeholder="Загрузка..."></div>
       <div class="fg"><label>Сила аккаунта</label><input class="fi" id="fStrength" placeholder="Например: 3162" type="number"></div>
       <div class="fg"><label>Клуб (цвет карточки)</label>
         <select class="fi" id="fClub">
@@ -1875,15 +1903,12 @@ function renderReserve(){
         <button class="f-cancel" onclick="closeOv('adminOv')">Отмена</button>
       </div>
     </div>`;
-  loadStats().then(next=>{ const el=document.getElementById('fNum'); if(el && next) el.value=next; });
 }
 async function saveDraft(){
-  const num=document.getElementById('fNum').value.trim();
-  if(!num){ toast('⚠️ Заполни число аккаунта'); return; }
   const btn=document.getElementById('dSubmit'); btn.disabled=true; btn.textContent='⏳ Сохраняю...';
   const fd=new FormData();
   fd.append('tg_id',TG_USER.id);
-  fd.append('number',num);
+  fd.append('number','');
   fd.append('vk',document.getElementById('fClub').value);
   fd.append('strength',document.getElementById('fStrength').value.trim());
   fd.append('binding',addBinding);
