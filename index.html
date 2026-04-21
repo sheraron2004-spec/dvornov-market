@@ -1826,49 +1826,71 @@ async function deleteDraft(id){
 }
 
 function renderReserve(){
-  draftPhoto=null; draftExtras=[];
+  selPhoto=null; extraFiles=[]; addBinding='';
   document.getElementById('adminBody').innerHTML=`
+    <button class="admin-back" onclick="closeOv('adminOv')">← Назад</button>
     <div class="sheet-title">📥 Зарезервировать аккаунт</div>
     <div class="form">
-      <div class="form-group">
-        <label class="form-label">Число аккаунта</label>
-        <input id="dNum" class="form-input" type="number" placeholder="Например: 42">
+      <div class="fg"><label>Главное фото</label>
+        <label class="photo-label" for="photoIn">📷 Выбрать главное фото</label>
+        <input type="file" id="photoIn" accept="image/*" style="display:none" onchange="previewPh(event)">
+        <img class="photo-preview" id="phPreview">
       </div>
-      <div class="form-group">
-        <label class="form-label">ВК клуб</label>
-        <input id="dVk" class="form-input" placeholder="https://vk.com/club...">
+      <div class="fg"><label>Число аккаунта</label><input class="fi" id="fNum" placeholder="Загрузка..."></div>
+      <div class="fg"><label>Сила аккаунта</label><input class="fi" id="fStrength" placeholder="Например: 3162" type="number"></div>
+      <div class="fg"><label>Клуб (цвет карточки)</label>
+        <select class="fi" id="fClub">
+          <option value="">— Без клуба</option>
+          <option value="psg">🔵 PSG</option>
+          <option value="real">⚪ Real Madrid</option>
+          <option value="barca">🔴 Barcelona</option>
+          <option value="manu">🔴 Man United</option>
+          <option value="juve">⬛ Juventus</option>
+          <option value="chelsea">🔵 Chelsea</option>
+          <option value="liverpool">🔴 Liverpool</option>
+          <option value="bayern">🔴 Bayern Munich</option>
+          <option value="inter">🔵 Inter Milan</option>
+          <option value="mancity">🩵 Man City</option>
+        </select>
       </div>
-      <div class="form-group">
-        <label class="form-label">Главное фото</label>
-        <label class="ph-pick" for="dPhFile" id="dPhLbl">📸 Выбрать фото</label>
-        <input id="dPhFile" type="file" accept="image/*" style="display:none" onchange="prevDraftPh(this)">
-        <img id="dPhPreview" style="display:none;width:100%;border-radius:12px;margin-top:8px;max-height:200px;object-fit:cover">
+      <div class="fg"><label>Привязка аккаунта</label>
+        <div class="bind-row">
+          <button class="bind-btn" onclick="setAddBinding('Konami ID + Google Play',this)">🤖 Konami ID + Google Play<br><span class="bind-ручаюсь">ручаюсь</span></button>
+          <button class="bind-btn" onclick="setAddBinding('Konami ID + Game Center',this)">🍎 Konami ID + Game Center<br><span class="bind-ручаюсь">ручаюсь</span></button>
+          <button class="bind-btn" onclick="setAddBinding('Только Konami ID',this)">🎮 Только Konami ID</button>
+        </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Доп. фото (до 20)</label>
-        <label class="ph-pick" for="dExFile">📸 Доп. фото</label>
-        <input id="dExFile" type="file" accept="image/*" multiple style="display:none" onchange="prevDraftExtras(this)">
-        <div id="dExChips"></div>
+      <div class="fg"><label>Доп. фото — фулл скрины</label>
+        <label class="photo-label" for="extrasIn">📸 Выбрать фото (можно сразу все)</label>
+        <input type="file" id="extrasIn" accept="image/*" multiple style="display:none" onchange="previewExtras(event)">
+        <div class="chips" id="extraChips"></div>
+      </div>
+      <div class="fg" style="background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.12);border-radius:12px;padding:12px">
+        <label style="color:#fbbf24;font-weight:800">🔑 Данные аккаунта</label>
+        <input class="fi" id="fLogin" placeholder="Логин (email Konami ID)" style="margin-top:8px">
+        <input class="fi" id="fPassword" placeholder="Пароль" style="margin-top:8px">
       </div>
       <div class="form-btns">
         <button class="f-submit" id="dSubmit" onclick="saveDraft()">📥 Зарезервировать</button>
         <button class="f-cancel" onclick="closeOv('adminOv')">Отмена</button>
       </div>
     </div>`;
+  loadStats().then(next=>{ const el=document.getElementById('fNum'); if(el && next) el.value=next; });
 }
-function prevDraftPh(input){ const f=input.files[0]; if(!f) return; draftPhoto=f; const lbl=document.getElementById('dPhLbl'); if(lbl) lbl.textContent='✅ '+f.name; const img=document.getElementById('dPhPreview'); img.src=URL.createObjectURL(f); img.style.display='block'; }
-function prevDraftExtras(input){ draftExtras=Array.from(input.files); renderDraftChips(); }
-function renderDraftChips(){ document.getElementById('dExChips').innerHTML=draftExtras.map(f=>`<div class="chip"><span>📸 ${f.name}</span></div>`).join(''); }
 async function saveDraft(){
-  const num=document.getElementById('dNum').value.trim();
-  if(!num){ toast('⚠️ Укажи число аккаунта'); return; }
+  const num=document.getElementById('fNum').value.trim();
+  if(!num){ toast('⚠️ Заполни число аккаунта'); return; }
   const btn=document.getElementById('dSubmit'); btn.disabled=true; btn.textContent='⏳ Сохраняю...';
   const fd=new FormData();
   fd.append('tg_id',TG_USER.id);
   fd.append('number',num);
-  fd.append('vk',document.getElementById('dVk').value.trim());
-  if(draftPhoto) fd.append('photo',draftPhoto);
-  draftExtras.forEach(f=>fd.append('extra_photos',f));
+  fd.append('vk',document.getElementById('fClub').value);
+  fd.append('strength',document.getElementById('fStrength').value.trim());
+  fd.append('binding',addBinding);
+  fd.append('login',document.getElementById('fLogin')?.value.trim()||'');
+  fd.append('password',document.getElementById('fPassword')?.value.trim()||'');
+  if(selPhoto) fd.append('photo',selPhoto);
+  extraFiles.forEach(f=>fd.append('extra_photos',f));
   try{
     const r=await fetch(`${API}/accounts/draft`,{method:'POST',body:fd});
     const d=await r.json();
