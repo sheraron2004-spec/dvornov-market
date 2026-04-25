@@ -647,7 +647,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
   <div id="navInner" style="position:absolute;top:0;left:0;bottom:0;display:flex;align-items:center;gap:7px;padding:8px 10px 14px;transform:translateX(0);transition:transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);will-change:transform;width:100%;box-sizing:border-box" id="navInner">
     <a href="https://t.me/Dvornov_Otziv" target="_blank" class="nav-btn nav-sell">⭐ Отзывы</a>
     <button class="nav-btn nav-sell" onclick="openProfile()">👤 Профиль</button>
-    <a href="https://t.me/DvornovNikitos" target="_blank" class="nav-btn nav-contact">✉️ Написать</a>
+    <button class="nav-btn nav-contact" onclick="openSell()" style="background:linear-gradient(135deg,#065f46,#059669);box-shadow:0 3px 12px rgba(5,150,105,.35)">💰 Продать акк</button>
   </div>
   <div id="navAdminBtn" style="display:none;position:absolute;right:0;top:0;bottom:0;width:68px;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;font-family:'Inter',sans-serif;background:rgba(168,85,247,.06);border-left:1px solid rgba(168,85,247,.15)" onclick="openAdmin()">
     <span style="font-size:18px;line-height:1">⚙️</span>
@@ -713,6 +713,11 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
 <!-- SWAP OVERLAY -->
 <div class="overlay overlay-full" id="swapOv" style="flex-direction:column;background:#07080f">
   <div id="swapBody" style="flex:1;overflow-y:auto"></div>
+</div>
+
+<!-- SELL OVERLAY -->
+<div class="overlay overlay-full" id="sellOv" style="flex-direction:column;background:#07080f">
+  <div id="sellBody" style="flex:1;overflow-y:auto"></div>
 </div>
 
 <!-- PROFILE OVERLAY -->
@@ -1752,6 +1757,155 @@ async function openProfile(){
 }
 function openAdmin(){ if(!isAdmin) return; renderHome(); openOv('adminOv'); }
 function openCoAdmin(){ renderReserve(); openOv('adminOv'); }
+
+// ━━━ ПРОДАТЬ АККАУНТ ━━━
+let sellFiles=[], sellBinding='';
+
+function openSell(){
+  sellFiles=[]; sellBinding='';
+  renderSellForm();
+  openOv('sellOv');
+}
+
+function renderSellForm(){
+  document.getElementById('sellBody').innerHTML=`
+    <div style="position:relative;overflow:hidden;min-height:220px;display:flex;flex-direction:column;justify-content:flex-end;padding:20px">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,#001a0a,#000d05,#020008)"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(5,150,105,.18),transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(5,150,105,.7),transparent)"></div>
+      <div style="position:absolute;right:-10px;top:10px;font-size:120px;opacity:.07;pointer-events:none;line-height:1;transform:rotate(15deg)">💰</div>
+      <div onclick="closeOv('sellOv')" style="position:absolute;top:16px;left:16px;width:36px;height:36px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;color:#94a3b8;z-index:10">←</div>
+      <div style="position:relative;z-index:2">
+        <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(5,150,105,.12);border:1px solid rgba(5,150,105,.35);border-radius:20px;padding:4px 12px;font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#6ee7b7;margin-bottom:10px">💰 Выкуп аккаунтов</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:1.5px;color:#fff;line-height:.95;margin-bottom:8px">Продай<br><span style="background:linear-gradient(135deg,#d1fae5,#6ee7b7,#059669);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Аккаунт</span></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:4px 10px;font-size:10px;font-weight:700;color:rgba(255,255,255,.5)">⚡ Быстрый ответ</div>
+          <div style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:4px 10px;font-size:10px;font-weight:700;color:rgba(255,255,255,.5)">🛡️ Безопасно</div>
+          <div style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:4px 10px;font-size:10px;font-weight:700;color:rgba(255,255,255,.5)">🤝 Честно</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:20px 16px 0;display:flex;gap:0;position:relative">
+      <div style="position:absolute;top:31px;left:38px;right:38px;height:1px;background:linear-gradient(90deg,rgba(5,150,105,.4),rgba(5,150,105,.15),rgba(5,150,105,.4));z-index:0"></div>
+      ${[['📸','Фото'],['💵','Цена'],['🤝','Ответ']].map(([ic,lb])=>`
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;z-index:1">
+        <div style="width:38px;height:38px;border-radius:50%;background:radial-gradient(135deg,rgba(5,150,105,.25),rgba(5,150,105,.08));border:1px solid rgba(5,150,105,.4);display:flex;align-items:center;justify-content:center;font-size:16px">${ic}</div>
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45)">${lb}</div>
+      </div>`).join('')}
+    </div>
+
+    <div style="padding:20px 16px 40px;display:flex;flex-direction:column;gap:14px">
+
+      <!-- ФОТО -->
+      <div style="border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);overflow:hidden">
+        <div style="padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:8px">
+          <div style="width:28px;height:28px;border-radius:8px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.25);display:flex;align-items:center;justify-content:center;font-size:13px">📷</div>
+          <div><div style="font-size:13px;font-weight:700;color:#f1f5f9">Скриншоты аккаунта</div><div style="font-size:10px;color:#475569">До 10 фото состава</div></div>
+          <div style="margin-left:auto;font-size:10px;font-weight:700;color:#ef4444">обязательно</div>
+        </div>
+        <div style="padding:12px 16px">
+          <label for="sellPhotosIn" style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(5,150,105,.06);border:1.5px dashed rgba(5,150,105,.3);border-radius:12px;padding:16px;color:#6ee7b7;font-size:12px;font-weight:700;cursor:pointer">📷 Нажми чтобы выбрать фото</label>
+          <input type="file" id="sellPhotosIn" accept="image/*" multiple style="display:none" onchange="onSellPhotos(this)">
+          <div id="sellPhotosPrev" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"></div>
+        </div>
+      </div>
+
+      <!-- ОПИСАНИЕ -->
+      <div style="border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);overflow:hidden">
+        <div style="padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:8px">
+          <div style="width:28px;height:28px;border-radius:8px;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.25);display:flex;align-items:center;justify-content:center;font-size:13px">📝</div>
+          <div><div style="font-size:13px;font-weight:700;color:#f1f5f9">Описание</div><div style="font-size:10px;color:#475569">Дивизион, состав, топ игроки</div></div>
+          <div style="margin-left:auto;font-size:10px;font-weight:700;color:#ef4444">обязательно</div>
+        </div>
+        <div style="padding:12px 16px">
+          <textarea id="sellDesc" rows="3" placeholder="Например: Дивизион 1, топ состав ЛЧ, Mbappe, Ronaldo..." style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:#f1f5f9;padding:11px 12px;font-family:'Inter',sans-serif;font-size:13px;resize:none;box-sizing:border-box;outline:none"></textarea>
+        </div>
+      </div>
+
+      <!-- ПРИВЯЗКА -->
+      <div style="border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);overflow:hidden">
+        <div style="padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:8px">
+          <div style="width:28px;height:28px;border-radius:8px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.25);display:flex;align-items:center;justify-content:center;font-size:13px">🔗</div>
+          <div><div style="font-size:13px;font-weight:700;color:#f1f5f9">Привязка аккаунта</div></div>
+        </div>
+        <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+          ${[['Чистый (только Konami ID)','🔑'],['Konami ID + Google Play','🤖'],['Konami ID + Game Center','🍎']].map(([lb,ic])=>`
+          <div onclick="setSellBinding('${lb}',this)" data-bind="${lb}" style="padding:12px 14px;border-radius:12px;border:1.5px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);cursor:pointer;display:flex;align-items:center;gap:10px;transition:.15s" class="sell-bind-opt">
+            <span style="font-size:18px">${ic}</span>
+            <span style="font-size:13px;font-weight:600;color:#f1f5f9">${lb}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- ЦЕНА -->
+      <div style="border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);overflow:hidden">
+        <div style="padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:8px">
+          <div style="width:28px;height:28px;border-radius:8px;background:rgba(5,150,105,.12);border:1px solid rgba(5,150,105,.25);display:flex;align-items:center;justify-content:center;font-size:13px">💵</div>
+          <div><div style="font-size:13px;font-weight:700;color:#f1f5f9">Желаемая цена</div><div style="font-size:10px;color:#475569">Можем обсудить</div></div>
+          <div style="margin-left:auto;font-size:10px;font-weight:700;color:#ef4444">обязательно</div>
+        </div>
+        <div style="padding:12px 16px">
+          <div style="position:relative">
+            <input id="sellPrice" type="number" placeholder="Например: 3000" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:#f1f5f9;padding:12px 40px 12px 14px;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;box-sizing:border-box;outline:none">
+            <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#475569;font-size:13px;font-weight:700">₽</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- КНОПКА -->
+      <button id="sellSubmitBtn" onclick="submitSell()" style="width:100%;background:linear-gradient(135deg,#065f46,#059669);border:none;color:#fff;padding:16px;border-radius:16px;font-family:'Inter',sans-serif;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(5,150,105,.4)">
+        💰 Отправить предложение
+      </button>
+    </div>`;
+}
+
+function setSellBinding(val, el){
+  sellBinding=val;
+  document.querySelectorAll('.sell-bind-opt').forEach(b=>{
+    b.style.borderColor=b.dataset.bind===val?'rgba(5,150,105,.6)':'rgba(255,255,255,.08)';
+    b.style.background=b.dataset.bind===val?'rgba(5,150,105,.1)':'rgba(255,255,255,.03)';
+  });
+}
+
+function onSellPhotos(input){
+  sellFiles=Array.from(input.files).slice(0,10);
+  const prev=document.getElementById('sellPhotosPrev');
+  prev.innerHTML=sellFiles.map((f,i)=>`
+    <div style="position:relative">
+      <img src="${URL.createObjectURL(f)}" style="width:72px;height:72px;border-radius:10px;object-fit:cover">
+    </div>`).join('');
+}
+
+async function submitSell(){
+  const desc=document.getElementById('sellDesc').value.trim();
+  const price=document.getElementById('sellPrice').value.trim();
+  if(!sellFiles.length){ toast('⚠️ Добавь хотя бы одно фото'); return; }
+  if(!desc){ toast('⚠️ Напиши описание'); return; }
+  if(!price){ toast('⚠️ Укажи цену'); return; }
+  const btn=document.getElementById('sellSubmitBtn');
+  btn.disabled=true; btn.textContent='⏳ Отправляю...';
+  const fd=new FormData();
+  fd.append('user_id', TG_USER.id||0);
+  fd.append('user_name', TG_USER.first_name||'Аноним');
+  fd.append('description', desc);
+  fd.append('binding', sellBinding);
+  fd.append('desired_price', price);
+  sellFiles.forEach(f=>fd.append('photos',f));
+  try{
+    const r=await fetch(`${API}/sell-requests`,{method:'POST',body:fd});
+    const d=await r.json();
+    if(d.ok){
+      document.getElementById('sellBody').innerHTML=`
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 24px;text-align:center">
+          <div style="font-size:72px;margin-bottom:20px">✅</div>
+          <div style="font-size:22px;font-weight:800;color:#f1f5f9;margin-bottom:10px">Предложение отправлено!</div>
+          <div style="font-size:14px;color:#64748b;margin-bottom:32px">Продавец рассмотрит и ответит в Telegram боте.</div>
+          <button onclick="closeOv('sellOv')" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#f1f5f9;padding:14px 32px;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer">← Назад в магазин</button>
+        </div>`;
+    } else { toast('❌ Ошибка'); btn.disabled=false; btn.textContent='💰 Отправить предложение'; }
+  }catch{ toast('❌ Сервер недоступен'); btn.disabled=false; btn.textContent='💰 Отправить предложение'; }
+}
 
 let _lbPhotos=[], _lbIdx=0;
 function openPhotoLightbox(photos, idx){
