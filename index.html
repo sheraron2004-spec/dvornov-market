@@ -448,19 +448,28 @@ header{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.97);backdrop-f
 
 /* ━━━ TABLET / IPAD ━━━ */
 @media(min-width:768px){
-  :root{--app-w:700px}
+  :root{--app-w:620px}
   html{background:#000 !important}
   body{background:#000}
   #swrap{left:50% !important;right:auto !important;width:var(--app-w) !important;transform:translateX(-50%) !important}
   .bottom-nav{left:50% !important;right:auto !important;width:var(--app-w) !important;transform:translateX(-50%) !important}
   .overlay{left:50% !important;right:auto !important;width:var(--app-w) !important;transform:translateX(-50%) !important}
   .scrollbar{display:none !important}
-  header{max-width:var(--app-w)}
-  #grid{grid-template-columns:repeat(2,1fr) !important}
-  .admin-sheet,.sheet{max-width:var(--app-w)}
-  #adminBody .form{max-width:100%}
-  .fg input,.fg select,.fg textarea,.fi{font-size:15px !important}
-  .photo-label{padding:20px !important;font-size:14px !important}
+  /* 1 колонка, но карточки шире и фото крупнее */
+  #grid{grid-template-columns:1fr !important}
+  .card-img{aspect-ratio:16/7 !important}
+  .card-price{font-size:30px !important}
+  .card-body{padding:14px 16px 16px !important}
+  .card-sub{font-size:12px !important}
+  /* Формы удобнее */
+  .fg input,.fg select,.fg textarea,.fi{font-size:15px !important;padding:12px 14px !important}
+  .photo-label{padding:22px !important;font-size:14px !important}
+  .f-submit,.f-cancel{font-size:15px !important;padding:14px !important}
+  /* Шапка */
+  .logo-name{font-size:40px !important}
+  .search-input{font-size:14px !important}
+  /* Навбар */
+  .nav-btn{font-size:13px !important;padding:12px 8px !important}
 }
 </style>
 </head>
