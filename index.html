@@ -952,7 +952,7 @@ async function loadAccounts(){
     }
   }
   if(!cached){
-    document.getElementById('grid').innerHTML=`<div class="state-box"><div class="state-icon">⚠️</div><div class="state-text">Сервер временно недоступен.<br>Попробуй позже.</div></div>`;
+    document.getElementById('grid').innerHTML=`<div class="state-box"><div class="state-icon">⚠️</div><div class="state-text" style="text-align:center;line-height:1.6">Сервер временно недоступен.<br><br><span style="font-size:13px;opacity:0.75">Нажми <b>⋮</b> в правом верхнем углу<br>→ <b>Перезагрузить</b></span><br><br><button onclick="location.reload()" style="margin-top:4px;padding:8px 22px;border-radius:20px;border:none;background:#3390ec;color:#fff;font-size:14px;font-weight:600;cursor:pointer">🔄 Обновить</button></div></div>`;
     document.getElementById('countBadge').textContent='—';
   }
 }
